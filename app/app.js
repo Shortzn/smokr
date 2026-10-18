@@ -7,9 +7,10 @@ const REGIONS = [
     note: "Am Bahnhof Kamakura gibt es nur den Raucherraum im 3. Stock des Aiza-Gebäudes an der Komachi-dori, offen 9 bis 17 Uhr. Rund um Enoshima gibt es keinen offiziellen Platz." },
   { id: "kyoto", de: "Kyoto", ja: "京都", center: [135.7681, 35.0045], zoom: 12.8,
     note: "In der Innenstadt, am Bahnhof und in Kiyomizu und Gion kostet Rauchen auf der Straße 1.000 Yen. In Arashiyama und Fushimi Inari gibt es keinen städtischen Raucherplatz." },
-  { id: "okinawa", de: "Okinawa", ja: "沖縄", center: [127.6809, 26.2124], zoom: 12.4 },
+  { id: "okinawa", de: "Okinawa", ja: "沖縄", center: [127.6809, 26.2124], zoom: 12.4,
+    note: "In Naha ist Rauchen auf der Kokusai-dori und der Okiei-dori verboten. Dort gibt es keinen offiziellen Platz, nutze Aschenbecher bei Konbinis in den Seitenstraßen. Am Flughafen gibt es viele Raucherräume." },
   { id: "osaka", de: "Osaka", ja: "大阪", center: [135.5023, 34.6937], zoom: 12.4,
-    note: "Seit Januar 2025 ist Rauchen auf der Straße in ganz Osaka verboten. Nur an ausgewiesenen Plätzen." },
+    note: "Seit Januar 2025 ist Rauchen auf der Straße in ganz Osaka verboten, auch mit IQOS. Strafe 1.000 Yen, sofort zu zahlen. Erlaubt nur an ausgewiesenen Plätzen oder bei Aschenbechern auf Privatgrund." },
 ];
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const WALK_M_PER_MIN = 75;
@@ -115,7 +116,10 @@ function metaLine(s) {
 }
 function sourceText(s) {
   const out = [];
-  if (s.src.includes("official")) out.push(s.ward ? `Bezirk ${s.ward}` : "offizielle Liste");
+  if (s.src.includes("official")) {
+    if (!s.ward) out.push("offizielle Liste");
+    else out.push(s.region === "tokyo" ? `Bezirk ${s.ward}` : `${s.ward}, offizielle Angabe`);
+  }
   if (s.src.includes("osm")) out.push("OpenStreetMap");
   return out.join(" und ");
 }
@@ -128,7 +132,7 @@ function fmtDate(iso) {
 const JA_WORDS = [
   [/24時間/g, "rund um die Uhr"], [/平日/g, "Mo–Fr"], [/土曜日?/g, "Sa"], [/日曜日?/g, "So"],
   [/祝日|祝祭日/g, "Feiertage"], [/年末年始/g, "Jahreswechsel"], [/お盆/g, "Obon"],
-  [/を除く/g, " ausgenommen"], [/のみ/g, " nur"], [/から/g, " bis "], [/まで/g, ""], [/毎日/g, "täglich"], [/[～〜]/g, "–"],
+  [/を除く/g, " ausgenommen"], [/のみ/g, " nur"], [/から/g, " bis "], [/まで/g, ""], [/毎日/g, "täglich"], [/[～〜~]/g, "–"],
   [/・/g, ", "], [/（/g, " ("], [/）/g, ")"],
 ];
 function fmtHours(h) {

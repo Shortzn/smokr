@@ -190,6 +190,9 @@ def official_spots(region):
             spot["chk"] = s["source_date"]
         if s.get("status") == "unknown":
             spot["unk"] = True
+        if s.get("access") == "customers":
+            # Raucherraum in einem Geschäft: wie ein Lokal behandeln (Kaufpflicht)
+            spot.update(k="v", vt="Geschäft", sd="Raucherraum für Kunden")
         out.append(spot)
     return out
 
@@ -201,6 +204,8 @@ def merge(official, osm):
         if o["k"] == "p":
             twin = None
             for m in official:
+                if m["k"] != "p":
+                    continue
                 radius = MERGE_RADIUS_M if m.get("geo") in (None, "source") else MERGE_RADIUS_M * 2
                 if dist_m(o["lat"], o["lon"], m["lat"], m["lon"]) <= radius:
                     twin = m
