@@ -23,35 +23,51 @@ Nichts wird automatisch gepostet. Du entscheidest, wann und wo.
 | r/iqos | Tabakerhitzer-Nutzer, Filter „Nur IQOS“ | Kleiner, Thema passt genau |
 | Kommentare in bestehenden Threads | Jemand fragt konkret nach Raucherplätzen in Japan | Nur antworten, wenn die Frage wirklich passt, kein Copy-Paste |
 
-## Entwurf (Englisch)
+## Entwurf (Englisch, Stand Phase 5)
 
-**Titel:** I built a free map of smoking areas in Japan (official city lists, works offline). Looking for beta testers.
+**Titel:** We kept walking to "smoking areas" in Japan that didn't exist, so I built a free map from official city lists. Beta testers welcome.
 
-> Hi! While traveling in Japan I kept walking to "smoking areas" from other apps that didn't exist, or turned out to be inside a café. So I built **Smokr**, a free web app:
+> Hi! On our trip through Japan (Tokyo, Kamakura, Kyoto, Okinawa, Osaka) the smoking-area apps we tried kept sending us to places that didn't exist anymore, to konbini ashtrays that had been removed years ago, or to spots that turned out to be inside a café where you have to order first. Some apps were Japanese only.
 >
-> **https://shortzn.github.io/smokr/**
+> So I built **Smokr**, a free web app: **https://shortzn.github.io/smokr/**
 >
-> - Covers Tokyo, Kamakura, Kyoto, Okinawa and Osaka.
-> - Most public spots come from the **official ward and city lists** (for example Chiyoda, Shinjuku, Minato and the City of Osaka), plus OpenStreetMap.
-> - Every spot shows **where the data comes from** and how exact the position is.
-> - Public spots and cafés/shops (where you may need to buy something) are clearly separated.
-> - **Heated-tobacco-only** spots (IQOS etc.) are marked, and you can filter them out if you smoke cigarettes.
-> - One tap opens **walking directions** in Apple Maps or Google Maps.
-> - English, German and Japanese. No account, no ads, no tracking. Works offline once loaded. Add it to your home screen to use it like an app.
+> **What it does today:**
+> - **Data:** Most public spots come from the **official ward and city lists** (for example Chiyoda, Minato, Chuo, Taito and the City of Osaka), plus OpenStreetMap.
+> - **Map symbols:** Every marker shows **what kind of place** it is: public smoking area, café or restaurant, shop, or heated-tobacco-only (IQOS etc.).
+> - **Details:** The list shows access ("free", "customers only", "boarding pass needed"), floor, and where the data comes from.
+> - **Names:** Japanese names are shown in **English** where they could be translated reliably, for example "Shinjuku Station Public Smoking Area – East Exit". The original Japanese name always stays visible so you can match it with signs.
+> - **Konbini:** Old konbini ashtray entries are hidden by default because many are gone.
+> - **Directions:** One tap opens walking directions in Apple Maps or Google Maps.
+> - **App:** English, German and Japanese. No account, no ads, no tracking. Works offline once loaded, and you can add it to your home screen.
 >
 > **Known limitations, honestly:**
-> - Distances are straight-line, not walking distance.
-> - Some spots from OpenStreetMap are old. They're drawn hollow so you can tell.
-> - Old konbini ashtray entries are hidden by default because many are gone.
-> - Kamakura and Okinawa have few official spots, so the map is sparse there.
+> - Distances are straight-line.
+> - About a third of the Japanese names couldn't be translated reliably, so the app describes those ("Smoking area near Shimbashi") instead of guessing.
+> - Some OpenStreetMap entries are old.
+> - Kamakura and Okinawa have few official spots.
 >
-> If you're in Japan, I'd love to hear: Did you find the spot? Was the position right? What was confusing? Reply here or open an issue on GitHub: https://github.com/Shortzn/smokr/issues
+> I'm looking for real feedback from people in Japan:
+> - Did you find the spot?
+> - Was the position or the access info right?
+> - Which names were confusing?
+>
+> Reply here or open an issue: https://github.com/Shortzn/smokr/issues
 >
 > Please follow local rules. Many areas fine you for smoking on the street.
 
-Ist die Community-Funktion eingeschaltet, kommt dieser Satz dazu:
+Ist die Community eingeschaltet, kommt dieser Absatz dazu:
 
-> You can also add missing spots and confirm existing ones with a photo, right in the app. Submissions are reviewed before they appear.
+> **New:** You can add missing smoking areas yourself, confirm existing ones, report wrong ones, and add your own photo of the entrance or sign. It's free and needs no account. Every submission is reviewed before it appears.
+
+### Stand der Regelprüfung
+
+- **Automatisch nicht prüfbar:** Reddit blockt automatische Abrufe. Auch eine Websuche lieferte die Regeln von r/JapanTravel und r/JapanTravelTips nicht.
+- **Was sich feststellen ließ:** Das Wiki von r/JapanTravel verweist auf die Regelliste in der Seitenleiste ([Wiki-Spiegel](https://pol1.lr.ggtyler.dev/r/JapanTravel/wiki/index)). Andere Reise-Subreddits erlauben Eigenwerbung oft nur nach Freigabe durch die Moderatoren oder in Sammel-Threads ([Beispiel r/canadatravel](https://pol1.lr.ggtyler.dev/r/canadatravel/wiki/index)).
+- **Vorgehen:** Vor jedem Post die Seitenleiste lesen und im Zweifel per Modmail fragen. Ein Entwurf für die Modmail steht unten.
+
+### Modmail-Entwurf
+
+> Hi mods, I built a free, non-commercial web map of smoking areas in Japan based on official ward and city lists (no ads, no account, no tracking). Would a short post asking travelers for feedback on data quality be okay here, or is there a thread where it fits better? Thanks!
 
 ## Kurzbeschreibung (für Kommentare oder Profil)
 

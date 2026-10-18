@@ -20,5 +20,6 @@ migrations_dir = "migrations"
 [triggers]
 crons = ["17 3 * * *"]
 
+# Keine dauerhaften Anfrage-Logs bei Cloudflare (Datenschutz). Live-Fehlersuche: npx wrangler tail
 [observability]
-enabled = true
+enabled = false

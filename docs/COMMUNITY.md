@@ -114,30 +114,60 @@ R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und die Fotos mehr al
 
 ## Einrichtung (deine manuellen Schritte)
 
-Diese Schritte brauchen deinen Cloudflare-Login. Sie lassen sich deshalb nicht automatisieren:
+Du brauchst nur zwei Dinge: ein Cloudflare-API-Token und ein Admin-Passwort.
 
-1. **Anmelden:** Im Terminal in `~/Projects/smokr` den folgenden Befehl ausführen. Er öffnet den Browser für den Cloudflare-Login. Ein kostenloses Konto reicht, eine Zahlungsmethode ist nicht nötig.
+### 1. API-Token anlegen (geht auch am iPhone)
 
-   ```sh
-   npx wrangler login
-   ```
+1. Kostenloses Cloudflare-Konto anlegen oder anmelden, unter dash.cloudflare.com. Eine Zahlungsmethode ist nicht nötig.
+2. Rechts oben das Profil öffnen, dann **API Tokens**, **Create Token**, ganz unten **Create Custom Token**.
+3. **Name:** `smokr-setup`
+4. **Rechte (Permissions):**
+   - Account · Workers Scripts · Edit
+   - Account · D1 · Edit
+   - Account · Turnstile · Edit
+   - Account · Account Settings · Read
+   - User · Memberships · Read
+   - User · User Details · Read
+5. **Account Resources:** dein Konto. **Zone Resources:** keine.
+6. **Gültigkeit (TTL):** ein paar Tage reichen. Nach der Einrichtung kannst du das Token löschen.
+7. **Create Token**, dann das Token kopieren. Es wird nur einmal angezeigt.
 
-2. **Turnstile anlegen:**
-   - Im Cloudflare-Dashboard unter **Turnstile** auf „Add widget“ gehen.
-   - Name „Smokr“, Hostname `shortzn.github.io`, Modus „Managed“.
-   - Site Key und Secret Key notieren.
-3. **Admin-Passwort ausdenken:** mindestens 16 Zeichen, nur für die Moderation.
-4. **Einrichtungsskript starten:**
+**Schicke das Token nie in den Chat.** Es gehört nur ins Terminal.
 
-   ```sh
-   sh worker/tools/setup.sh
-   ```
+### 2. Einrichtung starten (am Mac)
 
-   Es legt die D1-Datenbank an, spielt das Schema ein und fragt nach dem Turnstile-Secret und dem Admin-Passwort. Salz und Sitzungsschlüssel erzeugt es selbst. Dann veröffentlicht es den Worker und zeigt die Adresse.
-5. **Mir die Worker-Adresse und den Site Key nennen.** Die Site Key ist öffentlich. Ich trage beides in `app/config.js` ein, teste gegen die echte API und veröffentliche.
-6. **Impressum und Datenschutzerklärung** mit deinen Angaben aus den Vorlagen fertigstellen.
+Im Terminal:
 
-Kosten entstehen dabei keine. Kostenpflichtige Dienste (Workers Paid, R2, Images) bleiben aus.
+```sh
+cd ~/Projects/smokr
+sh worker/tools/setup.sh
+```
+
+**Abfragen, alle verdeckt:**
+- das API-Token
+- ein Admin-Passwort, mindestens 16 Zeichen, zweimal
+- nur falls dein Konto noch keine hat: ein Wunschname für die `workers.dev`-Adresse
+
+**Was das Skript selbst erledigt:**
+- Datenbank anlegen und Schema einspielen
+- Turnstile-Widget für `shortzn.github.io` anlegen
+- Zufällige Schlüssel erzeugen
+- Worker veröffentlichen
+- Gesundheit prüfen
+
+**Geheimnisse:** Sie liegen nur kurz in einer privaten Temp-Datei, die danach gelöscht wird.
+
+**Ergebnis:** Die öffentlichen Werte (API-Adresse und Site Key) schreibt das Skript nach `worker/deployed.json`.
+
+**Die App bleibt dabei ohne Community.** Eingeschaltet wird sie erst nach deiner ausdrücklichen Freigabe und wenn das Impressum online ist.
+
+### 3. Danach
+
+- Mir Bescheid geben. Ich prüfe die echte API mit Tests, die keine Daten veröffentlichen, und bereite das Einschalten vor.
+- Impressum und Datenschutzerklärung mit deinen Angaben fertigstellen (Vorlagen in `docs/legal/`).
+- Das API-Token im Cloudflare-Dashboard löschen. Für den Betrieb wird es nicht gebraucht.
+
+**Kosten:** keine. Kostenpflichtige Dienste (Workers Paid, R2, Images, Logpush) werden nicht aktiviert.
 
 ## Tests
 
