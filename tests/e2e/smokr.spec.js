@@ -543,11 +543,17 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
-  test("Ohne Backend gibt es keine Community-Knöpfe", async ({ page, context }) => {
+  test("Ohne Backend gibt es keine Community-Knöpfe, aber Rückmeldung per E-Mail", async ({ page, context }) => {
     const errors = await H.open(page, context);
     await expect(page.locator("#add-btn")).toBeHidden();
     await page.locator("#list .row").first().click();
     await expect(page.locator("[data-community-report]")).toHaveCount(0);
+    const id = await page.evaluate(() => window.__smokr.state.selected);
+    const href = await page.locator('#detail a[href^="mailto:"]').getAttribute("href");
+    expect(href).toMatch(/^mailto:mail@sthb\.me\?subject=/);
+    expect(decodeURIComponent(href)).toContain(id);
+    const color = await page.locator('#detail a[href^="mailto:"]').evaluate((el) => getComputedStyle(el).textDecorationLine);
+    expect(color).toBe("none");
     expect(errors, errors.join("\n")).toEqual([]);
   });
 });

@@ -212,6 +212,12 @@ function renderListSoon() {
 }
 
 // ---------- Detail ----------
+/** Rückmeldung per E-Mail, solange die Community nicht öffentlich ist. Enthält nur den Platz, nichts über die Person. */
+function mailtoFor(s) {
+  const subject = `Smokr: ${C.title(s)} (${s.id})`;
+  const body = `${t("mail.place")}: ${C.title(s)}${s.nj && s.nj !== C.title(s) ? ` / ${s.nj}` : ""}\nID: ${s.id}\n${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}\n\n${t("mail.what")}\n\n`;
+  return `mailto:${CFG.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
 function factsHtml(rows) {
   return `<dl class="facts">${rows.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${b}</dd>`).join("")}</dl>`;
 }
@@ -303,7 +309,8 @@ function renderDetail(s) {
         <button class="btn" data-report="gone" aria-pressed="${rep?.s === "gone"}">${esc(t("detail.notFound"))}</button>
       </div>
       <p class="mine">${mine}</p>
-      ${COM.enabled() ? `<button class="btn secondary wide" data-community-report>${esc(t("detail.report"))}</button>` : ""}
+      ${COM.enabled() ? `<button class="btn secondary wide" data-community-report>${esc(t("detail.report"))}</button>`
+        : CFG.contactEmail ? `<a class="btn secondary wide" href="${esc(mailtoFor(s))}">${esc(t("detail.reportMail"))}</a><p class="fine">${esc(t("detail.reportMailHint"))}</p>` : ""}
     </div>
     <div class="section"><button class="btn secondary wide" data-open="ask"><span lang="ja">喫煙所？</span> ${esc(t("detail.askJa"))}</button></div>`;
 }
@@ -791,6 +798,7 @@ function renderForm() {
       <p class="fine">${esc(t("add.privacy"))}</p>
       <p class="form-error" id="form-error" role="alert"${f.error ? "" : " hidden"}>${esc(f.error)}</p>
       <button class="btn primary wide" id="form-submit"${f.sending ? " disabled" : ""}>${esc(t(f.sending ? "add.sending" : f.type === "place" ? "add.submit" : "report.submit"))}</button>
+      <p class="fine form-note">${esc(t("add.textNote"))}${CFG.legalUrl ? ` <a href="${esc(CFG.legalUrl)}${t.lang === "de" ? "#de" : "#en-privacy"}" target="_blank" rel="noopener">${esc(t("add.privacy"))}</a>` : ""}</p>
     </form>`;
   renderPhotoBox();
   mountCaptcha();

@@ -5,6 +5,8 @@ window.SMOKR_CONFIG = {
   api: "https://smokr-api.stefan-boschmeier.workers.dev",
   turnstileSiteKey: "0x4AAAAAAFaO1xQghmWa_hn9",
   contactUrl: "https://github.com/Shortzn/smokr/issues",
+  // Rückmeldungen ohne GitHub-Konto (steht auch im Impressum)
+  contactEmail: "mail@sthb.me",
   legalUrl: "legal.html",
   // false = privater Test: nur Geräte mit Testercode oder dem Link #community fragen den Server.
   // Erst bei der öffentlichen Freigabe (Variante B) auf true setzen.

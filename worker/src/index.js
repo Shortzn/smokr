@@ -552,15 +552,21 @@ async function handleAdmin(request, env, path) {
 }
 
 // ---------- Wartung (täglicher Cron) ----------
+// Zeitstempel liegen als 2026-10-18T03:17:00Z vor; Vergleiche im selben Format
+const AGO = (days) => `strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-${days} days')`;
 async function purge(env) {
   await env.DB.batch([
     env.DB.prepare("DELETE FROM rate WHERE day < date('now', '-2 days')"),
-    env.DB.prepare("UPDATE submissions SET ip_hash = NULL WHERE created_at < datetime('now', '-30 days')"),
-    env.DB.prepare("UPDATE reports SET ip_hash = NULL WHERE created_at < datetime('now', '-30 days')"),
-    env.DB.prepare("UPDATE photo_flags SET ip_hash = NULL WHERE created_at < datetime('now', '-30 days')"),
+    env.DB.prepare(`UPDATE submissions SET ip_hash = NULL WHERE created_at < ${AGO(30)}`),
+    env.DB.prepare(`UPDATE reports SET ip_hash = NULL WHERE created_at < ${AGO(30)}`),
+    env.DB.prepare(`UPDATE photo_flags SET ip_hash = NULL WHERE created_at < ${AGO(30)}`),
     env.DB.prepare("UPDATE photos SET bytes = NULL WHERE status IN ('rejected', 'withdrawn')"),
     // Nie geprüfte Fotos nach 90 Tagen löschen
-    env.DB.prepare("UPDATE photos SET bytes = NULL, status = 'rejected' WHERE status = 'pending' AND created_at < datetime('now', '-90 days')"),
+    env.DB.prepare(`UPDATE photos SET bytes = NULL, status = 'rejected' WHERE status = 'pending' AND created_at < ${AGO(90)}`),
+    // Abgelehntes und Zurückgezogenes: Texte nach 30 Tagen löschen. Es bleibt nur, was für Dubletten und das
+    // Moderationsprotokoll nötig ist (Position, Art, Entscheidung).
+    env.DB.prepare(`UPDATE submissions SET name = NULL, floor = NULL, note = NULL WHERE status IN ('rejected', 'withdrawn') AND reviewed_at < ${AGO(30)}`),
+    env.DB.prepare(`UPDATE reports SET comment = NULL, sug_lat = NULL, sug_lon = NULL WHERE status IN ('rejected', 'withdrawn') AND reviewed_at < ${AGO(30)}`),
   ]);
 }
 

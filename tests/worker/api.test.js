@@ -342,6 +342,27 @@ test("Zu viele Fehlversuche sperren nur dieses Gerät", localOnly, async () => {
   assert.equal(r.status, 200, "anderes Gerät nicht betroffen");
 });
 
+test("Nächtliches Aufräumen löscht Texte abgelehnter Beiträge nach 30 Tagen", localOnly, async () => {
+  ip = "203.0.113.50";
+  const r = await post("/v1/submissions", form(place({ lat: "35.81", lon: "139.70", name: "[TEST] old rejected", note: "private text" })));
+  const id = (await r.json()).id;
+  const keep = await post("/v1/submissions", form(place({ lat: "35.82", lon: "139.70", name: "[TEST] fresh rejected" })));
+  const keepId = (await keep.json()).id;
+  await admin(`/admin/api/submissions/${id}`, { action: "reject" });
+  await admin(`/admin/api/submissions/${keepId}`, { action: "reject" });
+  // Entscheidung 31 Tage zurückdatieren (nur in der lokalen Testdatenbank)
+  require("node:child_process").execFileSync("npx", ["wrangler", "d1", "execute", "smokr-community", "--local", "--command",
+    `UPDATE submissions SET reviewed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-31 days') WHERE id = ${Number(id)}`],
+  { cwd: path.join(__dirname, "..", "..", "worker"), stdio: "ignore" });
+  assert.equal((await fetch(API + "/__scheduled?cron=17+3+*+*+*")).status, 200);
+  const subs = (await (await admin("/admin/api/export")).json()).submissions;
+  const old = subs.find((x) => x.id === id), fresh = subs.find((x) => x.id === keepId);
+  assert.equal(old.name, null);
+  assert.equal(old.note, null);
+  assert.equal(old.status, "rejected", "Entscheidung bleibt nachvollziehbar");
+  assert.equal(fresh.name, "[TEST] fresh rejected", "jüngere Ablehnungen bleiben 30 Tage");
+});
+
 test("Sicherung enthält alles außer Bilddaten", async () => {
   const r = await admin("/admin/api/export");
   assert.equal(r.status, 200);

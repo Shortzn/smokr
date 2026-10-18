@@ -46,6 +46,7 @@
     <li>The app contacts the community server (Cloudflare) only if you open the test link, have entered a test code or, later, once community features are public. Otherwise no request goes there.</li>
     <li>Your location is only requested when you tap the location button. It is used on your device to sort the list and is not sent to Smokr.</li>
     <li>Settings, your feedback and the last map position are stored in your browser's local storage. You can delete them by clearing the website data in your browser.</li>
+    <li>Smokr sets no cookies for visitors. The only cookie is the login session of the moderation area, used by the operator.</li>
   </ul>
   <h3>When you send a place, a report or a photo</h3>
   <p>This part applies once the community features are enabled in the app.</p>
@@ -54,9 +55,13 @@
     <li><strong>Private test phase:</strong> while the community is in a private test, sending requires a personal test code. The app keeps it in your browser's local storage. The server stores which code was used for a contribution, not who you are.</li>
     <li><strong>Abuse protection:</strong> to prevent spam, a hash of your IP address is stored. It is salted and changes daily, so it cannot be linked across days, and it is deleted after 30 days. Submissions are checked with Cloudflare Turnstile, which processes technical data of your browser. See the <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare privacy policy</a>.</li>
     <li><strong>Where:</strong> in a database of Cloudflare, Inc. (Cloudflare Workers and D1). Request logs are not stored permanently.</li>
-    <li><strong>Publication:</strong> approved contributions are public and licensed under CC BY 4.0. Rejected contributions and photos are deleted. Photos that were never reviewed are deleted after 90 days.</li>
+    <li><strong>Publication:</strong> approved contributions are public and licensed under CC BY 4.0 until they are withdrawn.</li>
+    <li><strong>Deletion:</strong> photos of rejected or withdrawn contributions are deleted immediately. Their texts are deleted after 30 days; only position, type and the moderation decision remain, to recognise duplicates. Photos that were never reviewed are deleted after 90 days. The IP hash is deleted after 30 days.</li>
+    <li><strong>Backups:</strong> Cloudflare keeps a restore history of the database for 7 days. Occasional backup copies are stored privately by the operator and deleted when no longer needed.</li>
     <li><strong>Legal basis:</strong> your consent (Art. 6(1)(a) GDPR) and the legitimate interest in a service free of abuse (Art. 6(1)(f) GDPR).</li>
   </ul>
+  <h3>Smoking in Japan</h3>
+  <p>Smoking is only allowed from age 20 in Japan. Many cities ban smoking on the street and fine offenders. Smokr only shows where smoking is said to be allowed; signs and local rules on site always take precedence.</p>
   <h3>Your rights</h3>
   <p>You have the right to access, rectification, erasure, restriction of processing, data portability and to withdraw your consent. Write to <a href="mailto:mail@sthb.me">mail@sthb.me</a>. You can also complain to the Austrian Data Protection Authority, <a href="https://www.dsb.gv.at/" target="_blank" rel="noopener">dsb.gv.at</a>.</p>
   <h3>Sources and licenses</h3>
@@ -75,16 +80,20 @@
     <ul>
       <li><strong>Auslieferung:</strong> über GitHub Pages (GitHub, Inc.), Kartenteile über OpenFreeMap. Beide verarbeiten technische Daten des Abrufs wie die IP-Adresse.</li>
       <li><strong>Community-Server:</strong> Die App fragt den Server bei Cloudflare nur, wenn du den Testlink öffnest, einen Testcode eingegeben hast oder die Community später öffentlich ist. Sonst geht keine Anfrage dorthin.</li>
+      <li><strong>Cookies:</strong> Smokr setzt für Besucher keine Cookies. Einziges Cookie ist die Anmeldung im Moderationsbereich, die nur der Betreiber nutzt.</li>
       <li><strong>Standort:</strong> Er wird nur nach Tippen auf den Standort-Knopf abgefragt, auf dem Gerät verwendet und nicht an Smokr gesendet.</li>
       <li><strong>Einsendungen,</strong> sobald die Community eingeschaltet ist:
         <ul>
           <li>Gespeichert werden deine Angaben, die Sprache, ein Foto ohne Metadaten und ein gesalzener, täglich wechselnder IP-Hash zum Schutz vor Missbrauch. Der IP-Hash wird nach 30 Tagen gelöscht.</li>
           <li>Speicherort: Cloudflare Workers und D1. Spam-Schutz: Cloudflare Turnstile.</li>
           <li>Private Testphase: Einsenden geht nur mit einem persönlichen Testcode. Die App speichert ihn im Browser. Der Server speichert, mit welchem Code etwas eingereicht wurde, nicht wer du bist.</li>
-          <li>Freigegebene Beiträge sind öffentlich (CC BY 4.0). Abgelehnte werden gelöscht, nie geprüfte Fotos nach 90 Tagen.</li>
+          <li>Freigegebene Beiträge sind öffentlich (CC BY 4.0), bis sie zurückgezogen werden.</li>
+          <li>Löschung: Fotos abgelehnter oder zurückgezogener Beiträge sofort, deren Texte nach 30 Tagen. Danach bleiben nur Position, Art und Entscheidung, um Dubletten zu erkennen. Nie geprüfte Fotos nach 90 Tagen, der IP-Hash nach 30 Tagen.</li>
+          <li>Sicherungen: Cloudflare hält einen Wiederherstellungsverlauf der Datenbank für 7 Tage. Gelegentliche Sicherungskopien bewahrt der Betreiber privat auf und löscht sie, wenn sie nicht mehr gebraucht werden.</li>
           <li>Rechtsgrundlage: Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) und berechtigtes Interesse an einem missbrauchsfreien Dienst (lit. f).</li>
         </ul>
       </li>
+      <li><strong>Rauchen in Japan:</strong> erst ab 20 Jahren erlaubt. Viele Städte verbieten das Rauchen auf der Straße und strafen das. Smokr zeigt nur, wo Rauchen laut den Angaben erlaubt ist. Schilder und Regeln vor Ort gehen immer vor.</li>
       <li><strong>Deine Rechte:</strong> Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerruf über <a href="mailto:mail@sthb.me">mail@sthb.me</a>. Beschwerde bei der Datenschutzbehörde, <a href="https://www.dsb.gv.at/" target="_blank" rel="noopener">dsb.gv.at</a>.</li>
     </ul>
   </section>
