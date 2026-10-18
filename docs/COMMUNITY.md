@@ -127,10 +127,12 @@ Die App fragt beim Start `GET /v1/status`. Antwortet der Server nicht oder mit e
 | Größe pro Konto | 5 GB | eine Datenbank |
 | Größe pro Zeile | 2 MB | Fotos höchstens 1 MB |
 | Abfragen pro Aufruf | 50 | eine Einsendung mit Foto braucht etwa 13 |
+| Länge einer SQL-Anweisung | 100 KB | betrifft nur die Wiederherstellung, siehe unten |
+| Time Travel | 7 Tage | automatisch |
 | Gelesene Zeilen pro Tag | 5 Mio. | `/v1/community` liest alle freigegebenen Einträge; bei mehr Last hilft ein Cache (auf workers.dev nur eingeschränkt) |
 | Geschriebene Zeilen pro Tag | 100.000 | globaler Deckel 500 Schreibvorgänge |
 
-Eine frühere Fassung dieses Dokuments nannte 5 GB als Grenze. Das gilt pro Konto, nicht pro Datenbank.
+Eine frühere Fassung dieses Dokuments nannte 5 GB als Grenze. Das gilt pro Konto, nicht pro Datenbank. Geprüft am 18.10.2026 in der Cloudflare-Dokumentation (Limits, Pricing, Time Travel). Überschreitungen im Free-Plan kosten nichts, Anfragen werden dann bis zum nächsten Tag abgewiesen.
 
 ### Später: Fotos nach R2
 
@@ -157,8 +159,23 @@ Vorbereitet, nicht aktiviert. R2 braucht eine Zahlungsmethode im Cloudflare-Kont
 
 ### Sicherung und Wiederherstellung
 
-- **Automatisch:** D1 Time Travel stellt die Datenbank auf einen Zeitpunkt der letzten Tage zurück (`wrangler d1 time-travel restore`).
-- **Manuell:** In der Moderation „Sicherung herunterladen“ (JSON aller Einträge ohne Bilddaten) oder `npx wrangler d1 export smokr-community --remote --output backup.sql` (inklusive Bilddaten).
+| Weg | Wann | Wie |
+|---|---|---|
+| Time Travel | Fehler in den letzten 7 Tagen (Free) | `npx wrangler d1 time-travel restore smokr-community --timestamp=<Unix-Zeit>`. Überschreibt die Datenbank, gibt ein Lesezeichen zum Rückgängigmachen aus. |
+| JSON-Export | Überblick, Archiv | Moderation, „Sicherung herunterladen“. Ohne Bilddaten, ohne IP-Hashes. |
+| Vollständige Sicherung | regelmäßig, vor großen Änderungen | `npx wrangler d1 export smokr-community --remote --output smokr-<Datum>.sql` (mit Bildern). Privat ablegen, nicht ins Repository. |
+
+**Wiederherstellen aus der vollständigen Sicherung:** D1 nimmt keine Anweisung über 100 KB an, der Export schreibt aber jedes Foto in eine einzige Zeile. Deshalb zuerst umwandeln:
+
+```sh
+node worker/tools/d1-restore-prepare.mjs smokr-<Datum>.sql restore.sql
+npx wrangler d1 create smokr-community-restore
+npx wrangler d1 execute smokr-community-restore --remote --file restore.sql
+```
+
+Danach die neue Datenbank prüfen und erst dann in `wrangler.toml` umstellen. Die Produktionsdatenbank wird dabei nicht angefasst.
+
+**Getestet:** Jeder Staging-Lauf des Workflows „Worker“ exportiert die Staging-Datenbank samt einem 600-KB-Foto, spielt sie in eine frische Datenbank ein, vergleicht alle Tabellen und Bilder und setzt die Staging-Datenbank per Time Travel zurück (`tests/tools/backup-restore-test.sh`, verweigert alles ohne „staging“ im Namen).
 
 ## Einrichtung und Bereitstellung
 
@@ -168,7 +185,7 @@ Vorbereitet, nicht aktiviert. R2 braucht eine Zahlungsmethode im Cloudflare-Kont
 
 Über GitHub Actions. Der Token liegt nur als Secret bei GitHub, nie im Chat, nie auf dem Mac.
 
-**Einmalig: Token anlegen** (geht am iPhone)
+**Token:** seit 18.10.2026 als Repository-Secret `CLOUDFLARE_API_TOKEN` hinterlegt (Rechte: Workers Scripts Edit, D1 Edit, Account Settings Read). Nur falls er einmal ersetzt werden muss:
 1. dash.cloudflare.com, Profil, **API Tokens**, **Create Token**, **Create Custom Token**.
 2. Name `smokr-deploy`. Rechte:
    - Account · Workers Scripts · Edit

@@ -34,14 +34,13 @@ Vor dem Start: Smokr einmal in Safari öffnen und zweimal neu laden, damit die n
 
 ## C. Erster echter Raucherplatz (privater Test)
 
-**Voraussetzung, einmalig (du):**
-1. Bereitstellungs-Token als GitHub-Secret anlegen und den Workflow „Worker“ erst mit `staging`, dann mit `production` laufen lassen. Anleitung: `docs/COMMUNITY.md`, Abschnitt „Neue Worker-Versionen veröffentlichen“.
-2. Moderation öffnen: `https://smokr-api.stefan-boschmeier.workers.dev/admin`, mit dem Passwort aus der Passwörter-App anmelden. Oben steht „Community: privat (nur mit Testercode)“.
-3. Unter „Testzugänge“ einen Namen eintragen (zum Beispiel „Stefan iPhone“) und „Testercode erstellen“. Der Code erscheint **nur einmal**. In die Passwörter-App kopieren. Für jede Person einen eigenen Code.
+**Schon erledigt:** Der Server läuft im privaten Testmodus. Dein persönlicher Testcode liegt im iCloud-Ordner „Smokr“ in der Datei `smokr-testcode.txt` (bitte in die Passwörter-App übernehmen, dann die Datei löschen). Für weitere Personen erzeugst du Codes in der Moderation unter „Testzugänge“.
+
+Moderation: `https://smokr-api.stefan-boschmeier.workers.dev/admin`, Passwort aus der Passwörter-App.
 
 Wir testen mit einem echten Platz, den ihr gefunden habt. Erfundene Plätze kommen nicht in die Datenbank. Muss doch etwas nur zum Testen hinein, beginnt der Name mit `[TEST]` und wird danach abgelehnt. Das löscht auch das Foto.
 
-- [ ] **C1 Freischalten:** In Safari `https://shortzn.github.io/smokr/#community` öffnen. Ein Fenster „Privater Test“ fragt nach dem Testcode. Den Testercode aus der Moderation einfügen, „Freischalten“. Danach erscheint unten rechts der „+“-Knopf.
+- [ ] **C1 Freischalten:** In Safari `https://shortzn.github.io/smokr/#community` öffnen. Ein Fenster „Privater Test“ fragt nach dem Testcode. Code aus `smokr-testcode.txt` einfügen, „Freischalten“. Danach erscheint rechts über der Liste der „+“-Knopf.
 - [ ] **C2 Platz hinzufügen:** Vor Ort „+“ antippen. Unten öffnet sich das Formular, auf der Karte steht eine Nadel.
 - [ ] **C3 Standort per Karte:** „Meinen Standort verwenden“ oder die Karte verschieben, bis die Nadel genau auf dem Platz steht.
 - [ ] **C4 Angaben:** Art, Tabak und Zugang wählen. Name, Stockwerk oder Ausgang und eine kurze Beschreibung eintippen. Die Tastatur verdeckt die Felder nicht.
@@ -50,13 +49,14 @@ Wir testen mit einem echten Platz, den ihr gefunden habt. Erfundene Plätze komm
 - [ ] **C7 Admin öffnen:** Moderation neu laden.
   - Ist der Eintrag da, mit Position, Angaben und Foto?
   - Ist das Foto richtig gedreht?
-  - Unter „Testzugänge“ steht beim Code „genutzt 1×“.
+  - Unter „Testzugänge“ steht bei „Stefan iPhone“, wie oft der Code genutzt wurde (der Freischalt-Test von heute zählt mit).
   - Bei Bedarf über „Korrigieren“ Name, Stockwerk oder Position anpassen.
 - [ ] **C8 Freigeben.**
 - [ ] **C9 Auf der Karte:** Smokr neu laden. Der Platz erscheint auf der Karte, in der Liste („Community“) und in der Suche nach seinem Namen. Das Foto ist sichtbar.
 - [ ] **C10 Sprachen:** Unter Filter die Sprache auf Englisch und auf Deutsch stellen. Beim Platz stimmen Art, Zugang und Herkunft in beiden Sprachen. Dein Name und deine Beschreibung bleiben, wie du sie geschrieben hast.
 - [ ] **C11 Meldung mit Position:** Bei einem anderen Platz „Problem melden oder mit Foto bestätigen“, dann „Falsche Position“. Die Nadel erscheint, Karte auf die richtige Stelle schieben, senden. In der Moderation steht die vorgeschlagene Position mit Abstand.
-- [ ] **C12 Ohne Code:** In einem privaten Safari-Tab Smokr ohne `#community` öffnen. Es gibt keinen „+“-Knopf.
+- [ ] **C12 Ohne Code:** In einem privaten Safari-Tab Smokr ohne `#community` öffnen. Es gibt keinen „+“-Knopf, im Detail steht stattdessen „Problem per E-Mail melden“.
+- [ ] **C13 Admin am iPhone:** Moderation in Safari öffnen. Lässt sich alles ohne Zoomen bedienen? Foto groß genug? Knöpfe gut zu treffen?
 
 ## Ergebnis
 
@@ -64,4 +64,4 @@ Wir testen mit einem echten Platz, den ihr gefunden habt. Erfundene Plätze komm
 |---|---|---|
 | A1 bis A11 | | |
 | B1 bis B4 | | |
-| C1 bis C12 | | |
+| C1 bis C13 | | |

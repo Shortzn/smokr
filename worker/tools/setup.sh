@@ -8,6 +8,13 @@
 # zufällige Schlüssel. Geheimnisse liegen nur kurz in einer privaten Temp-Datei und werden danach gelöscht.
 # Das Skript schaltet die Community in der App NICHT ein; das passiert erst nach Freigabe in app/config.js.
 set -eu
+# Smokr ist seit 18.10.2026 eingerichtet. Ein zweiter Lauf würde das Turnstile-Secret neu erzeugen und die
+# laufende API stören. Neue Versionen gehen über den GitHub-Workflow "Worker" (docs/COMMUNITY.md).
+if [ "${SMOKR_ALLOW_SETUP:-}" != "ja-neu-einrichten" ]; then
+  echo "Smokr ist bereits eingerichtet. Bitte den GitHub-Workflow \"Worker\" verwenden (docs/COMMUNITY.md)."
+  echo "Nur für eine komplette Neueinrichtung: SMOKR_ALLOW_SETUP=ja-neu-einrichten sh worker/tools/setup.sh"
+  exit 1
+fi
 cd "$(dirname "$0")/.."
 umask 077
 export WRANGLER_SEND_METRICS=false
