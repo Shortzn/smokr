@@ -3,3 +3,6 @@
 data/raw/official/gsi_cache.json
 __pycache__/
 data/raw/
+node_modules/
+test-results/
+playwright-report/

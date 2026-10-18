@@ -24,7 +24,7 @@
   <div class="filters" role="group" aria-label="Filter">
     <button class="chip on" id="f-public" aria-pressed="true"><span class="dot dot-p"></span>Öffentlich</button>
     <button class="chip" id="f-venue" aria-pressed="false"><span class="dot dot-v"></span>Lokale</button>
-    <button class="chip" id="f-heated" aria-pressed="false" title="Plätze nur für Tabakerhitzer ausblenden">Ohne Nur-IQOS</button>
+    <button class="chip" id="f-heated" aria-pressed="false" title="Plätze nur für Tabakerhitzer ausblenden">Nur Zigaretten</button>
   </div>
 </header>
 
@@ -68,11 +68,16 @@
   <h2>Über Smokr</h2>
   <p>Öffentliche Raucherplätze sind <b>grün</b> und kostenlos. <b>Braun</b> sind Lokale mit Raucherbereich, dort musst du etwas kaufen. <b>Violett</b> heißt: nur Tabakerhitzer wie IQOS oder Ploom.</p>
   <p>Wenn du vor Ort bist, tippe auf „War da“ oder „Nicht gefunden“. Nicht gefundene Plätze blendet die App bei dir aus.</p>
-  <p class="fine">Daten: Bezirke und Städte, wo angegeben, sonst © OpenStreetMap-Mitwirkende (ODbL). Karte: OpenFreeMap, OpenMapTiles. Stand der Daten: <span id="built"></span>.</p>
+  <h3>Daten</h3>
+  <ul class="fine" id="data-status"></ul>
+  <p class="fine">Entfernungen sind Luftlinie. Den echten Fußweg zeigen Apple Karten oder Google Maps.</p>
+  <h3>Quellen und Lizenzen</h3>
+  <p class="fine">Offizielle Listen der Bezirke und Städte, die Quelle steht bei jedem Platz. Liste der Stadt Osaka: Stadt Osaka, CC BY 4.0. Weitere Plätze und Bahnhöfe: © OpenStreetMap-Mitwirkende, ODbL. Karte: OpenFreeMap, © OpenMapTiles, Daten von OpenStreetMap.</p>
   <form method="dialog"><button class="btn">Schließen</button></form>
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
+<script src="core.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -108,6 +108,12 @@ body.sheet-big { --sheet-h: 82%; }
 .item .d span { font-size: 12px; color: var(--muted); }
 .item.gone { opacity: .55; }
 .ja { font-family: var(--ja); }
+.item .src { font-size: 12px; }
+.facts-h { font-size: 14px; margin: 4px 0 -4px; color: var(--muted); }
+.empty.error { color: #8a2a1f; }
+.linkish { color: var(--focus); background: none; border: 0; padding: 0; text-decoration: underline; font: inherit; }
+.ask h3 { font-size: 15px; margin: 14px 0 6px; }
+.ask ul.fine { padding-left: 18px; margin: 0 0 8px; }
 .empty { padding: 18px 12px; color: var(--muted); }
 
 /* Detail */

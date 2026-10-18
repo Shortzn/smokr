@@ -99,37 +99,42 @@ def heated_from_text(*texts):
     return "加熱式" in blob and "専用" in blob
 
 
+# Schema 2: Herkunft, Datum, Positionsgenauigkeit und Zugang sind getrennte Felder.
+#   k     "p" = eigener Raucherplatz, "v" = Raucherbereich eines Geschäfts oder Lokals
+#   acc   "public" | "customers" | "unknown"   (nur was die Quelle belegt)
+#   pos   "exact" | "address" | "area"         (wie genau die Koordinate ist)
+#   off   {"ward", "url", "date"}              offizielle Liste und deren Stand
+#   osm   {"url", "chk"}                       OSM-Eintrag und dessen check_date
+SCHEMA = 2
+
+
 def osm_spots(region):
     spots = []
     for e in load_json(os.path.join(RAW, f"osm_{region}.json"))["elements"]:
         t = e.get("tags", {})
         lat, lon = coords(e)
-        osm_url = f"https://www.openstreetmap.org/{e['type']}/{e['id']}"
-        name_ja = t.get("name") or ""
-        name_en = t.get("name:en") or ""
+        osm = {"url": f"https://www.openstreetmap.org/{e['type']}/{e['id']}"}
+        if t.get("check_date"):
+            osm["chk"] = t["check_date"]
         base = {
             "id": f"osm-{e['type'][0]}{e['id']}",
             "lat": round(lat, 6),
             "lon": round(lon, 6),
-            "nj": name_ja,
-            "ne": name_en,
-            "src": ["osm"],
-            "url": osm_url,
+            "nj": t.get("name") or "",
+            "ne": t.get("name:en") or "",
+            "pos": "exact",
+            "osm": osm,
         }
-        if t.get("check_date"):
-            base["chk"] = t["check_date"]
         if t.get("opening_hours"):
             base["hours"] = t["opening_hours"]
-        if heated_from_text(name_ja, t.get("description"), t.get("note")):
+        if heated_from_text(t.get("name"), t.get("description"), t.get("note")):
             base["heated"] = True
+        access = t.get("access")
+        if access in ("private", "no"):
+            continue
 
         if t.get("amenity") == "smoking_area":
-            access = t.get("access")
-            if access == "private":
-                continue
-            spot = dict(base, k="p")
-            if access == "customers":
-                spot["cust"] = True
+            spot = dict(base, k="p", acc="customers" if access == "customers" else "public")
             if t.get("covered") == "yes" or t.get("shelter") == "yes":
                 spot["cov"] = True
             if t.get("indoor") == "yes" or t.get("building"):
@@ -143,16 +148,25 @@ def osm_spots(region):
         vtype = t.get("amenity") or t.get("shop") or t.get("tourism") or t.get("leisure") or ""
         label = VENUE_TYPES.get(vtype)
         if not label:
-            # Bänke, Parkplätze usw. mit smoking=yes sind meist Aschenbecher im Freien
+            # Bänke, Parkplätze usw. mit smoking=yes: Rauchen dort erlaubt, kein Geschäft
             if vtype in ("bench", "parking", "waste_basket", "shelter"):
-                spots.append(dict(base, k="p"))
+                spots.append(dict(base, k="p", acc="public", sd="Rauchen erlaubt"))
             continue
         detail = SMOKING_DETAIL[smoking]
         if vtype == "convenience" and smoking == "outside":
             detail = "Aschenbecher vor dem Laden"
-        spot = dict(base, k="v", vt=label, sd=detail)
-        spots.append(spot)
+        # Ob man etwas kaufen muss, sagt OSM nicht. Nur access=customers belegt es.
+        spots.append(dict(base, k="v", acc="customers" if access == "customers" else "unknown", vt=label, sd=detail))
     return spots
+
+
+def position_quality(s):
+    note = (s.get("note") or "").lower()
+    if s.get("geo_precision") == "area" or s.get("geo") == "map" or "no feature id" in note:
+        return "area"
+    if s.get("geo") == "address":
+        return "address"
+    return "exact"
 
 
 def official_spots(region):
@@ -166,17 +180,19 @@ def official_spots(region):
             continue
         if s.get("status") == "closed":
             continue
+        off = {"ward": s.get("ward"), "url": s.get("source_url")}
+        if s.get("source_date"):
+            off["date"] = s["source_date"]
         spot = {
             "id": f"off-{s['id']}",
             "k": "p",
+            "acc": "public",
             "lat": round(float(s["lat"]), 6),
             "lon": round(float(s["lon"]), 6),
             "nj": s.get("name_ja") or "",
             "ne": s.get("name_en") or "",
-            "src": ["official"],
-            "url": s.get("source_url"),
-            "ward": s.get("ward"),
-            "geo": "area" if s.get("geo_precision") == "area" else s.get("geo"),
+            "pos": position_quality(s),
+            "off": off,
         }
         if s.get("hint_ja"):
             spot["hint"] = s["hint_ja"]
@@ -186,44 +202,52 @@ def official_spots(region):
             spot["hours"] = s["hours"]
         if s.get("heated_only"):
             spot["heated"] = True
-        if s.get("source_date"):
-            spot["chk"] = s["source_date"]
         if s.get("status") == "unknown":
             spot["unk"] = True
         if s.get("access") == "customers":
-            # Raucherraum in einem Geschäft: wie ein Lokal behandeln (Kaufpflicht)
-            spot.update(k="v", vt="Geschäft", sd="Raucherraum für Kunden")
+            # Von der Stadt als "nur für Kunden" gelistet: Kaufpflicht belegt
+            spot.update(k="v", acc="customers", vt="Geschäft", sd="Raucherraum")
         out.append(spot)
     return out
 
 
+def merge_radius(official_spot):
+    return MERGE_RADIUS_M if official_spot["pos"] == "exact" else MERGE_RADIUS_M * 2
+
+
 def merge(official, osm):
-    """Offizielle Plätze haben Vorrang. OSM-Raucherplätze in der Nähe werden zusammengelegt."""
-    merged = list(official)
-    for o in osm:
-        if o["k"] == "p":
-            twin = None
-            for m in official:
-                if m["k"] != "p":
-                    continue
-                radius = MERGE_RADIUS_M if m.get("geo") in (None, "source") else MERGE_RADIUS_M * 2
-                if dist_m(o["lat"], o["lon"], m["lat"], m["lon"]) <= radius:
-                    twin = m
-                    break
-            if twin:
-                if "osm" not in twin["src"]:
-                    twin["src"].append("osm")
-                twin["osm"] = o["url"]
-                # OSM-Koordinaten sind genauer als eine geokodierte Adresse
-                if twin.get("geo") in ("address", "area"):
-                    twin["lat"], twin["lon"] = o["lat"], o["lon"]
-                    twin["geo"] = "osm"
-                for key in ("cov", "ind", "chk"):
-                    if key in o and key not in twin:
-                        twin[key] = o[key]
+    """Legt OSM-Raucherplätze mit offiziellen Plätzen zusammen.
+
+    Eins zu eins und nächster Partner zuerst: Jeder offizielle Platz nimmt höchstens
+    einen OSM-Platz auf. Ein zweiter OSM-Platz in der Nähe bleibt als eigener Eintrag.
+    """
+    candidates = []
+    for oi, o in enumerate(osm):
+        if o["k"] != "p":
+            continue
+        for mi, m in enumerate(official):
+            if m["k"] != "p":
                 continue
-        merged.append(o)
-    return merged
+            d = dist_m(o["lat"], o["lon"], m["lat"], m["lon"])
+            if d <= merge_radius(m):
+                candidates.append((d, oi, mi))
+    candidates.sort()
+    used_osm, used_off = set(), set()
+    for d, oi, mi in candidates:
+        if oi in used_osm or mi in used_off:
+            continue
+        used_osm.add(oi)
+        used_off.add(mi)
+        o, m = osm[oi], official[mi]
+        m["osm"] = o["osm"]
+        # Eine geokodierte Adresse ist ungenauer als ein von Hand gesetzter OSM-Punkt
+        if m["pos"] != "exact":
+            m["lat"], m["lon"], m["pos"] = o["lat"], o["lon"], "exact"
+            m["posFrom"] = "osm"
+        for key in ("cov", "ind"):
+            if key in o and key not in m:
+                m[key] = o[key]
+    return list(official) + [o for i, o in enumerate(osm) if i not in used_osm]
 
 
 def build(region):
@@ -233,15 +257,14 @@ def build(region):
         st = nearest_station(stations, s["lat"], s["lon"])
         if st:
             s["st"] = st
-        s.pop("geo", None) if s.get("geo") == "source" else None
-    spots.sort(key=lambda s: (s["k"], s["lat"]))
-    payload = {"region": region, "built": date.today().isoformat(), "spots": spots}
+    spots.sort(key=lambda s: (s["k"], s["lat"], s["id"]))
+    payload = {"schema": SCHEMA, "region": region, "built": date.today().isoformat(), "spots": spots}
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, f"{region}.json"), "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
-    pub = sum(1 for s in spots if s["k"] == "p")
-    off = sum(1 for s in spots if "official" in s["src"])
-    print(f"{region}: {len(spots)} Orte ({pub} öffentlich, davon {off} offiziell, {len(spots) - pub} Lokale)")
+    pub = sum(1 for s in spots if s["acc"] == "public")
+    off = sum(1 for s in spots if "off" in s)
+    print(f"{region}: {len(spots)} Orte ({pub} öffentlich, {off} offiziell gelistet, {len(spots) - pub} mit Kundenpflicht oder unklarem Zugang)")
 
 
 if __name__ == "__main__":

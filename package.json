@@ -1,0 +1,15 @@
+{
+  "name": "smokr",
+  "private": true,
+  "description": "Raucherplätze für die Japanreise. Statische Web-App in app/, Tests in tests/.",
+  "scripts": {
+    "serve": "python3 -m http.server 4180 --directory app",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:data": "python3 -I -m unittest discover -s tests -p 'test_*.py'",
+    "test:e2e": "playwright test",
+    "test": "npm run test:unit && npm run test:data && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
