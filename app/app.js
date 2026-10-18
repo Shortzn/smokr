@@ -239,6 +239,7 @@ function renderDetail(s) {
   const ex = C.exitText(s);
   if (ex) where.push([t("detail.exit"), esc(ex)]);
   if (s.fl) where.push([t("detail.floor"), esc(C.floorText(s.fl))]);
+  if (s.dir) where.push([t("detail.side"), esc(C.dirText(s))]);
   if (s.floor) where.push([t("detail.floor"), esc(s.floor)]);
   if (s.st) {
     const name = t.lang === "ja" ? s.st.ja : s.st.en || s.st.ja;

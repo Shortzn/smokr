@@ -201,9 +201,11 @@ test.describe("Marker, Blatt und Detail", () => {
     await page.locator("#list-scroll").evaluate((el) => { el.scrollTop = 0; });
     await H.touchDrag(page, { x: vp.width / 2, y: listBox.y + 60 }, { x: vp.width / 2, y: listBox.y + 380 }, 10, 300);
     await expect.poll(() => H.sheetState(page)).not.toBe("expanded");
-    // Schnelles Wischen nach unten: zu
+    // Wischen nach unten bis kurz vor den unteren Rastpunkt: zu. Die Strecke reicht auch ohne Schwung,
+    // damit der Test unter Last nicht von der Zeitmessung abhängt (Schwung zählt nur bis 120 ms vor dem Loslassen)
     const now = await page.evaluate(() => window.__smokr.sheet.y);
-    await H.touchDrag(page, { x: vp.width / 2, y: now + 30 }, { x: vp.width / 2, y: now + 140 }, 4, 50);
+    const low = await page.evaluate(() => window.__smokr.sheet.snaps.collapsed);
+    await H.touchDrag(page, { x: vp.width / 2, y: now + 30 }, { x: vp.width / 2, y: now + 30 + (low - now) - 20 }, 4, 50);
     await expect.poll(() => H.sheetState(page)).toBe("collapsed");
     expect(await page.evaluate(() => [window.scrollX, window.scrollY])).toEqual([0, 0]);
     expect(errors, errors.join("\n")).toEqual([]);

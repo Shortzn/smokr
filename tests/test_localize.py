@@ -98,3 +98,31 @@ class ClassifyTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NightPassTest(unittest.TestCase):
+    """Ergänzungen vom 18.10.2026: Nummern, Bindestriche, Seiten, Richtung."""
+
+    def loc(self, nj):
+        return localize.localize({"nj": nj, "k": "p"}, {})
+
+    def test_circled_number_goes_to_the_end(self):
+        out, _ = self.loc("お台場海浜公園内指定喫煙場所⑤")
+        self.assertEqual(out["le"], "Odaiba Seaside Park Designated Smoking Area 5")
+
+    def test_hyphen_in_latin_names_stays(self):
+        out, _ = self.loc("P-ROOTs MANDORE喫煙所")
+        self.assertEqual(out["le"], "P-ROOTs MANDORE Smoking Area")
+
+    def test_side_and_exit(self):
+        out, _ = self.loc("新宿駅東南口高架下公衆喫煙所")
+        self.assertIn("Southeast Exit", out["le"])
+        self.assertIn("under the tracks", out["le"])
+
+    def test_direction_in_parens_is_kept_as_extra(self):
+        _, extra = self.loc("123鶴橋店屋内喫煙所（南西）")
+        self.assertEqual(extra.get("dir"), "南西")
+
+    def test_crossing_is_not_guessed(self):
+        out, _ = self.loc("（区設置）渋谷駅前スクランブル交差点喫煙所")
+        self.assertNotIn("Station Front Crossing", out.get("le") or "")

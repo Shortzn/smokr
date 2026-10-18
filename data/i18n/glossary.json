@@ -150,6 +150,26 @@
     "北出口": [
       "North Exit",
       "Nordausgang"
+    ],
+    "新南口": [
+      "New South Exit",
+      "Neuer Südausgang"
+    ],
+    "東南口": [
+      "Southeast Exit",
+      "Südostausgang"
+    ],
+    "西南口": [
+      "Southwest Exit",
+      "Südwestausgang"
+    ],
+    "東北口": [
+      "Northeast Exit",
+      "Nordostausgang"
+    ],
+    "西北口": [
+      "Northwest Exit",
+      "Nordwestausgang"
     ]
   },
   "place_suffix": {
@@ -292,6 +312,50 @@
     "文化センター": [
       "Cultural Center",
       "Kulturzentrum"
+    ],
+    "西側": [
+      "west side",
+      "Westseite"
+    ],
+    "東側": [
+      "east side",
+      "Ostseite"
+    ],
+    "南側": [
+      "south side",
+      "Südseite"
+    ],
+    "北側": [
+      "north side",
+      "Nordseite"
+    ],
+    "屋外": [
+      "outdoor",
+      "im Freien"
+    ],
+    "屋内": [
+      "indoor",
+      "innen"
+    ],
+    "境内": [
+      "Grounds",
+      "Gelände"
+    ],
+    "海浜公園": [
+      "Seaside Park",
+      "Strandpark"
+    ],
+    "卸売市場": [
+      "Wholesale Market",
+      "Großmarkt"
+    ],
+    "北広場": [
+      "North Square",
+      "Nordplatz"
+    ],
+    "南広場": [
+      "South Square",
+      "Südplatz"
     ]
   },
   "katakana": {
@@ -458,6 +522,10 @@
     "北": [
       "north",
       "Nord"
+    ],
+    "中央": [
+      "center",
+      "Mitte"
     ]
   },
   "brands": {

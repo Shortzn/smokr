@@ -62,9 +62,6 @@ off-koto-6,partial,区立亀戸駅前公園内指定喫煙所,,,,station,area
 off-kyoto-1,partial,四条西木屋町喫煙場所,,,,unknown,area
 off-kyoto-11,partial,清水坂観光駐車場（休憩所内）喫煙場所,,,,unknown,area
 off-kyoto-12,partial,清水坂観光駐車場（北側緑地帯内）喫煙場所,,,,unknown,area
-off-kyoto-15,partial,ＪＲ山科駅前北広場喫煙場所,,,,station,area
-off-kyoto-16,partial,JR西大路駅北側喫煙場所,,,,station,area
-off-kyoto-17,partial,ＪＲ西大路駅南側喫煙場所,,,,station,area
 off-kyoto-19,partial,京阪中書島駅前喫煙場所,,,,station,area
 off-kyoto-2,partial,新京極公園内喫煙場所,,,,park,area
 off-kyoto-4,partial,東塩小路公園内喫煙場所,,,,park,area
@@ -101,11 +98,6 @@ off-minato-29,partial,芝浦中央公園Ａ面指定喫煙場所,,,,park,area
 off-minato-31,romaji,品川駅港南口港南ふれあい広場指定喫煙場所（コンテナ型）,,Shinagawa Station Kōnan Fureai Plaza Designated Smoking Area – Kōnan Exit,"Ausgewiesener Raucherplatz Bahnhof Shinagawa Kōnan Fureai, Platz – Kōnan-Ausgang",station,booth
 off-minato-32,partial,シンボルプロムナード公園内デッキ上指定喫煙場所①,,,,park,area
 off-minato-34,partial,シンボルプロムナード公園内デッキ上指定喫煙場所②,,,,park,area
-off-minato-35,partial,お台場海浜公園内指定喫煙場所①,,,,park,area
-off-minato-36,partial,お台場海浜公園内指定喫煙場所②,,,,park,area
-off-minato-37,partial,お台場海浜公園内指定喫煙場所③,,,,park,area
-off-minato-38,partial,お台場海浜公園内指定喫煙場所④,,,,park,area
-off-minato-39,partial,お台場海浜公園内指定喫煙場所⑤,,,,park,area
 off-minato-40,partial,芝１丁目ビル１階指定喫煙場所（セブンイレブン港区芝１丁目店内）,,,,konbini,area
 off-minato-43,partial,東洋カーマックス芝３丁目第１１駐車場内指定喫煙場所（トレーラー型）,,,,unknown,area
 off-minato-46,romaji,ニイハオ田町店内指定喫煙場所,,Niihao Tamachi Designated Smoking Area,Ausgewiesener Raucherplatz Niihao Tamachi,unknown,area
@@ -231,19 +223,16 @@ off-osaka-242,partial,四海樓九条店（1F）喫煙所,,,,unknown,room
 off-osaka-243,partial,Osaka Metro本社前喫煙所,,,,unknown,outdoor
 off-osaka-244,partial,四ツ橋筋交差点喫煙所,,,,street,outdoor
 off-osaka-249,partial,大阪トヨタNorth株式会社 西店,,,,shop,section
-off-osaka-25,partial,123＋N大阪本店ビル屋内喫煙所（地下1階東）,,,,pachinko,room
 off-osaka-250,partial,焼肉牛魔 四ツ橋店,,,,restaurant,section
 off-osaka-251,partial,居酒屋 かずやん,,,,bar,section
 off-osaka-257,partial,大阪ベイタワー公共喫煙所,,,,building,room
 off-osaka-259,partial,大正橋公園喫煙所,,,,park,outdoor
-off-osaka-26,partial,123＋N大阪本店ビル屋内喫煙所（地下1階南）,,,,pachinko,room
 off-osaka-260,partial,千島ガーデンモール駐車場喫煙所,,,,mall,outdoor
 off-osaka-264,partial,マリンテニスパーク・北村,,,,unknown,outdoor
 off-osaka-265,romaji,カーショップキャスバル,,Car Shop Kyasubaru Smoking Area,Raucherplatz Car Shop Kyasubaru,unknown,room
 off-osaka-266,partial,ホルモン たろちゃん 大正橋店（店舗全面喫煙可能）,,,,shop,whole
 off-osaka-267,partial,上汐北公園喫煙所,,,,park,outdoor
 off-osaka-268,partial,うえほんまちハイハイタウン屋内喫煙所,,,,unknown,room
-off-osaka-27,partial,123＋N大阪本店ビル屋内喫煙所（1階北）,,,,pachinko,room
 off-osaka-270,partial,マジックバード2喫煙所（1階北西）,,,,pachinko,room
 off-osaka-271,partial,マジックバード2喫煙所（1階南西）,,,,pachinko,room
 off-osaka-272,partial,マジックバード2喫煙所（1階中央）,,,,pachinko,room
@@ -253,7 +242,6 @@ off-osaka-276,partial,天王寺駅公園口喫煙所,,,,station,outdoor
 off-osaka-277,partial,大阪トヨタSouth株式会社 天王寺店,,,,shop,section
 off-osaka-278,romaji,あべちか喫煙室,,Abechika Smoking Room,Raucherraum Abechika,unknown,room
 off-osaka-279,romaji,プロムナードカフェ あべちか店,,Promenade Café Abechika,Promenade Café Abechika,cafe,section
-off-osaka-28,partial,123＋N大阪本店ビル屋内喫煙所（1階西）,,,,pachinko,room
 off-osaka-280,partial,POWER RUSH 不夜城喫煙所,,,,unknown,room
 off-osaka-281,romaji,たばこハウス ひろたや喫煙所,,Hirotaya Smoking Area,Raucherplatz Hirotaya,tobacco,room
 off-osaka-282,partial,新世界環境公共喫煙所,,,,unknown,outdoor
@@ -264,7 +252,6 @@ off-osaka-286,partial,大阪木津地方卸売市場喫煙所（東側）,,,,unk
 off-osaka-287,partial,パーラーメトロJR今宮駅店喫煙所,,,,station,room
 off-osaka-288,partial,エムイーロッソJR今宮駅前店喫煙所,,,,station,room
 off-osaka-289,partial,なんば駅31号出入口喫煙所,,,,station,outdoor
-off-osaka-29,partial,123＋N大阪本店ビル屋内喫煙所（2階）,,,,pachinko,room
 off-osaka-291,partial,ナニワ環境公共喫煙所,,,,unknown,room
 off-osaka-292,partial,柏里公園喫煙所,,,,park,outdoor
 off-osaka-295,partial,久遠泰心堂喫煙所,,,,unknown,room
@@ -289,9 +276,6 @@ off-osaka-327,partial,新大阪駅東喫煙所,,,,station,outdoor
 off-osaka-33,partial,三共梅田ビル喫煙所,,,,building,outdoor
 off-osaka-330,partial,新大阪丸ビル別館喫煙所,,,,building,outdoor
 off-osaka-331,partial,大阪トヨタNorth株式会社 吹田店,,,,shop,section
-off-osaka-333,partial,123鶴橋店屋内喫煙所（西）,,,,pachinko,room
-off-osaka-334,partial,123鶴橋店屋内喫煙所（南西）,,,,pachinko,room
-off-osaka-335,partial,123鶴橋店屋内喫煙所（南東）,,,,pachinko,room
 off-osaka-34,partial,堂山東喫煙所,,,,unknown,room
 off-osaka-341,partial,東小橋商店街公共喫煙所,,,,unknown,room
 off-osaka-343,partial,神路公園喫煙所,,,,park,outdoor
@@ -303,8 +287,6 @@ off-osaka-351,partial,堀口商会喫煙所,,,,street,room
 off-osaka-353,partial,コリアンタウン喫煙所,,,,unknown,outdoor
 off-osaka-355,partial,大阪トヨタSouth株式会社 生野店,,,,shop,section
 off-osaka-358,partial,旭郵便局前喫煙所,,,,unknown,outdoor
-off-osaka-362,partial,123千林店屋内喫煙所（西）,,,,pachinko,room
-off-osaka-363,partial,123千林店屋内喫煙所（東）,,,,pachinko,room
 off-osaka-364,partial,アミューズ高殿店喫煙所（西）,,,,pachinko,room
 off-osaka-365,partial,アミューズ高殿店喫煙所（東）,,,,pachinko,room
 off-osaka-366,partial,喫茶和光,,,,cafe,section
@@ -338,17 +320,13 @@ off-osaka-415,partial,P－ROOTs住之江店喫煙所（南西）,,,,unknown,room
 off-osaka-416,partial,緑木検車場喫煙所,,,,unknown,outdoor
 off-osaka-417,partial,リッチウエル本店喫煙所,,,,unknown,room
 off-osaka-418,partial,大阪トヨタSouth株式会社 住之江店,,,,shop,section
-off-osaka-421,partial,P-ROOTs MANDORE屋内喫煙所（北西）,,,,unknown,room
-off-osaka-422,partial,P-ROOTs MANDORE屋内喫煙所（南西）,,,,unknown,room
-off-osaka-423,partial,P-ROOTs MANDORE屋内喫煙所（中央）,,,,unknown,room
-off-osaka-424,partial,P-ROOTs MANDORE屋内喫煙所（東）,,,,unknown,room
 off-osaka-425,romaji,ローソンあびこ駅前店喫煙所,,Lawson Abiko Station Front Smoking Area,"Raucherplatz Lawson Abiko, Bahnhofsvorplatz",konbini,room
 off-osaka-426,partial,四海樓アタリヤ店（2F）喫煙所,,,,unknown,room
 off-osaka-428,partial,トキワパーキング屋外喫煙所,,,,unknown,outdoor
 off-osaka-429,romaji,はりまや あびこ本店喫煙所,,Harimaya Abiko Smoking Area,Raucherplatz Harimaya Abiko,unknown,room
 off-osaka-430,partial,はりまや あびこ分店喫煙所,,,,unknown,room
-off-osaka-431,partial,シグマ本店屋内喫煙所（北東）,,,,unknown,room
-off-osaka-432,partial,シグマ本店屋内喫煙所（南西）,,,,unknown,room
+off-osaka-431,romaji,シグマ本店屋内喫煙所（北東）,,"Shiguma Smoking Area, indoor","Raucherplatz Shiguma, innen",unknown,room
+off-osaka-432,romaji,シグマ本店屋内喫煙所（南西）,,"Shiguma Smoking Area, indoor","Raucherplatz Shiguma, innen",unknown,room
 off-osaka-437,partial,ちん電東粉浜喫煙所,,,,unknown,outdoor
 off-osaka-438,partial,アミューズ南住吉店喫煙所,,,,pachinko,room
 off-osaka-439,romaji,あいおい公共喫煙所,,Aioi Public Smoking Area,Öffentlicher Raucherplatz Aioi,unknown,outdoor
@@ -379,9 +357,6 @@ off-osaka-47,partial,串揚げ たぬき,,,,restaurant,section
 off-osaka-470,partial,飛田喫煙所,,,,unknown,outdoor
 off-osaka-471,partial,大一本店喫煙所,,,,unknown,room
 off-osaka-473,partial,玉出南公園喫煙所,,,,park,outdoor
-off-osaka-475,partial,123玉出店屋内喫煙所（1階）,,,,pachinko,room
-off-osaka-476,partial,123玉出店屋内喫煙所（2階）,,,,pachinko,room
-off-osaka-477,partial,123玉出店屋内喫煙所（3階）,,,,pachinko,room
 off-osaka-479,partial,天下茶屋駅前南喫煙所,,,,station,outdoor
 off-osaka-48,romaji,バー・サンボア,,Bar Sanboa,Bar Sanboa,shop,section
 off-osaka-480,partial,天下茶屋駅前北喫煙所,,,,station,outdoor
@@ -412,7 +387,6 @@ off-osaka-83,partial,アミューズイチゴ店喫煙所（北東）,,,,pachink
 off-osaka-85,partial,お好み焼き 満月（店舗全面喫煙可能）,,,,shop,whole
 off-osaka-88,partial,パルパーク海老江駅2号出口屋外喫煙所,,,,station,outdoor
 off-osaka-9,partial,扇町公園東喫煙所,,,,park,outdoor
-off-osaka-90,partial,中央卸売市場喫煙所,,,,unknown,outdoor
 off-osaka-95,partial,大阪トヨタNorth株式会社 福島店,,,,shop,section
 off-osaka-98,partial,ユニバーサルシティ駅前喫煙所,,,,station,outdoor
 off-osaka-99,partial,テキサス此花喫煙所（B1F）,,,,unknown,room
@@ -427,7 +401,6 @@ off-shibuya-26,partial,ラ・トゥール渋谷宇田川Abema Towers,,,,building
 off-shibuya-3,partial,（区設置）宮益坂下交差点喫煙所,,,,street,area
 off-shibuya-33,partial,関電不動産渋谷ビル,,,,building,area
 off-shibuya-37,partial,東急プラザ原宿「ハラカド」,,,,unknown,area
-off-shibuya-4,partial,（区設置）渋谷駅新南口喫煙所,,,,station,area
 off-shibuya-41,partial,住友不動産新宿南口ビル,,,,building,area
 off-shibuya-42,partial,ヒューリック将棋会館千駄ヶ谷ビル,,,,building,area
 off-shibuya-7,partial,（区設置）原宿竹下口喫煙所,,,,street,area
@@ -436,7 +409,6 @@ off-shinagawa-14,partial,東京都立大井ふ頭中央海浜公園なぎさの�
 off-shinagawa-15,partial,東京都立みなとが丘ふ頭公園喫煙所,,,,park,area
 off-shinagawa-4,partial,大井町駅東口ペデストリアンデッキ下,,,,station,area
 off-shinagawa-7,partial,大崎駅東口コンテナ型喫煙所,,,,station,booth
-off-shinjuku-4,partial,新宿駅東南口高架下公衆喫煙所,,,,station,area
 off-shinjuku-6,partial,おおくぼそよかぜ橋公衆喫煙所,,,,unknown,area
 off-shinjuku-8,partial,マルタイタバコ店,,,,tobacco,area
 off-sumida-6,partial,東武橋喫煙所,,,,unknown,area
@@ -490,7 +462,6 @@ osm-n11251429637,none,,,,,unknown,area
 osm-n11328409539,none,,,,,unknown,area
 osm-n11342776827,romaji,いぶり,,Iburi,Iburi,restaurant,whole
 osm-n11346342454,partial,漫キチ,,,,cafe,section
-osm-n11361264361,partial,町田駅西側デッキ指定喫煙所,,,,station,area
 osm-n11386426792,none,,,,,unknown,area
 osm-n11395414293,none,,,,,unknown,area
 osm-n11416066924,none,,,,,unknown,area

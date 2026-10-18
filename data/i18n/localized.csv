@@ -1,6 +1,7 @@
 id,quality,name_ja,en,de
 osm-n10067476010,composed,南町田グランベリーパーク駅前指定喫煙所,Minami-machida Grandberry Park Station Front Designated Smoking Area,"Ausgewiesener Raucherplatz Minami-machida Grandberry Park, Bahnhofsvorplatz"
 osm-n11598429567,composed,JR町田駅原町田交番前指定喫煙所,Designated Smoking Area in front of JR Machida Station Haramachida Police Box,"Ausgewiesener Raucherplatz vor Bahnhof JR Machida Haramachida, Polizeiposten"
+osm-n11361264361,composed,町田駅西側デッキ指定喫煙所,"Machida Station Deck Designated Smoking Area, west side","Ausgewiesener Raucherplatz Bahnhof Machida, Deck, Westseite"
 off-shinagawa-8,composed,西大井駅前,Nishi-Oi Station Front Smoking Area,"Raucherplatz Nishi-Oi, Bahnhofsvorplatz"
 off-shinagawa-3,composed,大井町駅西口ＪＲ踏切横,"Oimachi Station JR Smoking Area, beside the level crossing – West Exit","Raucherplatz Bahnhof Oimachi JR, neben dem Bahnübergang – Westausgang"
 off-meguro-19,composed,自由が丘しらかば通り公衆喫煙所,Jiyugaoka Shirakaba Street Public Smoking Area,Öffentlicher Raucherplatz Jiyugaoka Shirakaba Street
@@ -16,6 +17,7 @@ off-meguro-10,composed,セブン-イレブン目黒鷹番1丁目店,7-Eleven Meg
 off-minato-89,romaji,イケダヤ品川ビル１階指定喫煙場所（セブンイレブン港区港南２丁目店内）,Ikedaya Shinagawa Building Designated Smoking Area,Ausgewiesener Raucherplatz Ikedaya Shinagawa Building
 off-minato-91,composed,ＮＢＦ品川タワー２階指定喫煙場所（ファミリーマート品川グランパサージュ店内）,NBF Shinagawa Tower Designated Smoking Area,Ausgewiesener Raucherplatz NBF Shinagawa Tower
 off-minato-83,composed,加藤たばこ店内指定喫煙場所,Kato Designated Smoking Area,Ausgewiesener Raucherplatz Kato
+off-minato-39,composed,お台場海浜公園内指定喫煙場所⑤,Odaiba Seaside Park Designated Smoking Area 5,"Ausgewiesener Raucherplatz Odaiba, Strandpark 5"
 off-minato-90,composed,ＴＨＥ ＴＯＢＡＣＣＯ ＳＨＩＮＡＧＡＷＡ指定喫煙場所,THE TOBACCO SHINAGAWA Designated Smoking Area,Ausgewiesener Raucherplatz THE TOBACCO SHINAGAWA
 off-minato-33,composed,フジテレビ（敷地内）横指定喫煙場所,"Fuji TV Designated Smoking Area, beside","Ausgewiesener Raucherplatz Fuji TV, daneben"
 off-shinagawa-10,composed,ファミリーマート東五反田桜田通り店 地下1階,FamilyMart Higashi Gotanda Sakurada-dori Smoking Area,Raucherplatz FamilyMart Higashi Gotanda Sakurada-dori
@@ -23,12 +25,16 @@ off-shinagawa-2,composed,五反田駅東口花房山通り,Gotanda Station Hanab
 off-meguro-11,composed,学芸大学駅西口公衆喫煙所,Gakugei-daigaku Station Public Smoking Area – West Exit,Öffentlicher Raucherplatz Bahnhof Gakugei-daigaku – Westausgang
 off-meguro-12,composed,学芸大学駅東口公衆喫煙所,Gakugei-daigaku Station Public Smoking Area – East Exit,Öffentlicher Raucherplatz Bahnhof Gakugei-daigaku – Ostausgang
 off-minato-92,composed,デックス東京ビーチ１階指定喫煙場所（ファミリーマートお台場東京ビーチ店内）,Decks Tokyo Beach Designated Smoking Area,Ausgewiesener Raucherplatz Decks Tokyo Beach
+off-minato-38,composed,お台場海浜公園内指定喫煙場所④,Odaiba Seaside Park Designated Smoking Area 4,"Ausgewiesener Raucherplatz Odaiba, Strandpark 4"
 off-minato-31,romaji,品川駅港南口港南ふれあい広場指定喫煙場所（コンテナ型）,Shinagawa Station Kōnan Fureai Plaza Designated Smoking Area – Kōnan Exit,"Ausgewiesener Raucherplatz Bahnhof Shinagawa Kōnan Fureai, Platz – Kōnan-Ausgang"
 off-minato-30,composed,こうなん星の公園指定喫煙場所,Konanboshi Park Designated Smoking Area,Ausgewiesener Raucherplatz Konanboshi Park
+off-minato-37,composed,お台場海浜公園内指定喫煙場所③,Odaiba Seaside Park Designated Smoking Area 3,"Ausgewiesener Raucherplatz Odaiba, Strandpark 3"
 off-minato-88,composed,ファミリーマート港南一丁目店内指定喫煙場所,FamilyMart Konan 1-chome Designated Smoking Area,Ausgewiesener Raucherplatz FamilyMart Konan 1-chome
+off-minato-36,composed,お台場海浜公園内指定喫煙場所②,Odaiba Seaside Park Designated Smoking Area 2,"Ausgewiesener Raucherplatz Odaiba, Strandpark 2"
 off-meguro-7,brand,ローソン目黒大鳥神社前（加熱式たばこ専用）,Lawson,Lawson
 off-minato-84,composed,ローソン高輪三丁目店内指定喫煙場所,Lawson Takanawa 3 Designated Smoking Area,Ausgewiesener Raucherplatz Lawson Takanawa 3
 off-minato-110,composed,THE LINKPILLAR 1 SOUTH １階指定喫煙場所,THE LINKPILLAR 1 SOUTH Designated Smoking Area,Ausgewiesener Raucherplatz THE LINKPILLAR 1 SOUTH
+off-minato-35,composed,お台場海浜公園内指定喫煙場所①,Odaiba Seaside Park Designated Smoking Area 1,"Ausgewiesener Raucherplatz Odaiba, Strandpark 1"
 off-minato-111,composed,THE LINKPILLAR 1 NORTH ６階指定喫煙場所,THE LINKPILLAR 1 NORTH Designated Smoking Area,Ausgewiesener Raucherplatz THE LINKPILLAR 1 NORTH
 off-meguro-8,composed,ローソン祐天寺駅前（加熱式たばこ専用）,Lawson Yutenji Station Front Smoking Area,"Raucherplatz Lawson Yutenji, Bahnhofsvorplatz"
 off-minato-112,composed,THE LINKPILLAR 2 地下１階指定喫煙場所,THE LINKPILLAR 2 Designated Smoking Area,Ausgewiesener Raucherplatz THE LINKPILLAR 2
@@ -45,7 +51,7 @@ off-minato-119,composed,msb Tamachi田町ステーションタワーＮ ②指�
 off-minato-2,composed,田町駅西口（２階）指定喫煙場所（加熱式たばこ専用）,Tamachi Station Designated Smoking Area – West Exit,Ausgewiesener Raucherplatz Bahnhof Tamachi – Westausgang
 off-minato-49,composed,セブンイレブン田町駅前店店内指定喫煙場所,7-Eleven Tamachi Station Front Designated Smoking Area,"Ausgewiesener Raucherplatz 7-Eleven Tamachi, Bahnhofsvorplatz"
 off-minato-1,composed,田町駅西口（１階）指定喫煙場所（コンテナ型）,Tamachi Station Designated Smoking Area – West Exit,Ausgewiesener Raucherplatz Bahnhof Tamachi – Westausgang
-off-minato-85,composed,e-booth白金指定喫煙場所（加熱式たばこ専用）,e booth Shirokane Designated Smoking Area,Ausgewiesener Raucherplatz e booth Shirokane
+off-minato-85,composed,e-booth白金指定喫煙場所（加熱式たばこ専用）,e-booth Shirokane Designated Smoking Area,Ausgewiesener Raucherplatz e-booth Shirokane
 off-koto-1,composed,辰巳駅前公衆喫煙所,Tatsumi Station Front Public Smoking Area,"Öffentlicher Raucherplatz Tatsumi, Bahnhofsvorplatz"
 off-minato-48,composed,ＴＨＥ ＴＯＢＡＣＣＯ  ＴＡＭＡＣＨＩ ＫＫ１６４指定喫煙場所,THE TOBACCO TAMACHI KK164 Designated Smoking Area,Ausgewiesener Raucherplatz THE TOBACCO TAMACHI KK164
 off-minato-93,composed,田町タワー１階指定喫煙場所,Tamachi Tower Designated Smoking Area,Ausgewiesener Raucherplatz Tamachi Tower
@@ -61,6 +67,7 @@ off-minato-14,composed,有栖川宮記念公園内指定喫煙場所,Prince Aris
 off-minato-41,brand,セブンイレブン芝２丁目金杉橋店内指定喫煙場所,7-Eleven Designated Smoking Area,Ausgewiesener Raucherplatz 7-Eleven
 off-minato-68,brand,ファミリーマート浜松町駅南店内指定喫煙場所,FamilyMart Designated Smoking Area,Ausgewiesener Raucherplatz FamilyMart
 off-minato-73,composed,ファミリーマート元麻布店指定喫煙場所,FamilyMart Moto-Azabu Designated Smoking Area,Ausgewiesener Raucherplatz FamilyMart Moto-Azabu
+off-shibuya-4,composed,（区設置）渋谷駅新南口喫煙所,Shibuya Station Smoking Area – New South Exit,Raucherplatz Bahnhof Shibuya – Neuer Südausgang
 off-minato-105,composed,東京ポートシティ竹芝１階指定喫煙場所,Tokyo Port City Takeshiba Designated Smoking Area,Ausgewiesener Raucherplatz Tokyo Port City Takeshiba
 off-chuo-71,composed,HARUMI WAVE GARDEN喫煙所,HARUMI WAVE GARDEN Smoking Area,Raucherplatz HARUMI WAVE GARDEN
 off-shibuya-25,composed,渋谷ソラスタ,Shibuya SOLASTA Smoking Area,Raucherplatz Shibuya SOLASTA
@@ -74,7 +81,7 @@ off-koto-3,composed,潮見駅前公衆喫煙所,Shiomi Station Front Public Smok
 off-minato-17,composed,六本木ヒルズ イーストコート（六本木けやき坂通り）指定喫煙場所,Roppongi Hills East Court Designated Smoking Area,Ausgewiesener Raucherplatz Roppongi Hills East Court
 off-shibuya-32,composed,渋谷アクシュ,SHIBUYA AXSH Smoking Area,Raucherplatz SHIBUYA AXSH
 off-shibuya-13,composed,paspa宮益坂,paspa Miyamasu-zaka Street Smoking Area,Raucherplatz paspa Miyamasu-zaka Street
-off-shibuya-30,composed,道玄坂通 dogenzaka-dori,Dogen-zaka Street-dori dogenzaka dori Smoking Area,Raucherplatz Dogen-zaka Street-dori dogenzaka dori
+off-shibuya-30,composed,道玄坂通 dogenzaka-dori,Dogen-zaka Street-dori dogenzaka-dori Smoking Area,Raucherplatz Dogen-zaka Street-dori dogenzaka-dori
 off-shibuya-43,composed,Ploom LOUNGE 渋谷,Ploom LOUNGE Shibuya Smoking Area,Raucherplatz Ploom LOUNGE Shibuya
 off-minato-59,brand,ファミリーマート＋ミヤモトドラッグ御成門店内指定喫煙場所,FamilyMart Designated Smoking Area,Ausgewiesener Raucherplatz FamilyMart
 off-minato-82,composed,ＫＤＸ南青山ビル１階指定喫煙場所(セブンイレブン南青山５丁目店内),KDX Minami-Aoyama Building Designated Smoking Area,Ausgewiesener Raucherplatz KDX Minami-Aoyama Building
@@ -90,7 +97,7 @@ off-minato-70,composed,六本木ファーストビル１階指定喫煙場所,Ro
 off-minato-15,composed,六本木駅６番出口指定喫煙場所,Roppongi Station Designated Smoking Area – Exit 6,Ausgewiesener Raucherplatz Bahnhof Roppongi – Ausgang 6
 off-minato-63,composed,TOKYU REIT虎ノ門ビル１階（セブンイレブン神谷町駅東店内）,TOKYU REIT Toranomon Building Smoking Area,Raucherplatz TOKYU REIT Toranomon Building
 off-minato-57,composed,ファミリーマート新橋日比谷通り店内指定喫煙場所,FamilyMart Shimbashi Hibiya-dori Designated Smoking Area,Ausgewiesener Raucherplatz FamilyMart Shimbashi Hibiya-dori
-off-minato-69,composed,THE TOBACCO ROPPONGI-ITCHOME指定喫煙場所,THE TOBACCO ROPPONGI ITCHOME Designated Smoking Area,Ausgewiesener Raucherplatz THE TOBACCO ROPPONGI ITCHOME
+off-minato-69,composed,THE TOBACCO ROPPONGI-ITCHOME指定喫煙場所,THE TOBACCO ROPPONGI-ITCHOME Designated Smoking Area,Ausgewiesener Raucherplatz THE TOBACCO ROPPONGI-ITCHOME
 off-minato-9,composed,桜田公園内指定喫煙場所,Sakurada Park Designated Smoking Area,"Ausgewiesener Raucherplatz Sakurada, Park"
 off-minato-72,composed,六本木インターナショナルビル１階指定喫煙場所(セブンイレブン港区乃木坂駅南店内),Roppongi International Building Designated Smoking Area,Ausgewiesener Raucherplatz Roppongi International Building
 off-minato-24,composed,表参道Ａ１出口前指定喫煙場所,Designated Smoking Area in front of Omotesandō – Exit A1,Ausgewiesener Raucherplatz vor Omotesandō – Ausgang A1
@@ -163,6 +170,7 @@ off-chuo-17,composed,（区営）浜町公園,Hamacho Park Smoking Area,Raucherp
 off-shinjuku-2,composed,新宿駅西口公衆喫煙所,Shinjuku Station Public Smoking Area – West Exit,Öffentlicher Raucherplatz Bahnhof Shinjuku – Westausgang
 off-shibuya-38,brand,アパホテル&リゾート西新宿五丁目タワー,APA Hotel,APA Hotel
 off-chuo-51,composed,東山ビルディング,Higashiyama Building Smoking Area,Raucherplatz Higashiyama Building
+off-shinjuku-4,composed,新宿駅東南口高架下公衆喫煙所,"Shinjuku Station Public Smoking Area, under the tracks – Southeast Exit","Öffentlicher Raucherplatz Bahnhof Shinjuku, unter der Bahntrasse – Südostausgang"
 off-chiyoda-22,composed,paspa鍛冶町,paspa Kajicho Smoking Area,Raucherplatz paspa Kajicho
 off-shinjuku-10,composed,paspa御苑前,Smoking Area in front of paspa Inner Garden,Raucherplatz vor paspa Inner Garden
 off-chiyoda-20,composed,セブン-イレブン神田駅西口通り店内喫煙所,7-Eleven Kandaeki Nishiguchi-dori Smoking Area,Raucherplatz 7-Eleven Kandaeki Nishiguchi-dori
@@ -247,7 +255,7 @@ osm-w120477640,romaji,きのこの,Kinokono,Kinokono
 osm-n2402414452,romaji,だんだん,Dandan,Dandan
 osm-n2212822408,romaji,ひしゅうや,Hishuuya,Hishuuya
 osm-n2066427239,romaji,さわやか,Sawayaka,Sawayaka
-osm-n4232585650,composed,Bar and Restaurant 食堂AO-ZOLA,Bar and Restaurant Dining Hall AO ZOLA,Bar and Restaurant Dining Hall AO ZOLA
+osm-n4232585650,composed,Bar and Restaurant 食堂AO-ZOLA,Bar and Restaurant Dining Hall AO-ZOLA,Bar and Restaurant Dining Hall AO-ZOLA
 osm-n9093016391,romaji,やきとん,Yakiton,Yakiton
 osm-n747054033,composed,ローソン・スリーエフ,Lawson Three F,Lawson Three F
 osm-n1517466721,composed,ローソン・スリーエフ,Lawson Three F,Lawson Three F
@@ -293,10 +301,13 @@ off-fujisawa-2,composed,藤沢駅南口喫煙所,Fujisawa Station Smoking Area �
 off-fujisawa-1,composed,藤沢駅北口喫煙所,Fujisawa Station Smoking Area – North Exit,Raucherplatz Bahnhof Fujisawa – Nordausgang
 off-kamakura-3,composed,大船駅東口2階ペデストリアンデッキ 喫煙所（屋外型）,Ofuna Station Pedestrian Deck Smoking Area – East Exit,"Raucherplatz Bahnhof Ofuna, Fußgängerdeck – Ostausgang"
 off-kyoto-18,composed,ＪＲ桂川駅前喫煙場所,JR Katsuragawa Station Front Smoking Area,"Raucherplatz JR Katsuragawa, Bahnhofsvorplatz"
+off-kyoto-16,composed,JR西大路駅北側喫煙場所,"JR Nishiōji Station Smoking Area, north side","Raucherplatz Bahnhof JR Nishiōji, Nordseite"
+off-kyoto-17,composed,ＪＲ西大路駅南側喫煙場所,"JR Nishiōji Station Smoking Area, south side","Raucherplatz Bahnhof JR Nishiōji, Südseite"
 off-kyoto-9,composed,京都駅サンクンガーデン前喫煙場所,Smoking Area in front of Kyoto Station Sunken Garden,Raucherplatz vor Bahnhof Kyoto Sunken Garden
 off-kyoto-10,composed,京都駅北口広場（タクシープール東）喫煙場所,Kyoto Station Plaza Smoking Area – North Exit,"Raucherplatz Bahnhof Kyoto, Platz – Nordausgang"
 off-kyoto-3,composed,京都駅北口広場（バスターミナル東）喫煙場所,Kyoto Station Plaza Smoking Area – North Exit,"Raucherplatz Bahnhof Kyoto, Platz – Nordausgang"
 off-kyoto-14,composed,山科駅前（バスロータリー北側）喫煙場所,Yamashina Station Front Smoking Area,"Raucherplatz Yamashina, Bahnhofsvorplatz"
+off-kyoto-15,composed,ＪＲ山科駅前北広場喫煙場所,JR Yamashina Station Front North Square Smoking Area,"Raucherplatz JR Yamashina, Bahnhofsvorplatz, Nordplatz"
 off-kyoto-13,composed,高台寺公園内喫煙場所,Kōdai-ji Park Smoking Area,Raucherplatz Kōdai-ji Park
 osm-n3781733995,romaji,ハウスこのゆびとまれ,House Konoyubitomare,House Konoyubitomare
 osm-n5273797446,romaji,ポポロ,Poporo,Poporo
@@ -340,10 +351,16 @@ off-osaka-439,romaji,あいおい公共喫煙所,Aioi Public Smoking Area,Öffen
 off-osaka-429,romaji,はりまや あびこ本店喫煙所,Harimaya Abiko Smoking Area,Raucherplatz Harimaya Abiko
 off-osaka-425,romaji,ローソンあびこ駅前店喫煙所,Lawson Abiko Station Front Smoking Area,"Raucherplatz Lawson Abiko, Bahnhofsvorplatz"
 off-osaka-419,composed,我孫子町駅前喫煙所,Abikocho Station Front Smoking Area,"Raucherplatz Abikocho, Bahnhofsvorplatz"
-off-osaka-420,composed,P-ROOTs MANDORE喫煙所,P ROOTs MANDORE Smoking Area,Raucherplatz P ROOTs MANDORE
+off-osaka-424,composed,P-ROOTs MANDORE屋内喫煙所（東）,"P-ROOTs MANDORE Smoking Area, indoor","Raucherplatz P-ROOTs MANDORE, innen"
+off-osaka-423,composed,P-ROOTs MANDORE屋内喫煙所（中央）,"P-ROOTs MANDORE Smoking Area, indoor","Raucherplatz P-ROOTs MANDORE, innen"
+off-osaka-420,composed,P-ROOTs MANDORE喫煙所,P-ROOTs MANDORE Smoking Area,Raucherplatz P-ROOTs MANDORE
+off-osaka-422,composed,P-ROOTs MANDORE屋内喫煙所（南西）,"P-ROOTs MANDORE Smoking Area, indoor","Raucherplatz P-ROOTs MANDORE, innen"
+off-osaka-421,composed,P-ROOTs MANDORE屋内喫煙所（北西）,"P-ROOTs MANDORE Smoking Area, indoor","Raucherplatz P-ROOTs MANDORE, innen"
 off-osaka-446,romaji,シグマ矢田店喫煙所（中央）,Shiguma Yata Smoking Area,Raucherplatz Shiguma Yata
 off-osaka-445,romaji,シグマ矢田店喫煙所（西）,Shiguma Yata Smoking Area,Raucherplatz Shiguma Yata
 off-osaka-447,romaji,シグマ矢田店喫煙所（2F）,Shiguma Yata Smoking Area,Raucherplatz Shiguma Yata
+off-osaka-432,romaji,シグマ本店屋内喫煙所（南西）,"Shiguma Smoking Area, indoor","Raucherplatz Shiguma, innen"
+off-osaka-431,romaji,シグマ本店屋内喫煙所（北東）,"Shiguma Smoking Area, indoor","Raucherplatz Shiguma, innen"
 off-osaka-453,brand,キコーナ喜連瓜破インター店喫煙所,Kicona Smoking Area,Raucherplatz Kicona
 off-osaka-463,composed,出戸5丁目喫煙所,Deto 5-chome Smoking Area,Raucherplatz Deto 5-chome
 off-osaka-454,composed,キコーナ喜連瓜破店喫煙所,Kicona Kire-Uriwari Smoking Area,Raucherplatz Kicona Kire-Uriwari
@@ -360,6 +377,9 @@ off-osaka-403,composed,マルハン北加賀屋店喫煙所（南東）,Maruhan 
 off-osaka-401,composed,マルハン北加賀屋店喫煙所（北西）,Maruhan Kitakagaya Smoking Area,Raucherplatz Maruhan Kitakagaya
 off-osaka-402,composed,マルハン北加賀屋店喫煙所（北東）,Maruhan Kitakagaya Smoking Area,Raucherplatz Maruhan Kitakagaya
 off-osaka-474,composed,123玉出店喫煙所,123 Tamade Smoking Area,Raucherplatz 123 Tamade
+off-osaka-475,composed,123玉出店屋内喫煙所（1階）,"123 Tamade Smoking Area, indoor","Raucherplatz 123 Tamade, innen"
+off-osaka-477,composed,123玉出店屋内喫煙所（3階）,"123 Tamade Smoking Area, indoor","Raucherplatz 123 Tamade, innen"
+off-osaka-476,composed,123玉出店屋内喫煙所（2階）,"123 Tamade Smoking Area, indoor","Raucherplatz 123 Tamade, innen"
 off-osaka-466,romaji,さんぽみち喫煙所,Sanpomichi Smoking Area,Raucherplatz Sanpomichi
 off-osaka-467,composed,平野駅前喫煙所,Hirano Station Front Smoking Area,"Raucherplatz Hirano, Bahnhofsvorplatz"
 off-osaka-411,composed,ポートタウン東駅前喫煙所,Port Town-higashi Station Front Smoking Area,"Raucherplatz Port Town-higashi, Bahnhofsvorplatz"
@@ -402,11 +422,14 @@ off-osaka-139,romaji,ホテルニッセイ大阪市指定喫煙所,Hotel Nissei 
 off-osaka-194,romaji,NAMBAなんなん喫煙室,NAMBA Nannan Smoking Room,Raucherraum NAMBA Nannan
 off-osaka-138,composed,なんば喫煙所,Namba Smoking Area,Raucherplatz Namba
 off-osaka-265,romaji,カーショップキャスバル,Car Shop Kyasubaru Smoking Area,Raucherplatz Car Shop Kyasubaru
+off-osaka-334,composed,123鶴橋店屋内喫煙所（南西）,"123 Tsuruhashi Smoking Area, indoor","Raucherplatz 123 Tsuruhashi, innen"
+off-osaka-335,composed,123鶴橋店屋内喫煙所（南東）,"123 Tsuruhashi Smoking Area, indoor","Raucherplatz 123 Tsuruhashi, innen"
 off-osaka-332,composed,123鶴橋店喫煙所,123 Tsuruhashi Smoking Area,Raucherplatz 123 Tsuruhashi
 off-osaka-128,composed,スロットマルハンなんば店地下2階喫煙所（西）,Slot Maruhan Namba Smoking Area,Raucherplatz Slot Maruhan Namba
 off-osaka-127,composed,スロットマルハンなんば店地下1階喫煙所,Slot Maruhan Namba Smoking Area,Raucherplatz Slot Maruhan Namba
 off-osaka-125,composed,パチンコマルハンなんば店2階喫煙所（エスカレーター横）,Maruhan Pachinko Namba Smoking Area,Raucherplatz Maruhan Pachinko Namba
 off-osaka-123,composed,パチンコマルハンなんば店1階喫煙所（エスカレーター横）,Maruhan Pachinko Namba Smoking Area,Raucherplatz Maruhan Pachinko Namba
+off-osaka-333,composed,123鶴橋店屋内喫煙所（西）,"123 Tsuruhashi Smoking Area, indoor","Raucherplatz 123 Tsuruhashi, innen"
 off-osaka-126,composed,パチンコマルハンなんば店2階喫煙所（西）,Maruhan Pachinko Namba Smoking Area,Raucherplatz Maruhan Pachinko Namba
 off-osaka-124,composed,パチンコマルハンなんば店1階喫煙所（東）,Maruhan Pachinko Namba Smoking Area,Raucherplatz Maruhan Pachinko Namba
 off-osaka-129,composed,スロットマルハンなんば店地下2階喫煙所（東）,Slot Maruhan Namba Smoking Area,Raucherplatz Slot Maruhan Namba
@@ -441,6 +464,7 @@ off-osaka-337,composed,123緑橋店喫煙所（北西）,123 Midoribashi Smoking
 off-osaka-342,composed,DERDE喫煙所,DERDE Smoking Area,Raucherplatz DERDE
 off-osaka-132,romaji,せんびる公共喫煙所（10号館B1）,Senbiru Public Smoking Area,Öffentlicher Raucherplatz Senbiru
 off-osaka-131,romaji,せんびる公共喫煙所（2号館B2）,Senbiru Public Smoking Area,Öffentlicher Raucherplatz Senbiru
+off-osaka-90,composed,中央卸売市場喫煙所,Chuo Wholesale Market Smoking Area,"Raucherplatz Chuo, Großmarkt"
 off-osaka-159,romaji,ファミリーマートカツラギ南本町店喫煙所,FamilyMart Katsuragi Minamihoncho Smoking Area,Raucherplatz FamilyMart Katsuragi Minamihoncho
 off-osaka-237,brand,ファミリーマート靭公園前店喫煙所,FamilyMart Smoking Area,Raucherplatz FamilyMart
 off-osaka-236,composed,靱公園喫煙所,Utsubo Park Smoking Area,Raucherplatz Utsubo Park
@@ -463,8 +487,13 @@ off-osaka-370,brand,マルハン今福店喫煙所,Maruhan Smoking Area,Raucherp
 off-osaka-38,composed,ファミリーマート西天満六丁目店喫煙所,FamilyMart Nishitenma 6-chome Smoking Area,Raucherplatz FamilyMart Nishitenma 6-chome
 off-osaka-81,composed,京橋駅喫煙所,Kyobashi Station Smoking Area,Raucherplatz Bahnhof Kyobashi
 off-osaka-4,composed,スロット123梅田店喫煙所,Slot 123 Umeda Smoking Area,Raucherplatz Slot 123 Umeda
+off-osaka-26,composed,123＋N大阪本店ビル屋内喫煙所（地下1階南）,"123+N Osaka Building Smoking Area, indoor","Raucherplatz 123+N Osaka Building, innen"
 off-osaka-24,composed,123＋N大阪本店ビル喫煙所,123+N Osaka Building Smoking Area,Raucherplatz 123+N Osaka Building
+off-osaka-28,composed,123＋N大阪本店ビル屋内喫煙所（1階西）,"123+N Osaka Building Smoking Area, indoor","Raucherplatz 123+N Osaka Building, innen"
+off-osaka-29,composed,123＋N大阪本店ビル屋内喫煙所（2階）,"123+N Osaka Building Smoking Area, indoor","Raucherplatz 123+N Osaka Building, innen"
 off-osaka-369,brand,キコーナ今福店喫煙所,Kicona Smoking Area,Raucherplatz Kicona
+off-osaka-25,composed,123＋N大阪本店ビル屋内喫煙所（地下1階東）,"123+N Osaka Building Smoking Area, indoor","Raucherplatz 123+N Osaka Building, innen"
+off-osaka-27,composed,123＋N大阪本店ビル屋内喫煙所（1階北）,"123+N Osaka Building Smoking Area, indoor","Raucherplatz 123+N Osaka Building, innen"
 off-osaka-13,composed,小松原町喫煙所,Komatsubaracho Smoking Area,Raucherplatz Komatsubaracho
 off-osaka-54,composed,ホワイティうめだ（泉の広場）喫煙室,Whity Umeda Smoking Room,Raucherraum Whity Umeda
 off-osaka-87,composed,キコーナ海老江店喫煙所,Kicona Ebie Smoking Area,Raucherplatz Kicona Ebie
@@ -493,7 +522,9 @@ off-osaka-304,composed,十三公園喫煙所,Juso Park Smoking Area,Raucherplatz
 off-osaka-302,composed,キコーナ十三店喫煙所,Kicona Juso Smoking Area,Raucherplatz Kicona Juso
 off-osaka-360,composed,キコーナ千林店喫煙所（2階）,Kicona Sembayashi Smoking Area,Raucherplatz Kicona Sembayashi
 off-osaka-359,composed,キコーナ千林店喫煙所（1階）,Kicona Sembayashi Smoking Area,Raucherplatz Kicona Sembayashi
+off-osaka-363,composed,123千林店屋内喫煙所（東）,"123 Sembayashi Smoking Area, indoor","Raucherplatz 123 Sembayashi, innen"
 off-osaka-361,composed,123千林店喫煙所,123 Sembayashi Smoking Area,Raucherplatz 123 Sembayashi
+off-osaka-362,composed,123千林店屋内喫煙所（西）,"123 Sembayashi Smoking Area, indoor","Raucherplatz 123 Sembayashi, innen"
 off-osaka-356,brand,キコーナ赤川店喫煙所,Kicona Smoking Area,Raucherplatz Kicona
 off-osaka-299,composed,加島駅前喫煙所,Kashima Station Front Smoking Area,"Raucherplatz Kashima, Bahnhofsvorplatz"
 off-osaka-357,composed,城北公園喫煙所,Shirokita Park Smoking Area,Raucherplatz Shirokita Park
@@ -535,7 +566,7 @@ off-osaka-221,composed,ROSSO（店舗全面喫煙可能）,ROSSO,ROSSO
 off-osaka-201,composed,SHUN SAI KA NAKA（店舗全面喫煙可能）,SHUN SAI KA NAKA,SHUN SAI KA NAKA
 off-osaka-208,composed,meza（店舗全面喫煙可能）,meza,meza
 off-osaka-167,composed,Bar Cactus（店舗全面喫煙可能）,Bar Cactus,Bar Cactus
-off-osaka-213,composed,ROCKBAR GUITAR－RA（店舗全面喫煙可能）,ROCKBAR GUITAR RA,ROCKBAR GUITAR RA
+off-osaka-213,composed,ROCKBAR GUITAR－RA（店舗全面喫煙可能）,ROCKBAR GUITAR-RA,ROCKBAR GUITAR-RA
 off-osaka-204,composed,ribbon DINING BAR（店舗全面喫煙可能）,ribbon DINING BAR,ribbon DINING BAR
 off-osaka-214,romaji,バーオリジンズ（店舗全面喫煙可能）,Bar Orijinzu,Bar Orijinzu
 off-osaka-230,composed,カフェブレーク クリスタ長堀店（まねきゃっと広場内）,Café Break Crysta Nagahori,Café Break Crysta Nagahori

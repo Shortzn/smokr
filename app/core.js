@@ -149,7 +149,12 @@
     // "Öffentlicher Raucherplatz · Öffentlich" wäre doppelt
     if (!(category(s) === "public" && !s.unv && acc === t("acc2.public"))) parts.push(acc);
     if (s.fl) parts.push(s.fl);
+    if (s.dir) parts.push(dirText(s));
     return parts;
+  }
+  /** Lage im Gebäude, z. B. "Südwestseite" (aus "（南西）" im Originalnamen) */
+  function dirText(s) {
+    return s && s.dir && /^(n|s|e|w|ne|nw|se|sw|c)$/.test(s.dir) ? t(`dir.${s.dir}`) : "";
   }
   function floorText(fl) {
     if (!fl) return "";
@@ -469,7 +474,7 @@
     setLang, tr, regionName, regionNote, inJapan,
     distM, fmtDist, regionFor,
     category, accessLabel, accessExplain, title, jaLine, placeType, warnings, trust, sourceName,
-    translatedName, areaLabel, accessShort, summary, floorText, tobaccoText, exitText,
+    translatedName, areaLabel, accessShort, summary, floorText, dirText, tobaccoText, exitText,
     migratePrefs, visible, rank, norm, search, searchRegions,
     initialLocation, locationReduce, anchorOf,
     hours, fmtMonth, fmtDay, routeUrls, defaultRouteApp, validateRegionData, mergeCommunity,

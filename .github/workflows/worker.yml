@@ -113,7 +113,10 @@ jobs:
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: npx wrangler d1 execute smokr-community-staging --remote -y -c wrangler.staging.toml --command "DELETE FROM photo_flags; DELETE FROM photos; DELETE FROM reports; DELETE FROM submissions; DELETE FROM hidden_spots; DELETE FROM rate; DELETE FROM audit; DELETE FROM testers;" > /dev/null
+        run: |
+          npx wrangler d1 execute smokr-community-staging --remote -y -c wrangler.staging.toml --command "DELETE FROM photo_flags; DELETE FROM photos; DELETE FROM reports; DELETE FROM submissions; DELETE FROM hidden_spots; DELETE FROM rate; DELETE FROM audit; DELETE FROM testers;" > /dev/null
+          # /v1/community wird 60 s zwischengespeichert; direktes Leeren umgeht das Löschen des Caches
+          sleep 65
       - name: API-Tests gegen Staging
         if: steps.token.outputs.ok == '1'
         env:

@@ -302,3 +302,16 @@ test("Namen und Ortstyp: lokalisiert, beschreibend, nie geraten", () => {
   assert.equal(C.search([mall], "einkaufszentrum", [135.5, 34.6], C.DEFAULT_PREFS, {}).length, 1, "Ortstyp auf Deutsch");
   C.setLang("de");
 });
+
+test("Lage im Gebäude unterscheidet Räume am selben Ort", () => {
+  C.setLang("de");
+  const a = spot({ dir: "sw", fl: "2F" });
+  assert.equal(C.dirText(a), "Südwestseite");
+  assert.ok(C.summary(a).includes("Südwestseite"));
+  assert.equal(C.dirText(spot({ dir: "<b>" })), "", "unbekannte Werte werden nicht angezeigt");
+  C.setLang("en");
+  assert.equal(C.dirText(a), "southwest side");
+  C.setLang("ja");
+  assert.equal(C.dirText(a), "南西側");
+  C.setLang("de");
+});

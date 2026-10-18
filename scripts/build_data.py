@@ -328,6 +328,9 @@ NAME_STATS = collections.Counter()
 REVIEW = []
 
 
+DIR_CODE = {"北": "n", "南": "s", "東": "e", "西": "w", "北東": "ne", "北西": "nw", "南東": "se", "南西": "sw", "中央": "c"}
+
+
 def enrich(s):
     """Lokalisierter Name, Ortstyp, Rauchbereich und Zugang (siehe localize.py, classify.py)."""
     tags = s.pop("_tags", None) or {}
@@ -339,6 +342,9 @@ def enrich(s):
         s["heated"] = True
     if extra.get("ex"):
         s["ex"] = extra["ex"]
+    if extra.get("dir") in DIR_CODE:
+        # Lage im Gebäude aus "（南西）": unterscheidet mehrere Räume am selben Ort
+        s["dir"] = DIR_CODE[extra["dir"]]
     s.update(classify.classify(s, tags, extra))
     nj = s.get("nj") or ""
     NAME_STATS["total"] += 1

@@ -225,7 +225,7 @@ def tokenize(text):
             toks.append(("latin", "@"))
             i += 1
             continue
-        m = re.match(r"[A-Za-z0-9][A-Za-z0-9'&+./!]*", text[i:])
+        m = re.match(r"[A-Za-z0-9][A-Za-z0-9'&+./!]*(?:-[A-Za-z0-9][A-Za-z0-9'&+./!]*)*", text[i:])
         if m:
             toks.append(("latin", m.group(0)))
             i += m.end()
@@ -318,8 +318,17 @@ def parse_qualifiers(parts):
     return q
 
 
+CIRCLED = re.compile(r"\s*([\u2460-\u2473])\s*$")
+
+
 def compose(name, kind):
     """Baut englischen und deutschen Titel. Gibt (en, de, quality, info) zurück; en None, wenn nicht sicher."""
+    # Eingekreiste Nummer am Ende (喫煙場所②) gehört hinter den ganzen Titel, nicht in den Ortsnamen
+    m = CIRCLED.search(name or "")
+    if m:
+        en, de, quality, info = compose(name[: m.start()], kind)
+        n = ord(m.group(1)) - 0x2460 + 1
+        return (f"{en} {n}" if en else en), (f"{de} {n}" if de else de), quality, info
     outer, inner = split_parens(nfkc(name))
     q = parse_qualifiers(inner)
     toks = tokenize(outer)
@@ -416,7 +425,10 @@ def compose(name, kind):
 def localize(spot, osm_tags=None):
     """Setzt le, ld, lq und Zusatzangaben aus dem Namen."""
     t = osm_tags or {}
-    nj = nfkc(spot.get("nj"))
+    # NFKC macht aus ⑤ eine 5 mitten im Namen; die eingekreiste Nummer bleibt erhalten, compose() setzt sie ans Ende
+    raw = (spot.get("nj") or "").strip()
+    circ = CIRCLED.search(raw)
+    nj = nfkc(raw[: circ.start()]) + circ.group(1) if circ else nfkc(raw)
     ne = nfkc(spot.get("ne"))
     extra = {}
     if ne and not JA.search(ne):
