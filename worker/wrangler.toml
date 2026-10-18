@@ -14,7 +14,7 @@ TURNSTILE_HOSTNAMES = "shortzn.github.io"
 binding = "DB"
 database_name = "smokr-community"
 # Wird beim ersten Einrichten von scripts in worker/tools/setup.sh eingetragen
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "00892a63-e48c-4e70-85eb-d1597b63fb6a"
 migrations_dir = "migrations"
 
 [triggers]
