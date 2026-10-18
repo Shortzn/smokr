@@ -100,7 +100,8 @@
 
     function updateGrab() {
       if (!grab) return;
-      const label = state === "expanded" ? "Blatt verkleinern" : "Blatt vergrößern";
+      const L = opts.labels ? opts.labels() : { grow: "Expand panel", shrink: "Collapse panel" };
+      const label = state === "expanded" ? L.shrink : L.grow;
       grab.setAttribute("aria-label", label);
       grab.setAttribute("aria-expanded", String(state === "expanded"));
       el.dataset.state = state;

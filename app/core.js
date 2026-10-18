@@ -1,28 +1,37 @@
 /* Smokr Kernlogik: reine Funktionen ohne DOM, im Browser als window.SmokrCore,
-   in Node über require() für die Tests. */
+   in Node über require() für die Tests. Texte kommen aus i18n.js (setLang). */
 (function (root, factory) {
-  const api = factory();
+  const i18n = typeof module === "object" && module.exports ? require("./i18n.js") : root.SmokrI18n;
+  const api = factory(i18n);
   if (typeof module === "object" && module.exports) module.exports = api;
   else root.SmokrCore = api;
-})(typeof self !== "undefined" ? self : this, function () {
+})(typeof self !== "undefined" ? self : this, function (I18N) {
   "use strict";
 
-  const DATA_SCHEMA = 2;
+  const DATA_SCHEMA = 3;
+  let t = I18N.make("en");
+  function setLang(lang) { t = I18N.make(I18N.LANGS.includes(lang) ? lang : "en"); return t; }
+  function tr() { return t; }
 
-  // Reihenfolge = Reiseroute
+  // Reihenfolge = Reiseroute. Namen und Hinweise kommen aus i18n.js.
   const REGIONS = [
-    { id: "tokyo", de: "Tokio", ja: "東京", center: [139.767, 35.681], zoom: 12.3 },
-    { id: "kamakura", de: "Kamakura", ja: "鎌倉", center: [139.5505, 35.3192], zoom: 13.6,
-      note: "Am Bahnhof Kamakura gibt es nur den Raucherraum im 3. Stock des Aiza-Gebäudes an der Komachi-dori, offen 9 bis 17 Uhr. Rund um Enoshima gibt es keinen offiziellen Platz." },
-    { id: "kyoto", de: "Kyoto", ja: "京都", center: [135.7681, 35.0045], zoom: 12.8,
-      note: "In der Innenstadt, am Bahnhof und in Kiyomizu und Gion kostet Rauchen auf der Straße 1.000 Yen. In Arashiyama und Fushimi Inari gibt es keinen städtischen Raucherplatz." },
-    { id: "okinawa", de: "Okinawa", ja: "沖縄", center: [127.6809, 26.2124], zoom: 12.4,
-      note: "In Naha ist Rauchen auf der Kokusai-dori und der Okiei-dori verboten. Dort gibt es keinen offiziellen Platz. In den Seitenstraßen ist Rauchen draußen nicht verboten. Am Flughafen gibt es viele Raucherräume." },
-    { id: "osaka", de: "Osaka", ja: "大阪", center: [135.5023, 34.6937], zoom: 12.4,
-      note: "Seit Januar 2025 ist Rauchen auf der Straße in ganz Osaka verboten, auch mit IQOS. Strafe 1.000 Yen, sofort zu zahlen. Erlaubt nur an ausgewiesenen Plätzen oder bei Aschenbechern auf Privatgrund." },
+    { id: "tokyo", ja: "東京", center: [139.767, 35.681], zoom: 12.3 },
+    { id: "kamakura", ja: "鎌倉", center: [139.5505, 35.3192], zoom: 13.6, note: true },
+    { id: "kyoto", ja: "京都", center: [135.7681, 35.0045], zoom: 12.8, note: true },
+    { id: "okinawa", ja: "沖縄", center: [127.6809, 26.2124], zoom: 12.4, note: true },
+    { id: "osaka", ja: "大阪", center: [135.5023, 34.6937], zoom: 12.4, note: true },
   ];
   // Fujisawa und Ōfuna gehören zu "Kamakura", das Okinawa-Gebiet ist groß
   const REGION_RADIUS_M = { tokyo: 60000, kamakura: 20000, kyoto: 30000, okinawa: 120000, osaka: 30000 };
+  function regionName(r) { return r ? t(`region.${r.id}`) : t("region.none"); }
+  function regionNote(r) { return r && r.note ? t(`note.${r.id}`) : ""; }
+
+  // Bezirksnamen auf Japanisch, für die japanische Oberfläche
+  const WARD_JA = {
+    Shinjuku: "新宿区", Shibuya: "渋谷区", Chiyoda: "千代田区", Minato: "港区", Chuo: "中央区", Taito: "台東区",
+    Toshima: "豊島区", Bunkyo: "文京区", Meguro: "目黒区", Koto: "江東区", Kamakura: "鎌倉市", Fujisawa: "藤沢市",
+    "Naha Airport": "那覇空港", Motobu: "本部町（海洋博公園）",
+  };
 
   const GENERIC_NAMES = /^(喫煙所|喫煙場所|喫煙コーナー|喫煙スペース|喫煙エリア|指定喫煙所|公衆喫煙所|smoking area)$/i;
 
@@ -33,19 +42,12 @@
     const h = Math.sin(dp / 2) ** 2 + Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin(dl / 2) ** 2;
     return 2 * r * Math.asin(Math.sqrt(h));
   }
-  function bearing(a, b) {
-    const rad = Math.PI / 180;
-    const y = Math.sin((b[0] - a[0]) * rad) * Math.cos(b[1] * rad);
-    const x = Math.cos(a[1] * rad) * Math.sin(b[1] * rad) - Math.sin(a[1] * rad) * Math.cos(b[1] * rad) * Math.cos((b[0] - a[0]) * rad);
-    return (Math.atan2(y, x) / rad + 360) % 360;
-  }
-  const COMPASS = ["Norden", "Nordosten", "Osten", "Südosten", "Süden", "Südwesten", "Westen", "Nordwesten"];
-  function compass(deg) { return COMPASS[Math.round(deg / 45) % 8]; }
 
   /** Luftlinie, bewusst ohne Gehzeit: Wir kennen den Fußweg nicht. */
   function fmtDist(m) {
     if (m < 1000) return `${Math.max(10, Math.round(m / 10) * 10)} m`;
-    return `${(m / 1000).toFixed(m < 10000 ? 1 : 0).replace(".", ",")} km`;
+    const km = (m / 1000).toFixed(m < 10000 ? 1 : 0);
+    return `${t.lang === "de" ? km.replace(".", ",") : km} km`;
   }
 
   function regionFor(point) {
@@ -56,6 +58,10 @@
     }
     return best && bd <= REGION_RADIUS_M[best.id] ? best : null;
   }
+  // Japan grob als Rechteck: Einreichungen außerhalb werden abgelehnt
+  function inJapan(lat, lon) {
+    return lat >= 24 && lat <= 46 && lon >= 122.9 && lon <= 146;
+  }
 
   // ---------- Einordnung eines Platzes ----------
   /** "public" | "customers" | "business": was die Daten über den Zugang belegen. */
@@ -64,80 +70,76 @@
     if (s.k === "v") return "business";
     return "public";
   }
-  const ACCESS_LABEL = {
-    public: "Öffentlich",
-    customers: "Nur für Kunden",
-    business: "Zugang unklar",
-  };
-  function accessLabel(s) { return ACCESS_LABEL[category(s)]; }
+  function accessLabel(s) {
+    if (s.unv) return t("access.unverified");
+    return t(`access.${category(s)}`);
+  }
   function accessExplain(s) {
     const c = category(s);
-    if (c === "public") {
-      return s.off ? "Öffentlicher Raucherplatz, von der Stadt gelistet. Keine Kaufpflicht."
-        : "Laut OpenStreetMap ein öffentlicher Raucherplatz.";
-    }
-    if (c === "customers") {
-      return s.off ? "Laut Stadt nur für Kunden. Du musst dort etwas kaufen."
-        : "Laut OpenStreetMap nur für Kunden.";
-    }
-    return "Raucherbereich bei einem Geschäft oder Lokal. Ob du als Nicht-Kunde rauchen darfst, ist nicht angegeben.";
+    if (c === "business") return t("access.explain.business");
+    return t(`access.explain.${c}.${s.off ? "official" : "osm"}`);
   }
 
   function title(s) {
-    if (s.ne) return s.ne;
+    if (s.ne && t.lang !== "ja") return s.ne;
     if (s.nj && !GENERIC_NAMES.test(s.nj.trim())) return s.nj;
-    if (s.k === "v") return s.vt || "Lokal";
-    return "Raucherplatz";
+    if (s.ne) return s.ne;
+    if (s.k === "v") return s.vt ? t(`vt.${s.vt}`) : t("place.fallback.venue");
+    return t("place.fallback.public");
   }
   function jaLine(s) {
     return s.nj && s.nj !== title(s) ? s.nj : "";
   }
   function placeType(s) {
-    if (s.k === "v") return [s.vt, s.sd].filter(Boolean).join(", ");
+    if (s.k === "v") return [s.vt && t(`vt.${s.vt}`), s.sd && t(`sd.${s.sd}`)].filter(Boolean).join(", ");
     const bits = [];
-    if (s.ind) bits.push("drinnen");
-    else if (s.cov) bits.push("überdacht");
-    if (s.sd) bits.push(s.sd);
+    if (s.ind) bits.push(t("place.indoor"));
+    else if (s.cov) bits.push(t("place.covered"));
+    if (s.sd) bits.push(t(`sd.${s.sd}`));
     return bits.join(", ");
   }
 
   /** Probleme und Unsicherheiten, die vor Ort wichtig sind. */
   function warnings(s, prefs) {
     const out = [];
-    if (s.heated && (!prefs || prefs.tobacco !== "heated")) out.push({ id: "heated", text: "Nur für Tabakerhitzer wie IQOS, glo oder Ploom. Zigaretten sind hier nicht erlaubt." });
-    if (s.unk) out.push({ id: "status", text: "Die Stadt gibt den Status als unklar an. Der Platz ist vielleicht geschlossen." });
-    if (s.pos === "area") out.push({ id: "pos", text: "Die Position ist nur ungefähr bekannt. Halte dich an die Beschreibung." });
-    if (s.pos === "address") out.push({ id: "pos", text: "Die Position ist aus der Adresse berechnet und kann einige Dutzend Meter danebenliegen." });
+    if (s.unv) out.push({ id: "unverified", text: t("warn.unverified") });
+    if (s.heated && (!prefs || prefs.tobacco !== "heated")) out.push({ id: "heated", text: t("warn.heated") });
+    if (s.unk) out.push({ id: "status", text: t("warn.status") });
+    if (s.pos === "area") out.push({ id: "pos", text: t("warn.posArea") });
+    if (s.pos === "address") out.push({ id: "pos", text: t("warn.posAddress") });
     return out;
   }
 
   /** Herkunft und Verlässlichkeit, getrennt nach Eigenschaften. Datumsangaben bleiben, was sie sind. */
   function trust(s, report) {
-    const t = {
+    const out = {
       official: s.off ? { ward: s.off.ward || "", date: s.off.date || null, url: s.off.url || null } : null,
       osm: s.osm ? { url: s.osm.url, checked: s.osm.chk || null } : null,
+      community: s.com ? { confirmed: s.com.n || 0, last: s.com.last || null, added: s.com.added || null } : null,
       position: s.pos || "exact",
       mine: report && report.s ? { status: report.s, at: report.t } : null,
     };
-    // Kurzfassung für die Liste: eine Zeile, ohne Wertung in Prozent oder Sternen
-    if (t.official) t.short = "Offizielle Liste";
-    else if (t.osm && t.osm.checked) t.short = "OpenStreetMap, geprüft";
-    else t.short = "OpenStreetMap";
-    // "weniger verlässlich": nur OSM ohne Prüfdatum, oder Position nur ungefähr
-    t.weak = (!t.official && !(t.osm && t.osm.checked)) || t.position === "area";
-    return t;
+    if (out.official) out.short = t("src.official");
+    else if (out.community && out.community.added) out.short = t("src.community");
+    else if (out.osm && out.osm.checked) out.short = t("src.osmChecked");
+    else out.short = t("src.osm");
+    // "weniger verlässlich": nur OSM ohne Prüfdatum, Position ungefähr, oder unbestätigt
+    const byCommunity = !!(out.community && (out.community.confirmed > 0 || out.community.added));
+    out.weak = !!s.unv || out.position === "area" || (!out.official && !(out.osm && out.osm.checked) && !byCommunity);
+    return out;
   }
 
   function sourceName(s) {
     if (!s.off) return "";
     const w = s.off.ward || "";
-    if (!w) return "Offizielle Liste";
-    if (s.region === "tokyo") return `Bezirk ${w}`;
+    if (!w) return t("src.official");
+    if (t.lang === "ja" && WARD_JA[w]) return WARD_JA[w];
+    if (s.region === "tokyo") return t("src.ward.tokyo", { ward: w });
     return w;
   }
 
   // ---------- Einstellungen ----------
-  const DEFAULT_PREFS = { tobacco: "both", showPublic: true, showBusiness: false, showHidden: false, route: null };
+  const DEFAULT_PREFS = { tobacco: "both", showPublic: true, showBusiness: false, showUnverified: false, showHidden: false, route: null };
 
   /** Übernimmt die alten Filter (kitsuen.filters) in das neue Format. */
   function migratePrefs(saved, oldFilters) {
@@ -157,8 +159,12 @@
 
   function visible(s, prefs, reports) {
     const c = category(s);
-    if (c === "public" && !prefs.showPublic) return false;
-    if (c !== "public" && !prefs.showBusiness) return false;
+    if (s.unv) {
+      if (!prefs.showUnverified) return false;
+    } else {
+      if (c === "public" && !prefs.showPublic) return false;
+      if (c !== "public" && !prefs.showBusiness) return false;
+    }
     if (prefs.tobacco === "cig" && s.heated) return false;
     if (!prefs.showHidden && reports && reports[s.id] && reports[s.id].s === "gone") return false;
     return true;
@@ -183,7 +189,7 @@
   }
   function searchText(s) {
     if (!s._q) {
-      s._q = norm([s.ne, s.nj, s.st && s.st.en, s.st && s.st.ja, s.off && s.off.ward, s.hint, s.addr, s.vt].filter(Boolean).join("|"));
+      s._q = norm([s.ne, s.nj, s.st && s.st.en, s.st && s.st.ja, s.off && s.off.ward, s.off && WARD_JA[s.off.ward], s.hint, s.addr].filter(Boolean).join("|"));
     }
     return s._q;
   }
@@ -206,7 +212,8 @@
       if (!visible(s, prefs, reports)) continue;
       if (!searchText(s).includes(q)) continue;
       const score = searchScore(s, q);
-      hits.push({ d: distM(anchor, [s.lon, s.lat]), s, score, key: score === 0 ? s.st.m : distM(anchor, [s.lon, s.lat]) });
+      const d = distM(anchor, [s.lon, s.lat]);
+      hits.push({ d, s, score, key: score === 0 ? s.st.m : d });
     }
     hits.sort((a, b) => a.score - b.score || a.key - b.key);
     return hits.slice(0, limit || 40);
@@ -214,7 +221,7 @@
   function searchRegions(query) {
     const q = norm(query);
     if (!q) return REGIONS.slice();
-    return REGIONS.filter((r) => norm(r.de).includes(q) || norm(r.id).includes(q) || norm(r.ja).includes(q));
+    return REGIONS.filter((r) => I18N.LANGS.some((l) => norm(I18N.DICTS[l][`region.${r.id}`]).includes(q)) || norm(r.id).includes(q) || norm(r.ja).includes(q));
   }
 
   // ---------- Standort-Zustand ----------
@@ -267,25 +274,39 @@
   }
 
   // ---------- Öffnungszeiten ----------
-  const JA_WORDS = [
-    [/24時間/g, "rund um die Uhr"], [/平日/g, "Mo–Fr"], [/土曜日?/g, "Sa"], [/日曜日?/g, "So"],
-    [/祝日|祝祭日/g, "Feiertage"], [/年末年始/g, "Jahreswechsel"], [/お盆/g, "Obon"],
-    [/を除く/g, " ausgenommen"], [/のみ/g, " nur"], [/から/g, " bis "], [/まで/g, ""], [/毎日/g, "täglich"], [/[～〜~]/g, "–"],
-    [/・/g, ", "], [/（/g, " ("], [/）/g, ")"],
-  ];
+  const JA_WORDS = {
+    de: [
+      [/24時間/g, "rund um die Uhr"], [/平日/g, "Mo–Fr"], [/土曜日?/g, "Sa"], [/日曜日?/g, "So"],
+      [/祝日|祝祭日/g, "Feiertage"], [/年末年始/g, "Jahreswechsel"], [/お盆/g, "Obon"],
+      [/を除く/g, " ausgenommen"], [/のみ/g, " nur"], [/から/g, " bis "], [/まで/g, ""], [/毎日/g, "täglich"],
+    ],
+    en: [
+      [/24時間/g, "24 hours"], [/平日/g, "Mon–Fri"], [/土曜日?/g, "Sat"], [/日曜日?/g, "Sun"],
+      [/祝日|祝祭日/g, "public holidays"], [/年末年始/g, "New Year holidays"], [/お盆/g, "Obon"],
+      [/を除く/g, " excluded"], [/のみ/g, " only"], [/から/g, " to "], [/まで/g, ""], [/毎日/g, "daily"],
+    ],
+  };
+  const JA_PUNCT = [[/[～〜~]/g, "–"], [/・/g, ", "], [/（/g, " ("], [/）/g, ")"]];
   const JA_CHAR = /[぀-ヿ一-鿿]/;
-  /** Übersetzt nur bekannte Muster. Gibt {text, original} zurück; original nur, wenn Reste unübersetzt bleiben. */
+  /** Übersetzt nur bekannte Muster. {text, original}: original nur, wenn Reste unübersetzt bleiben.
+      Auf Japanisch bleibt der Text der Quelle unverändert. */
   function hours(h) {
     if (!h) return null;
-    if (h === "24/7") return { text: "rund um die Uhr", original: null };
-    if (!JA_CHAR.test(h)) return { text: h.replace(/Mo-Su/g, "täglich"), original: null };
-    let t = h.replace(/午前(\d{1,2})時(\d{1,2})?分?/g, (_, a, b) => `${a}:${(b || "00").padStart(2, "0")}`)
+    const lang = t.lang;
+    if (h === "24/7") return { text: lang === "de" ? "rund um die Uhr" : lang === "ja" ? "24時間" : "24 hours", original: null };
+    if (!JA_CHAR.test(h)) {
+      const daily = { de: "täglich", en: "daily", ja: "毎日" }[lang];
+      return { text: h.replace(/Mo-Su/g, daily), original: null };
+    }
+    if (lang === "ja") return { text: h, original: null };
+    let s = h.replace(/午前(\d{1,2})時(\d{1,2})?分?/g, (_, a, b) => `${a}:${(b || "00").padStart(2, "0")}`)
       .replace(/午後(\d{1,2})時(\d{1,2})?分?/g, (_, a, b) => `${(+a % 12) + 12}:${(b || "00").padStart(2, "0")}`)
       .replace(/(\d{1,2})時(\d{1,2})分/g, "$1:$2").replace(/(\d{1,2})時/g, "$1:00");
-    for (const [re, de] of JA_WORDS) t = t.replace(re, de);
-    t = t.replace(/\s{2,}/g, " ").trim();
-    const rest = (t.match(/[぀-ヿ一-鿿]/g) || []).length;
-    return { text: t, original: rest > 3 ? h : null };
+    for (const [re, rep] of JA_WORDS[lang] || JA_WORDS.en) s = s.replace(re, rep);
+    for (const [re, rep] of JA_PUNCT) s = s.replace(re, rep);
+    s = s.replace(/\s{2,}/g, " ").trim();
+    const rest = (s.match(/[぀-ヿ一-鿿]/g) || []).length;
+    return { text: s, original: rest > 3 ? h : null };
   }
 
   function fmtMonth(iso) {
@@ -293,7 +314,11 @@
     if (/^\d{4}$/.test(iso)) return iso;
     const d = new Date(iso);
     if (isNaN(d)) return String(iso);
-    return d.toLocaleDateString("de-AT", { month: "short", year: "numeric" });
+    return d.toLocaleDateString(t.locale, { month: "short", year: "numeric" });
+  }
+  function fmtDay(iso) {
+    const d = new Date(iso);
+    return isNaN(d) ? String(iso) : d.toLocaleDateString(t.locale);
   }
 
   // ---------- Route ----------
@@ -310,22 +335,54 @@
   // ---------- Daten ----------
   /** Prüft eine Stadtdatei. Wirft mit verständlicher Meldung, statt halbe Daten zu liefern. */
   function validateRegionData(data, regionId) {
-    if (!data || typeof data !== "object") throw new Error("leer");
-    if (data.schema !== DATA_SCHEMA) throw new Error(`Datenformat ${data.schema || 1} statt ${DATA_SCHEMA}`);
-    if (data.region !== regionId) throw new Error("falsche Stadt");
-    if (!Array.isArray(data.spots)) throw new Error("keine Liste");
+    if (!data || typeof data !== "object") throw new Error("empty");
+    if (data.schema !== DATA_SCHEMA) throw new Error(`format ${data.schema || 1} ≠ ${DATA_SCHEMA}`);
+    if (data.region !== regionId) throw new Error("wrong city");
+    if (!Array.isArray(data.spots)) throw new Error("no list");
     for (const s of data.spots) {
-      if (typeof s.id !== "string" || typeof s.lat !== "number" || typeof s.lon !== "number") throw new Error("fehlerhafter Eintrag");
+      if (typeof s.id !== "string" || typeof s.lat !== "number" || typeof s.lon !== "number") throw new Error("broken entry");
     }
     return data;
   }
 
+  /** Freigegebene Community-Daten mit den Basisdaten zusammenführen.
+      Bestätigungen hängen sich an vorhandene Plätze, neue Plätze kommen dazu. */
+  function mergeCommunity(spots, community) {
+    if (!community || !Array.isArray(community.places)) return spots;
+    const byId = new Map(spots.map((s) => [s.id, s]));
+    for (const c of community.confirmations || []) {
+      const s = byId.get(c.spot_id);
+      if (s) s.com = Object.assign({}, s.com, { n: c.n || 0, last: c.last || null, photos: c.photos || [] });
+    }
+    const added = [];
+    for (const p of community.places) {
+      if (typeof p.lat !== "number" || typeof p.lon !== "number" || !inJapan(p.lat, p.lon)) continue;
+      const id = `com-${p.id}`;
+      if (byId.has(id)) continue;
+      const k = p.category === "shop" ? "v" : "p";
+      const spot = {
+        id, k, acc: p.access === "customers" ? "customers" : k === "v" ? "unknown" : "public",
+        lat: p.lat, lon: p.lon, nj: "", ne: String(p.name || ""), pos: "exact",
+        com: { added: p.approved_at || null, n: p.confirmations || 0, last: p.last_confirmed || null, photos: p.photos || [] },
+        region: (regionFor([p.lon, p.lat]) || {}).id || null,
+      };
+      if (p.note) spot.hint = String(p.note);
+      if (p.floor) spot.floor = String(p.floor);
+      if (p.tobacco === "heated") spot.heated = true;
+      if (k === "v") spot.vt = "shop";
+      if (p.category === "room") { spot.ind = true; spot.sd = "room"; }
+      added.push(spot);
+    }
+    return spots.concat(added);
+  }
+
   return {
-    DATA_SCHEMA, REGIONS, DEFAULT_PREFS,
-    distM, bearing, compass, fmtDist, regionFor,
+    DATA_SCHEMA, REGIONS, DEFAULT_PREFS, I18N,
+    setLang, tr, regionName, regionNote, inJapan,
+    distM, fmtDist, regionFor,
     category, accessLabel, accessExplain, title, jaLine, placeType, warnings, trust, sourceName,
     migratePrefs, visible, rank, norm, search, searchRegions,
     initialLocation, locationReduce, anchorOf,
-    hours, fmtMonth, routeUrls, defaultRouteApp, validateRegionData,
+    hours, fmtMonth, fmtDay, routeUrls, defaultRouteApp, validateRegionData, mergeCommunity,
   };
 });

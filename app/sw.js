@@ -1,7 +1,7 @@
 // Offline-Betrieb: App und Daten vorab, Kartenteile beim Ansehen zwischenspeichern.
-const VERSION = "smokr-v6";
+const VERSION = "smokr-v7";
 const SHELL = [
-  "./", "index.html", "style.css", "core.js", "markers.js", "sheet.js", "app.js", "manifest.webmanifest",
+  "./", "index.html", "style.css", "config.js", "i18n.js", "core.js", "markers.js", "sheet.js", "community.js", "app.js", "manifest.webmanifest",
   "vendor/maplibre-gl.js", "vendor/maplibre-gl.css", "icons/icon-180.png", "icons/icon-192.png",
   "data/tokyo.json", "data/kamakura.json", "data/kyoto.json", "data/okinawa.json", "data/osaka.json",
 ];
@@ -13,11 +13,23 @@ const NETWORK_TIMEOUT_MS = 3500;
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
-self.addEventListener("activate", (e) => {
-  e.waitUntil(caches.keys().then((keys) => Promise.all(
+function removeOldCaches() {
+  return caches.keys().then((keys) => Promise.all(
     keys.filter((k) => k !== VERSION && k !== TILE_CACHE).map((k) => caches.delete(k))
-  )).then(() => self.clients.claim()));
+  ));
+}
+self.addEventListener("activate", (e) => {
+  e.waitUntil(removeOldCaches().then(() => self.clients.claim()));
 });
+// Eine ältere Version kann kurz nach dem Wechsel noch in ihren Cache schreiben.
+// Darum gelegentlich nachräumen, höchstens einmal pro Minute.
+let lastSweep = 0;
+function sweepLater(e) {
+  const now = Date.now();
+  if (now - lastSweep < 60000) return;
+  lastSweep = now;
+  e.waitUntil(new Promise((r) => setTimeout(r, 3000)).then(removeOldCaches));
+}
 
 let trimTimer = null;
 function scheduleTrim() {
@@ -51,6 +63,7 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
 
   if (url.origin === location.origin) {
+    sweepLater(e);
     e.respondWith(networkFirst(e.request));
     return;
   }

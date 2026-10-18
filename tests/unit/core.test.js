@@ -2,6 +2,9 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const C = require("../../app/core.js");
+const I18N = require("../../app/i18n.js");
+// Die meisten Tests prüfen deutsche Texte; Englisch und Japanisch haben eigene Tests unten
+C.setLang("de");
 
 const TOKYO_STATION = [139.7671, 35.6812];
 const SHINJUKU = [139.7005, 35.6909];
@@ -19,11 +22,12 @@ test("Entfernung ist Luftlinie ohne Gehzeit", () => {
 });
 
 test("Zugang: nur Belegtes wird als Tatsache ausgegeben", () => {
-  const konbini = spot({ k: "v", acc: "unknown", vt: "Konbini", sd: "Aschenbecher vor dem Laden" });
+  const konbini = spot({ k: "v", acc: "unknown", vt: "konbini", sd: "ashtray_front" });
   assert.equal(C.category(konbini), "business");
   assert.equal(C.accessLabel(konbini), "Zugang unklar");
   assert.ok(!/kaufen/.test(C.accessExplain(konbini)), "kein Kaufzwang ohne Beleg");
-  const osakaShop = spot({ k: "v", acc: "customers", vt: "Geschäft", off: { ward: "Osaka Kita" } });
+  const osakaShop = spot({ k: "v", acc: "customers", vt: "shop", off: { ward: "Osaka Kita" } });
+  assert.equal(C.placeType(konbini), "Konbini, Aschenbecher vor dem Laden");
   assert.equal(C.category(osakaShop), "customers");
   assert.match(C.accessExplain(osakaShop), /etwas kaufen/);
   assert.equal(C.accessLabel(spot({})), "Öffentlich");
@@ -162,8 +166,74 @@ test("Routen: Fußweg in beiden Apps", () => {
 });
 
 test("Datenprüfung erkennt kaputte und alte Dateien", () => {
-  assert.throws(() => C.validateRegionData({ region: "tokyo", spots: [] }, "tokyo"), /Datenformat/);
-  assert.throws(() => C.validateRegionData({ schema: 2, region: "kyoto", spots: [] }, "tokyo"), /falsche Stadt/);
-  assert.throws(() => C.validateRegionData({ schema: 2, region: "tokyo", spots: [{ id: 1 }] }, "tokyo"), /fehlerhaft/);
-  assert.ok(C.validateRegionData({ schema: 2, region: "tokyo", spots: [] }, "tokyo"));
+  assert.throws(() => C.validateRegionData({ region: "tokyo", spots: [] }, "tokyo"), /format 1/);
+  assert.throws(() => C.validateRegionData({ schema: 2, region: "tokyo", spots: [] }, "tokyo"), /format 2/);
+  assert.throws(() => C.validateRegionData({ schema: 3, region: "kyoto", spots: [] }, "tokyo"), /wrong city/);
+  assert.throws(() => C.validateRegionData({ schema: 3, region: "tokyo", spots: [{ id: 1 }] }, "tokyo"), /broken/);
+  assert.ok(C.validateRegionData({ schema: 3, region: "tokyo", spots: [] }, "tokyo"));
+});
+
+test("Unbestätigte Konbinis sind standardmäßig aus und klar gekennzeichnet", () => {
+  const k = spot({ id: "k", k: "v", acc: "unknown", vt: "konbini", sd: "ashtray_front", unv: true });
+  assert.equal(C.visible(k, C.DEFAULT_PREFS, {}), false);
+  assert.equal(C.visible(k, Object.assign({}, C.DEFAULT_PREFS, { showBusiness: true }), {}), false, "Geschäfte an reicht nicht");
+  assert.equal(C.visible(k, Object.assign({}, C.DEFAULT_PREFS, { showUnverified: true }), {}), true);
+  assert.equal(C.accessLabel(k), "Unbestätigt");
+  assert.equal(C.trust(k, null).weak, true);
+  assert.equal(C.warnings(k)[0].id, "unverified");
+  const checked = spot({ id: "c", k: "v", acc: "unknown", vt: "konbini", sd: "ashtray_front", osm: { url: "u", chk: "2025-03-01" } });
+  assert.equal(C.visible(checked, Object.assign({}, C.DEFAULT_PREFS, { showBusiness: true }), {}), true);
+});
+
+test("Sprachen: Englisch als Standard, Auswahl und Rückfall", () => {
+  assert.equal(I18N.pick(["fr-FR", "es"], null), "en");
+  assert.equal(I18N.pick(["de-AT", "en"], null), "de");
+  assert.equal(I18N.pick(["ja-JP"], null), "ja");
+  assert.equal(I18N.pick(["de-DE"], "en"), "en", "gespeicherte Wahl gewinnt");
+  assert.equal(I18N.pick(["de-DE"], "xx"), "de", "ungültige Wahl wird ignoriert");
+  for (const l of ["de", "ja"]) {
+    assert.deepEqual(Object.keys(I18N.DICTS[l]).sort(), Object.keys(I18N.DICTS.en).sort(), `alle Texte in ${l}`);
+  }
+  const t = I18N.make("ja");
+  assert.equal(t("nope.key"), "nope.key");
+  assert.equal(t("list.in", { city: "京都" }), "京都");
+});
+
+test("Sprachen: Texte, Namen und Öffnungszeiten", () => {
+  const s = spot({ off: { ward: "Chiyoda", date: "2026-09-11" }, region: "tokyo", nj: "秋葉原駅前喫煙所", ne: "" });
+  C.setLang("en");
+  assert.equal(C.accessLabel(s), "Public");
+  assert.equal(C.sourceName(s), "Chiyoda City");
+  assert.equal(C.hours("午前7時～午後8時（土曜日・日曜日・祝日を除く）").text, "7:00–20:00 (Sat, Sun, public holidays excluded)");
+  assert.equal(C.fmtDist(1530), "1.5 km");
+  assert.equal(C.regionName(C.REGIONS[0]), "Tokyo");
+  C.setLang("ja");
+  assert.equal(C.accessLabel(s), "公共");
+  assert.equal(C.sourceName(s), "千代田区");
+  assert.equal(C.hours("午前7時～午後8時").text, "午前7時～午後8時", "Japanisch bleibt Original");
+  assert.equal(C.title(spot({ ne: "Smoking Area A", nj: "喫煙所A" })), "喫煙所A");
+  C.setLang("de");
+  assert.equal(C.sourceName(s), "Bezirk Chiyoda");
+  // Japanische Ortsbeschreibung wird nie übersetzt
+  assert.equal(spot({ hint: "東口 交番横" }).hint, "東口 交番横");
+});
+
+test("Community-Daten: nur gültige Plätze, Bestätigungen hängen sich an", () => {
+  C.setLang("de");
+  const base = [spot({ id: "off-a", off: { ward: "Chiyoda" } })];
+  const out = C.mergeCommunity(base, {
+    places: [
+      { id: 7, lat: 35.68, lon: 139.76, category: "room", tobacco: "heated", access: "customers", name: "Test", approved_at: "2026-10-18", confirmations: 2 },
+      { id: 8, lat: 48.2, lon: 16.37, category: "public" },
+    ],
+    confirmations: [{ spot_id: "off-a", n: 3, last: "2026-10-17", photos: ["p1"] }],
+  });
+  assert.equal(out.length, 2, "Platz außerhalb Japans fällt weg");
+  const added = out.find((s) => s.id === "com-7");
+  assert.equal(added.heated, true);
+  assert.equal(C.category(added), "customers");
+  assert.equal(C.trust(added, null).short, "Community");
+  assert.equal(base[0].com.n, 3);
+  assert.equal(C.trust(base[0], null).community.confirmed, 3);
+  assert.deepEqual(C.mergeCommunity(base, null), base);
 });

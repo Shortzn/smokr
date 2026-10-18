@@ -2,6 +2,8 @@
 
 const C = window.SmokrCore;
 const M = window.SmokrMarkers;
+const COM = window.SmokrCommunity;
+const CFG = window.SMOKR_CONFIG || {};
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const LIST_LIMIT = 40;
 const PANEL_QUERY = "(min-width: 900px), (orientation: landscape) and (max-height: 520px) and (min-width: 560px)";
@@ -21,15 +23,20 @@ function saveStore(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* privater Modus */ }
 }
 
+let t = C.setLang(C.I18N.pick(navigator.languages || [navigator.language], loadStore("kitsuen.lang", null)));
+
 const state = {
+  base: [],
   spots: [],
   byId: new Map(),
   regions: {}, // id -> {status: "loading"|"ok"|"error", error, built, count}
+  community: null,
   prefs: C.migratePrefs(loadStore("kitsuen.prefs", null), loadStore("kitsuen.filters", null)),
   reports: loadStore("kitsuen.reports", {}),
   loc: C.initialLocation(),
   selected: null,
   view: "list",
+  form: null,
   online: navigator.onLine !== false,
 };
 let map = null;
@@ -49,11 +56,11 @@ function esc(s) {
 }
 let toastTimer = 0;
 function toast(msg) {
-  const t = $("toast");
-  t.textContent = msg;
-  t.classList.add("show");
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
 }
 function mapCenter() {
   if (map) { const c = map.getCenter(); return [c.lng, c.lat]; }
@@ -66,25 +73,57 @@ function kindOf(s) { return M.markerKind(s, state.reports); }
 function weak(s) { return C.trust(s, null).weak; }
 function stationLine(s) {
   if (!s.st) return "";
-  const name = s.st.en || s.st.ja;
-  return s.st.m < 600 ? `bei ${name}` : `Richtung ${name}`;
+  const name = t.lang === "ja" ? s.st.ja : s.st.en || s.st.ja;
+  return t(s.st.m < 600 ? "near.station" : "toward.station", { station: name });
 }
 function accessHtml(s) {
-  const cat = C.category(s);
+  const cat = s.unv ? "unverified" : C.category(s);
   return `<span class="acc acc-${cat}">${esc(C.accessLabel(s))}</span>`;
+}
+
+// ---------- Sprache ----------
+function applyStatic() {
+  document.documentElement.lang = t.lang;
+  for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
+  for (const el of document.querySelectorAll("[data-i18n-attr]")) {
+    for (const pair of el.dataset.i18nAttr.split(";")) {
+      const [attr, key] = pair.split(":");
+      if (attr && key) el.setAttribute(attr, t(key));
+    }
+  }
+  $("contact-link").href = CFG.contactUrl || "https://github.com/Shortzn/smokr/issues";
+  $("contact-link").textContent = (CFG.contactUrl || "https://github.com/Shortzn/smokr/issues").replace(/^https:\/\//, "");
+  $("legal-row").hidden = !CFG.legalUrl;
+  if (CFG.legalUrl) $("legal-link").href = CFG.legalUrl;
+  $(`l-${t.lang}`).checked = true;
+}
+function setLang(lang) {
+  t = C.setLang(lang);
+  saveStore("kitsuen.lang", lang);
+  applyStatic();
+  renderLegend();
+  syncFilters();
+  updateCityPill();
+  renderInfo();
+  rerender();
+}
+function rerender() {
+  if (state.view === "list") renderList();
+  else if (state.view === "detail" && state.selected) renderDetail(state.byId.get(state.selected));
+  else if (state.view === "search") renderSearch($("q").value);
+  else if (state.view === "form") renderForm();
+  if (sheet) sheet.layout();
 }
 
 // ---------- Liste ----------
 function renderHeader(top) {
   const region = C.regionFor(anchor());
   const nearby = isNearby();
-  let title = nearby ? "In deiner Nähe" : region ? `In ${region.de}` : "Auf der Karte";
+  $("list-title").textContent = nearby ? t("list.near") : region ? t("list.in", { city: C.regionName(region) }) : t("list.map");
   let sub;
-  if (state.loc.pendingCenter) sub = "Standort wird gesucht …";
-  else if (top.length) {
-    sub = `${nearby ? "Ab deinem Standort" : "Ab Kartenmitte"}, Luftlinie`;
-  } else sub = nearby ? "Ab deinem Standort" : "Ab Kartenmitte";
-  $("list-title").textContent = title;
+  if (state.loc.pendingCenter) sub = t("list.locating");
+  else sub = nearby ? t("list.fromYou") : t("list.fromCenter");
+  void top;
   $("list-sub").textContent = sub;
 
   const banner = $("banner");
@@ -92,49 +131,50 @@ function renderHeader(top) {
   let html = "", cls = "";
   if (rs && rs.status === "error") {
     cls = "error";
-    html = `<span>Daten für ${esc(region.de)} fehlen (${esc(rs.error)}). Die Liste ist nicht vollständig.</span><button class="text-btn" data-retry="${region.id}">Erneut laden</button>`;
+    html = `<span>${esc(t("banner.dataError", { city: C.regionName(region), error: rs.error }))}</span><button class="text-btn" data-retry="${region.id}">${esc(t("banner.reload"))}</button>`;
   } else if (state.loc.error === "denied" && state.loc.perm === "denied") {
-    cls = "";
-    html = `<span>Standort nicht freigegeben. Die Liste zeigt Plätze um die Kartenmitte.</span>`;
+    html = `<span>${esc(t("banner.denied"))}</span>`;
   } else if (state.loc.error === "unavailable") {
-    cls = "";
-    html = `<span>Standort gerade nicht verfügbar.</span><button class="text-btn" data-locate>Erneut</button>`;
+    html = `<span>${esc(t("banner.unavailable"))}</span><button class="text-btn" data-locate>${esc(t("banner.retry"))}</button>`;
   } else if (!state.online) {
     cls = "warn";
-    html = `<span>Offline. Gespeicherte Daten, Karte nur wo du schon warst.</span>`;
+    html = `<span>${esc(t("banner.offline"))}</span>`;
   }
   banner.className = `banner ${cls}`;
   banner.innerHTML = html;
   banner.hidden = !html;
 
   const rules = $("rules");
-  rules.hidden = !(region && region.note);
-  if (region && region.note) {
-    $("rules-title").textContent = `Regeln in ${region.de}`;
-    $("rules-text").textContent = region.note;
+  const note = C.regionNote(region);
+  rules.hidden = !note;
+  if (note) {
+    $("rules-title").textContent = t("rules.title", { city: C.regionName(region) });
+    $("rules-text").textContent = note;
   }
 }
 
-function rowHtml(d, s, opts) {
+function rowHtml(d, s) {
   const kind = kindOf(s);
   const ja = C.jaLine(s);
   const meta = [accessHtml(s)];
-  if (s.heated) meta.push(`<span class="acc acc-heated">nur Tabakerhitzer</span>`);
+  if (s.heated) meta.push(`<span class="acc acc-heated">${esc(t("heatedOnly"))}</span>`);
   const type = C.placeType(s);
   if (type) meta.push(esc(type));
   const tr = C.trust(s, state.reports[s.id]);
-  const src = [tr.short];
-  if (tr.position === "area") src.push("Position ungefähr");
-  else if (tr.position === "address") src.push("Position aus Adresse");
-  if (tr.mine) src.push(tr.mine.status === "ok" ? "von dir gefunden" : "von dir nicht gefunden");
+  const src = [];
   const st = stationLine(s);
-  if (st) src.unshift(esc(st));
+  if (st) src.push(st);
+  src.push(tr.short);
+  if (tr.community && tr.community.confirmed) src.push(`✓ ${tr.community.confirmed}`);
+  if (tr.position === "area") src.push(t("src.posArea"));
+  else if (tr.position === "address") src.push(t("src.posAddress"));
+  if (tr.mine) src.push(t(tr.mine.status === "ok" ? "src.mineOk" : "src.mineGone"));
   return `<li><button class="row${kind === "gone" ? " gone" : ""}" data-id="${esc(s.id)}">
     ${M.svg(kind, weak(s), 28)}
-    <span class="row-title">${esc(C.title(s))}${ja && !opts?.noJa ? `<span class="ja" lang="ja">${esc(ja)}</span>` : ""}</span>
+    <span class="row-title">${esc(C.title(s))}${ja ? `<span class="ja" lang="ja">${esc(ja)}</span>` : ""}</span>
     <span class="row-meta">${meta.join(" · ")}</span>
-    <span class="row-src">${src.map((x) => x).join(" · ")}</span>
-    ${d == null ? "" : `<span class="row-dist"><b>${C.fmtDist(d)}</b><span>Luftlinie</span></span>`}
+    <span class="row-src">${src.map(esc).join(" · ")}</span>
+    ${d == null ? "" : `<span class="row-dist"><b>${C.fmtDist(d)}</b><span>${esc(t("list.straight"))}</span></span>`}
   </button></li>`;
 }
 
@@ -145,22 +185,22 @@ function renderList() {
   const list = $("list");
   if (!state.spots.length && Object.values(state.regions).some((r) => r.status === "loading")) {
     renderHeader([]);
-    list.innerHTML = `<li class="empty">Daten werden geladen …</li>`;
+    list.innerHTML = `<li class="empty">${esc(t("list.loading"))}</li>`;
     return;
   }
   const top = C.rank(state.spots, from, state.prefs, state.reports, LIST_LIMIT).filter((x) => x.d <= 30000);
   renderHeader(top);
   if (rs && rs.status === "error" && !top.length) {
-    list.innerHTML = `<li class="empty">Für ${esc(region.de)} sind gerade keine Daten da. Prüfe die Verbindung und lade erneut.</li>`;
+    list.innerHTML = `<li class="empty">${esc(t("list.empty.dataMissing", { city: C.regionName(region) }))}</li>`;
     return;
   }
   if (!top.length) {
-    let msg;
-    if (!state.prefs.showPublic && !state.prefs.showBusiness) msg = "Alle Arten sind ausgeblendet. Schalte oben „Öffentlich“ oder „Geschäfte“ ein.";
-    else if (!region) msg = "Hier liegt keiner der Orte eurer Reise. Wähle oben einen Ort.";
-    else if (!state.prefs.showBusiness) msg = "In dieser Gegend ist kein öffentlicher Platz eingetragen. Schalte „Geschäfte“ ein, um Lokale mit Raucherbereich zu sehen.";
-    else msg = "In dieser Gegend ist mit diesen Filtern nichts eingetragen.";
-    list.innerHTML = `<li class="empty">${msg}</li>`;
+    let key;
+    if (!state.prefs.showPublic && !state.prefs.showBusiness) key = "list.empty.allOff";
+    else if (!region) key = "list.empty.noRegion";
+    else if (!state.prefs.showBusiness) key = "list.empty.onlyPublic";
+    else key = "list.empty.filtered";
+    list.innerHTML = `<li class="empty">${esc(t(key))}</li>`;
     return;
   }
   list.innerHTML = top.map(({ d, s }) => rowHtml(d, s)).join("");
@@ -172,45 +212,66 @@ function renderListSoon() {
 }
 
 // ---------- Detail ----------
+function factsHtml(rows) {
+  return `<dl class="facts">${rows.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${b}</dd>`).join("")}</dl>`;
+}
 function renderDetail(s) {
+  if (!s) return;
   const rep = state.reports[s.id];
   const tr = C.trust(s, rep);
-  const kind = kindOf(s);
   const cat = C.category(s);
-  const tags = [`<span class="tag ${cat}">${M.svg(cat === "public" ? "public" : "business", weak(s), 16)}${esc(C.accessLabel(s))}</span>`];
-  if (s.heated) tags.push(`<span class="tag heated">${M.svg("heated", false, 16)}Nur Tabakerhitzer</span>`);
+  const tags = [`<span class="tag ${s.unv ? "unverified" : cat}">${M.svg(cat === "public" ? "public" : "business", weak(s), 16)}${esc(C.accessLabel(s))}</span>`];
+  if (s.heated) tags.push(`<span class="tag heated">${M.svg("heated", false, 16)}${esc(t("heatedOnly.tag"))}</span>`);
   if (state.loc.pos) {
     const d = C.distM(state.loc.pos, [s.lon, s.lat]);
-    if (d < 50000) tags.push(`<span class="tag dist">${C.fmtDist(d)} Luftlinie</span>`);
+    if (d < 50000) tags.push(`<span class="tag dist">${C.fmtDist(d)} ${esc(t("list.straight"))}</span>`);
   }
 
   const app = routeApp();
   const urls = C.routeUrls(s);
-  const appName = { apple: "Apple Karten", google: "Google Maps" };
   const other = app === "apple" ? "google" : "apple";
 
   const warn = C.warnings(s, state.prefs);
   const find = [];
-  if (s.hint) find.push(`<p class="hint" lang="ja">${esc(s.hint)}</p>`);
+  if (s.hint) find.push(`<p class="hint"${/[぀-ヿ一-鿿]/.test(s.hint) ? ' lang="ja"' : ""}>${esc(s.hint)}</p>`);
   const where = [];
-  if (s.st) where.push(["Bahnhof", `${esc(s.st.en || s.st.ja)}${s.st.en ? ` <span class="ja">${esc(s.st.ja)}</span>` : ""}, ${C.fmtDist(s.st.m)} Luftlinie`]);
-  if (s.addr) where.push(["Adresse", `<span class="ja">${esc(s.addr)}</span>`]);
+  if (s.floor) where.push([t("add.floor").replace(/\s*\(.*\)$/, "").replace(/（.*）$/, ""), esc(s.floor)]);
+  if (s.st) {
+    const name = t.lang === "ja" ? s.st.ja : s.st.en || s.st.ja;
+    where.push([t("detail.station"), `${esc(name)}${s.st.en && t.lang !== "ja" ? ` <span class="ja" lang="ja">${esc(s.st.ja)}</span>` : ""}, ${C.fmtDist(s.st.m)} ${esc(t("list.straight"))}`]);
+  }
+  if (s.addr) where.push([t("detail.address"), `<span class="ja" lang="ja">${esc(s.addr)}</span>`]);
 
-  const info = [];
-  info.push(["Zugang", esc(C.accessExplain(s))]);
+  const info = [[t("detail.access"), esc(C.accessExplain(s))]];
   const type = C.placeType(s);
-  if (type) info.push(["Art", esc(type)]);
+  if (type) info.push([t("detail.type"), esc(type)]);
   const h = C.hours(s.hours);
-  info.push(["Geöffnet", h ? `${esc(h.text)}${h.original ? `<span class="orig ja">${esc(h.original)}</span>` : ""}` : "keine Angabe"]);
+  info.push([t("detail.hours"), h ? `${esc(h.text)}${h.original ? `<span class="orig ja" lang="ja">${esc(h.original)}</span>` : ""}` : esc(t("detail.hoursNone"))]);
 
   const src = [];
   if (tr.official) {
-    src.push(["Offizielle Liste", `${esc(C.sourceName(s))}, ${tr.official.date ? `Stand ${esc(C.fmtMonth(tr.official.date))}` : "ohne Datum"}${tr.official.url ? `. <a href="${esc(tr.official.url)}" target="_blank" rel="noopener">Quelle öffnen</a>` : ""}`]);
+    const val = tr.official.date ? t("detail.officialVal", { source: C.sourceName(s), date: C.fmtMonth(tr.official.date) }) : t("detail.officialNoDate", { source: C.sourceName(s) });
+    src.push([t("detail.official"), `${esc(val)}${tr.official.url ? `. <a href="${esc(tr.official.url)}" target="_blank" rel="noopener">${esc(t("detail.openSource"))}</a>` : ""}`]);
   }
   if (tr.osm) {
-    src.push(["OpenStreetMap", `${tr.osm.checked ? `Zuletzt von Mitwirkenden geprüft ${esc(C.fmtMonth(tr.osm.checked))}` : "Eingetragen, ohne Prüfdatum"}. <a href="${esc(tr.osm.url)}" target="_blank" rel="noopener">Eintrag öffnen</a>`]);
+    const val = tr.osm.checked ? t("detail.osmChecked", { date: C.fmtMonth(tr.osm.checked) }) : t("detail.osmUnchecked");
+    src.push([t("src.osm"), `${esc(val)}. <a href="${esc(tr.osm.url)}" target="_blank" rel="noopener">${esc(t("detail.openOsm"))}</a>`]);
   }
-  src.push(["Position", { exact: "Genau", address: "Aus der Adresse berechnet", area: "Nur ungefähr" }[tr.position] || "Unbekannt"]);
+  if (tr.community) {
+    const bits = [];
+    if (tr.community.added) bits.push(t("detail.communityAdded", { date: C.fmtMonth(tr.community.added) }));
+    if (tr.community.confirmed) bits.push(t("detail.communityVal", { n: tr.community.confirmed, date: C.fmtMonth(tr.community.last) }));
+    if (bits.length) src.push([t("detail.community"), esc(bits.join(". "))]);
+  }
+  src.push([t("detail.position"), esc(t(`pos.${tr.position}`))]);
+
+  const photos = (s.com && s.com.photos) || [];
+  const photoHtml = photos.length && COM.enabled() ? `<div class="section"><h3>${esc(t("detail.photos"))}</h3><div class="photos">${photos.slice(0, 6).map((id) => `
+      <figure><img src="${esc(COM.photoUrl(id))}" alt="${esc(t("detail.photoBy"))}" loading="lazy" decoding="async"><figcaption><button class="text-btn" data-flag="${esc(id)}">${esc(t("detail.photoReport"))}</button></figcaption></figure>`).join("")}</div></div>` : "";
+
+  const mine = rep
+    ? `${esc(t(rep.s === "ok" ? "detail.mineOk" : "detail.mineGone", { date: C.fmtDay(rep.t) }))} <button class="text-btn" data-report="clear">${esc(t("detail.reset"))}</button>`
+    : esc(t("detail.mineHint"));
 
   $("detail").innerHTML = `
     <div class="d-head">
@@ -219,40 +280,46 @@ function renderDetail(s) {
       <div class="tags">${tags.join("")}</div>
     </div>
     <div class="route">
-      <a class="btn primary btn-col" id="route-main" href="${urls[app]}" target="_blank" rel="noopener" data-route="${app}">Route starten<small>Fußweg in ${appName[app]}</small></a>
-      <a class="text-btn alt" href="${urls[other]}" target="_blank" rel="noopener" data-route="${other}">Stattdessen in ${appName[other]} öffnen</a>
+      <a class="btn primary btn-col" id="route-main" href="${urls[app]}" target="_blank" rel="noopener" data-route="${app}">${esc(t("detail.route"))}<small>${esc(t("detail.routeSub", { app: t(`app.${app}`) }))}</small></a>
+      <a class="text-btn alt" href="${urls[other]}" target="_blank" rel="noopener" data-route="${other}">${esc(t("detail.routeAlt", { app: t(`app.${other}`) }))}</a>
     </div>
     ${warn.map((w) => `<div class="callout">${esc(w.text)}</div>`).join("")}
-    ${find.length || where.length ? `<div class="section"><h3>So findest du ihn</h3>${find.join("")}${where.length ? `<dl class="facts">${where.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>` : ""}</div>` : ""}
-    <div class="section"><h3>Infos</h3><dl class="facts">${info.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl></div>
-    <div class="section"><h3>Herkunft der Angaben</h3><dl class="facts">${src.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl></div>
+    ${find.length || where.length ? `<div class="section"><h3>${esc(t("detail.findIt"))}</h3>${find.join("")}${where.length ? factsHtml(where) : ""}</div>` : ""}
+    ${photoHtml}
+    <div class="section"><h3>${esc(t("detail.info"))}</h3>${factsHtml(info)}</div>
+    <div class="section"><h3>${esc(t("detail.origin"))}</h3>${factsHtml(src)}</div>
     <div class="section">
-      <h3>Warst du dort?</h3>
+      <h3>${esc(t("detail.wereYou"))}</h3>
       <div class="feedback">
-        <button class="btn" data-report="ok" aria-pressed="${rep?.s === "ok"}">Gefunden</button>
-        <button class="btn" data-report="gone" aria-pressed="${rep?.s === "gone"}">Nicht gefunden</button>
+        <button class="btn" data-report="ok" aria-pressed="${rep?.s === "ok"}">${esc(t("detail.found"))}</button>
+        <button class="btn" data-report="gone" aria-pressed="${rep?.s === "gone"}">${esc(t("detail.notFound"))}</button>
       </div>
-      <p class="mine">${rep ? `${rep.s === "ok" ? "Du hast ihn gefunden" : "Du hast ihn nicht gefunden"}, ${esc(new Date(rep.t).toLocaleDateString("de-AT"))}. <button class="text-btn" data-report="clear">Zurücksetzen</button>` : "Bleibt nur auf diesem Gerät. „Nicht gefunden“ blendet den Platz für dich aus."}</p>
+      <p class="mine">${mine}</p>
+      ${COM.enabled() ? `<button class="btn secondary wide" data-community-report>${esc(t("detail.report"))}</button>` : ""}
     </div>
-    <div class="section"><button class="btn secondary wide" data-open="ask"><span lang="ja">喫煙所？</span> Auf Japanisch fragen</button></div>`;
+    <div class="section"><button class="btn secondary wide" data-open="ask"><span lang="ja">喫煙所？</span> ${esc(t("detail.askJa"))}</button></div>`;
 }
 
 // ---------- Ansichten ----------
 function setView(name) {
   state.view = name;
-  for (const v of ["list", "detail", "search"]) {
+  for (const v of ["list", "detail", "search", "form"]) {
     const el = $(`view-${v}`);
     const show = v === name;
     if (show && el.hidden) { el.hidden = false; el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter"); }
     else if (!show) el.hidden = true;
   }
+  $("add-pin").hidden = !(name === "form" && state.form && state.form.type === "place");
+  document.body.dataset.view = name;
+  if (name === "form") positionPin();
 }
 
 function select(id, opts) {
   const s = state.byId.get(id);
   if (!s) return;
   const o = Object.assign({ fly: true }, opts);
-  const keyboard = document.activeElement && document.activeElement.closest && document.activeElement.closest("#sheet") && document.activeElement.matches(":focus-visible");
+  const a = document.activeElement;
+  const keyboard = a && a.closest && a.closest("#sheet") && a.matches(":focus-visible");
   state.selected = id;
   returnFocusId = id;
   renderDetail(s);
@@ -286,8 +353,8 @@ function report(kind) {
   saveStore("kitsuen.reports", state.reports);
   updateMapData();
   renderDetail(state.byId.get(id));
-  if (kind === "gone") toast("Ausgeblendet. Unter Filter wieder einblenden.");
-  if (kind === "ok") toast("Danke, gespeichert");
+  if (kind === "gone") toast(t("toast.hidden"));
+  if (kind === "ok") toast(t("toast.saved"));
 }
 
 // ---------- Suche ----------
@@ -305,23 +372,26 @@ function closeSearch() {
   if (!state.selected) renderList();
   if (sheet && !sheet.isPanel()) sheet.snap("half");
 }
+function cityCount(r) {
+  const st = state.regions[r.id];
+  if (st && st.status === "ok") return t("search.entries", { n: st.count });
+  if (st && st.status === "error") return t("search.dataMissing");
+  return "";
+}
 function renderSearch(query) {
   const out = [];
   const regions = C.searchRegions(query);
   if (regions.length) {
-    out.push(`<h3 class="group-h">Orte der Reise</h3><ol class="results">${regions.map((r) => {
-      const st = state.regions[r.id];
-      const count = st && st.status === "ok" ? `${st.count} Einträge` : st && st.status === "error" ? "Daten fehlen" : "";
-      return `<li><button class="row city-row" data-region="${r.id}"><span class="mk-city" lang="ja">${r.ja.slice(0, 1)}</span><span class="row-title">${esc(r.de)}<span class="ja" lang="ja">${esc(r.ja)}</span></span><span class="row-meta">${esc(count)}</span></button></li>`;
-    }).join("")}</ol>`);
+    out.push(`<h3 class="group-h">${esc(t("search.cities"))}</h3><ol class="results">${regions.map((r) =>
+      `<li><button class="row city-row" data-region="${r.id}"><span class="mk-city" lang="ja">${r.ja.slice(0, 1)}</span><span class="row-title">${esc(C.regionName(r))}${t.lang !== "ja" ? `<span class="ja" lang="ja">${esc(r.ja)}</span>` : ""}</span><span class="row-meta">${esc(cityCount(r))}</span></button></li>`).join("")}</ol>`);
   }
   if (query.trim()) {
     const hits = C.search(state.spots, query, anchor(), state.prefs, state.reports, 40);
-    out.push(`<h3 class="group-h">Plätze</h3>`);
+    out.push(`<h3 class="group-h">${esc(t("search.places"))}</h3>`);
     out.push(hits.length ? `<ol class="results">${hits.map(({ d, s }) => rowHtml(d, s)).join("")}</ol>`
-      : `<p class="empty">Nichts gefunden für „${esc(query)}“. Suche nach einem Bahnhof wie „Shinjuku“, „Namba“ oder „Kawaramachi“. Ausgeblendete Arten werden nicht durchsucht.</p>`);
+      : `<p class="empty">${esc(t("search.none", { q: query }))}</p>`);
   } else {
-    out.push(`<p class="empty">Tipp: Suche nach einem Bahnhof, zum Beispiel „Shibuya“ oder „Kyoto“. Japanische Namen gehen auch.</p>`);
+    out.push(`<p class="empty">${esc(t("search.tip"))}</p>`);
   }
   $("search-results").innerHTML = out.join("");
 }
@@ -329,15 +399,13 @@ function renderSearch(query) {
 // ---------- Orte ----------
 function currentMapRegion() { return C.regionFor(mapCenter()); }
 function updateCityPill() {
-  const r = currentMapRegion();
-  $("city-name").textContent = r ? r.de : "Japan";
+  $("city-name").textContent = C.regionName(currentMapRegion());
 }
 function renderCityMenu() {
   const cur = currentMapRegion();
   $("city-menu").innerHTML = C.REGIONS.map((r) => {
-    const st = state.regions[r.id];
-    const info = st && st.status === "ok" ? `${st.count} Einträge` : st && st.status === "error" ? "Daten fehlen" : "";
-    return `<button role="menuitemradio" aria-checked="${cur && cur.id === r.id}" data-region="${r.id}"><b>${esc(r.de)} <span class="ja" lang="ja">${esc(r.ja)}</span></b><small>${esc(info)}</small><span class="check" aria-hidden="true">${cur && cur.id === r.id ? "✓" : ""}</span></button>`;
+    const on = cur && cur.id === r.id;
+    return `<button role="menuitemradio" aria-checked="${on}" data-region="${r.id}"><b>${esc(C.regionName(r))}${t.lang !== "ja" ? ` <span class="ja" lang="ja">${esc(r.ja)}</span>` : ""}</b><small>${esc(cityCount(r))}</small><span class="check" aria-hidden="true">${on ? "✓" : ""}</span></button>`;
   }).join("");
 }
 function toggleCityMenu(open) {
@@ -353,32 +421,28 @@ function flyRegion(id) {
   if (!r) return;
   toggleCityMenu(false);
   if (state.selected) { state.selected = null; updateSelection(); }
-  if (state.view !== "list") setView("list");
+  if (state.view !== "list" && state.view !== "form") setView("list");
   dispatchLoc({ type: "region" });
   if (sheet && !sheet.isPanel() && sheet.state === "expanded") sheet.snap("half");
-  if (map) map.flyTo({ center: r.center, zoom: r.zoom, padding: mapPadding(), essential: false }, { smokr: "region" });
+  if (map) map.flyTo({ center: r.center, zoom: r.zoom, padding: mapPadding(), essential: false });
   else renderList();
 }
 
 // ---------- Karte ----------
 function featureCollection() {
-  const prefs = Object.assign({}, state.prefs);
   return {
     type: "FeatureCollection",
-    features: state.spots.filter((s) => C.visible(s, prefs, state.reports)).map((s) => {
-      const kind = kindOf(s);
-      return {
-        type: "Feature",
-        geometry: { type: "Point", coordinates: [s.lon, s.lat] },
-        properties: {
-          id: s.id,
-          icon: `m-${kind}${weak(s) ? "-weak" : ""}`,
-          pub: C.category(s) === "public" ? 1 : 0,
-          // öffentlich und verlässlich oben
-          rank: (C.category(s) === "public" ? 0 : 2) + (weak(s) ? 1 : 0),
-        },
-      };
-    }),
+    features: state.spots.filter((s) => C.visible(s, state.prefs, state.reports)).map((s) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [s.lon, s.lat] },
+      properties: {
+        id: s.id,
+        icon: `m-${kindOf(s)}${weak(s) ? "-weak" : ""}`,
+        pub: C.category(s) === "public" && !s.unv ? 1 : 0,
+        // öffentlich und verlässlich oben
+        rank: (C.category(s) === "public" ? 0 : 2) + (weak(s) ? 1 : 0),
+      },
+    })),
   };
 }
 function selectedCollection() {
@@ -411,9 +475,17 @@ function mapPadding() {
   const visible = sheet.state === "expanded" ? h - sheet.snaps.half : sheet.visibleHeight();
   return { top, bottom: Math.round(Math.min(visible, h * 0.62)), left: 0, right: 0 };
 }
+/** Die Nadel für "Platz hinzufügen" sitzt genau auf der Kartenmitte (mit Rand). */
+function positionPin() {
+  const pin = $("add-pin");
+  if (pin.hidden || !map) return;
+  const p = map.project(map.getCenter());
+  const r = map.getCanvas().getBoundingClientRect();
+  pin.style.transform = `translate(${Math.round(r.left + p.x - 20)}px, ${Math.round(r.top + p.y - 50)}px)`;
+}
 
 function initMap() {
-  if (!window.maplibregl) { $("map").textContent = ""; return; }
+  if (!window.maplibregl) return;
   const saved = loadStore("kitsuen.view", null);
   const start = saved && Array.isArray(saved.c) ? saved : { c: C.REGIONS[0].center, z: C.REGIONS[0].zoom };
   try {
@@ -434,7 +506,7 @@ function initMap() {
   }
   map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-left");
   map.touchZoomRotate.disableRotation();
-  map.keyboard.disableRotation && map.keyboard.disableRotation();
+  if (map.keyboard.disableRotation) map.keyboard.disableRotation();
   map.on("load", () => {
     M.addImages(map);
     map.addSource("spots", {
@@ -474,6 +546,7 @@ function initMap() {
       layout: { "icon-image": ["get", "icon"], "icon-anchor": "bottom", "icon-allow-overlap": true, "icon-ignore-placement": true },
     });
     map.on("click", "spots", (e) => {
+      if (state.view === "form") return;
       const f = e.features && e.features[0];
       if (f) select(f.properties.id, { fly: false });
     });
@@ -489,7 +562,7 @@ function initMap() {
       map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; });
     }
-    // Quellenangabe zuerst eingeklappt, sie steht vollständig unter "Info und Quellen"
+    // Quellenangabe zuerst eingeklappt, sie steht vollständig unter "Info"
     document.querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
     map.on("click", (e) => {
       // Tipp auf freie Karte schließt die Detailansicht
@@ -501,18 +574,16 @@ function initMap() {
     updateMapData();
     applyPadding();
   });
-  map.on("error", (e) => {
-    // Kartenteile fehlen (offline): die Liste funktioniert trotzdem
-    if (e && e.error && /Failed to fetch|NetworkError|Load failed/i.test(String(e.error.message))) state.mapOffline = true;
-  });
   map.on("dragstart", (e) => { if (e.originalEvent) dispatchLoc({ type: "userPan" }); });
   map.on("zoomstart", (e) => { if (e.originalEvent && e.originalEvent.type === "wheel") dispatchLoc({ type: "userPan" }); });
+  map.on("move", () => { if (state.view === "form") positionPin(); });
   map.on("moveend", () => {
     if (paddingPending) setTimeout(applyPadding, 0);
     updateCityPill();
     const c = map.getCenter();
     saveStore("kitsuen.view", { c: [+c.lng.toFixed(5), +c.lat.toFixed(5)], z: +map.getZoom().toFixed(2) });
     if (state.loc.mode === "area") renderListSoon();
+    if (state.view === "form") positionPin();
   });
 }
 let paddingPending = false;
@@ -522,6 +593,7 @@ function applyPadding() {
   if (map.isMoving()) { paddingPending = true; return; }
   paddingPending = false;
   map.setPadding(mapPadding());
+  positionPin();
 }
 
 // ---------- Standort ----------
@@ -531,26 +603,24 @@ function dispatchLoc(ev) {
   for (const fx of effects) {
     if (fx.type === "watch") startWatch();
     if (fx.type === "center" && map) {
-      if (state.selected) { state.selected = null; updateSelection(); setView("list"); }
+      if (state.selected && state.view === "detail") { state.selected = null; updateSelection(); setView("list"); }
       map.easeTo({ center: fx.to, zoom: Math.max(map.getZoom(), 15.5), padding: mapPadding(), duration: 500 });
     }
   }
   const btn = $("locate");
   btn.setAttribute("aria-pressed", String(isNearby()));
   btn.classList.toggle("busy", state.loc.pendingCenter);
-  btn.setAttribute("aria-label", isNearby() ? "Liste ab meinem Standort (aktiv)" : "Zu meinem Standort");
+  btn.setAttribute("aria-label", t(isNearby() ? "locate.aria.active" : "locate.aria"));
   if (state.view === "detail" && state.selected) renderDetail(state.byId.get(state.selected));
   else if (state.view === "list") renderList();
 }
-function placeMe(pos, accuracy) {
+function placeMe(pos) {
   if (!map) return;
   if (!meMarker) {
     const el = document.createElement("div");
     el.className = "me";
-    el.setAttribute("aria-label", "Dein Standort");
     meMarker = new maplibregl.Marker({ element: el }).setLngLat(pos).addTo(map);
   } else meMarker.setLngLat(pos);
-  void accuracy;
 }
 function startWatch() {
   if (!("geolocation" in navigator)) { dispatchLoc({ type: "unavailable" }); return; }
@@ -558,7 +628,7 @@ function startWatch() {
   geoWatch = navigator.geolocation.watchPosition((p) => {
     const pos = [p.coords.longitude, p.coords.latitude];
     saveStore("kitsuen.geo", true);
-    placeMe(pos, p.coords.accuracy);
+    placeMe(pos);
     // Liste nur neu sortieren, wenn sich etwas Merkliches bewegt hat
     const moved = !lastRankedPos || C.distM(lastRankedPos, pos) > 20 || state.loc.pendingCenter || state.loc.perm !== "granted";
     if (moved) { lastRankedPos = pos; dispatchLoc({ type: "fix", pos, accuracy: p.coords.accuracy }); }
@@ -566,13 +636,13 @@ function startWatch() {
   }, (err) => {
     navigator.geolocation.clearWatch(geoWatch);
     geoWatch = null;
-    if (err.code === 1) { saveStore("kitsuen.geo", false); dispatchLoc({ type: "denied" }); toast("Standort nicht freigegeben"); }
+    if (err.code === 1) { saveStore("kitsuen.geo", false); dispatchLoc({ type: "denied" }); toast(t("toast.denied")); }
     else dispatchLoc({ type: "unavailable" });
   }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 });
 }
 
 // ---------- Daten ----------
-async function loadRegion(r, i) {
+async function loadRegion(r) {
   state.regions[r.id] = { status: "loading" };
   try {
     const res = await fetch(`data/${r.id}.json`);
@@ -581,59 +651,216 @@ async function loadRegion(r, i) {
     state.regions[r.id] = { status: "ok", built: data.built, count: data.spots.length };
     return data.spots.map((s) => Object.assign(s, { region: r.id }));
   } catch (e) {
-    const offline = e.name === "TypeError";
-    state.regions[r.id] = { status: "error", error: offline ? "keine Verbindung" : e.message };
-    void i;
+    state.regions[r.id] = { status: "error", error: e.name === "TypeError" ? t("error.offline") : e.message };
     return [];
   }
 }
-function setSpots(spots) {
-  state.spots = spots;
-  state.byId = new Map(spots.map((s) => [s.id, s]));
+function rebuildSpots() {
+  for (const s of state.base) delete s.com;
+  state.spots = C.mergeCommunity(state.base, state.community);
+  state.byId = new Map(state.spots.map((s) => [s.id, s]));
   updateMapData();
   if (state.view === "list") renderList();
+  if (state.view === "detail" && state.selected && state.byId.has(state.selected)) renderDetail(state.byId.get(state.selected));
   renderInfo();
 }
 async function loadData() {
   renderList();
   const parts = await Promise.all(C.REGIONS.map(loadRegion));
-  setSpots(parts.flat());
+  state.base = parts.flat();
+  rebuildSpots();
+  loadCommunity();
+}
+async function loadCommunity() {
+  if (!COM.enabled()) return;
+  try {
+    state.community = await COM.fetchCommunity();
+    saveStore("kitsuen.community", state.community);
+  } catch (e) {
+    // offline: letzter bekannter Stand
+    state.community = loadStore("kitsuen.community", null);
+  }
+  rebuildSpots();
 }
 async function retryRegion(id) {
-  const i = C.REGIONS.findIndex((r) => r.id === id);
+  const r = C.REGIONS.find((x) => x.id === id);
   state.regions[id] = { status: "loading" };
   renderList();
-  const spots = await loadRegion(C.REGIONS[i], i);
-  setSpots(state.spots.filter((s) => s.region !== id).concat(spots));
-  toast(state.regions[id].status === "ok" ? "Daten geladen" : "Laden fehlgeschlagen");
+  const spots = await loadRegion(r);
+  state.base = state.base.filter((s) => s.region !== id).concat(spots);
+  rebuildSpots();
+  toast(t(state.regions[id].status === "ok" ? "toast.dataLoaded" : "toast.dataFailed"));
 }
 function renderInfo() {
   $("data-status").innerHTML = C.REGIONS.map((r) => {
     const st = state.regions[r.id] || {};
-    const txt = st.status === "ok" ? `${st.count} Einträge, gebaut am ${new Date(st.built).toLocaleDateString("de-AT")}` : st.status === "error" ? `nicht geladen (${st.error})` : "lädt";
-    return `<li>${esc(r.de)}: ${esc(txt)}</li>`;
+    const txt = st.status === "ok" ? t("info.dataOk", { n: st.count, date: C.fmtDay(st.built) })
+      : st.status === "error" ? t("info.dataError", { error: st.error }) : t("info.loading");
+    return `<li>${esc(C.regionName(r))}: ${esc(txt)}</li>`;
   }).join("");
 }
 
+// ---------- Community-Formulare ----------
+function openForm(type) {
+  if (!COM.enabled()) return;
+  state.form = { type, spotId: type === "report" ? state.selected : null, photo: null, sending: false, done: false, error: "", ts: null };
+  renderForm();
+  setView("form");
+  if (sheet && !sheet.isPanel()) sheet.snap(type === "place" ? "half" : "expanded");
+  mountCaptcha();
+}
+function closeForm() {
+  if (state.form && state.form.ts) state.form.ts.remove();
+  const back = state.form && state.form.spotId;
+  state.form = null;
+  $("add-pin").hidden = true;
+  if (back && state.byId.has(back)) { select(back, { fly: false }); return; }
+  setView("list");
+  renderList();
+}
+async function mountCaptcha() {
+  const f = state.form;
+  const el = document.getElementById("ts-box");
+  if (!f || !el) return;
+  try {
+    f.ts = await COM.mountTurnstile(el, t.lang);
+  } catch (e) {
+    f.error = t("err.network");
+    renderFormError();
+  }
+}
+function radios(name, options, value) {
+  return `<div class="choice">${options.map(([v, key]) => `<label><input type="radio" name="${name}" value="${v}"${v === value ? " checked" : ""}><span>${esc(t(key))}</span></label>`).join("")}</div>`;
+}
+function renderForm() {
+  const f = state.form;
+  if (!f) return;
+  const box = $("form-scroll");
+  if (f.done) {
+    box.innerHTML = `<div class="form-done"><h2>${esc(t(f.type === "place" ? "add.thanks" : "report.thanks"))}</h2><button class="btn primary wide" data-form-close>${esc(t("close"))}</button></div>`;
+    return;
+  }
+  const keep = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+  const vals = { name: keep("f-name"), floor: keep("f-floor"), note: keep("f-note"), comment: keep("f-comment") };
+  const photo = `<fieldset><legend>${esc(t("add.photo"))}</legend>
+      <p class="hint-text">${esc(t("add.photoHint"))}</p>
+      ${f.photo ? `<div class="photo-preview"><img src="${f.photo.url}" alt=""><button type="button" class="text-btn" data-photo-remove>${esc(t("add.photoRemove"))}</button></div>`
+        : `<label class="btn secondary wide file-btn"><input type="file" id="f-photo" accept="image/*" hidden>${esc(t("add.photoPick"))}</label>`}
+      ${f.photo ? `<label class="check-row"><input type="checkbox" id="f-consent" required><span>${esc(t("add.consent"))}</span></label>` : ""}
+    </fieldset>`;
+  let body;
+  if (f.type === "place") {
+    body = `<h2 class="form-title">${esc(t("add.title"))}</h2>
+      <fieldset><legend>${esc(t("add.step.position"))}</legend>
+        <p class="hint-text">${esc(t("add.pinHint"))}</p>
+        <button type="button" class="btn secondary wide" data-form-gps>${esc(t("add.useGps"))}</button>
+      </fieldset>
+      <fieldset><legend>${esc(t("add.category"))}</legend>${radios("category", [["public", "add.cat.public"], ["shop", "add.cat.shop"], ["room", "add.cat.room"]], f.category || "public")}</fieldset>
+      <fieldset><legend>${esc(t("add.tobacco"))}</legend>${radios("tobacco", [["all", "add.tob.all"], ["heated", "add.tob.heated"], ["unknown", "add.tob.unknown"]], f.tobacco || "unknown")}</fieldset>
+      <fieldset><legend>${esc(t("add.access"))}</legend>${radios("access", [["public", "add.acc.public"], ["customers", "add.acc.customers"], ["unknown", "add.acc.unknown"]], f.access || "unknown")}</fieldset>
+      <label class="field-row"><span>${esc(t("add.name"))}</span><input id="f-name" maxlength="80" autocomplete="off" value="${esc(vals.name)}"></label>
+      <label class="field-row"><span>${esc(t("add.floor"))}</span><input id="f-floor" maxlength="60" autocomplete="off" value="${esc(vals.floor)}"></label>
+      <label class="field-row"><span>${esc(t("add.note"))}</span><textarea id="f-note" maxlength="500" rows="3">${esc(vals.note)}</textarea></label>
+      ${photo}`;
+  } else {
+    const s = state.byId.get(f.spotId);
+    body = `<h2 class="form-title">${esc(t("report.title"))}</h2>
+      <p class="form-sub">${esc(s ? C.title(s) : "")}</p>
+      <fieldset><legend>${esc(t("report.kind"))}</legend>${radios("kind", [["found", "report.found"], ["missing", "report.missing"], ["closed", "report.closed"], ["position", "report.position"], ["info", "report.info"], ["other", "report.other"]], f.kind || "found")}</fieldset>
+      <label class="field-row"><span>${esc(t("report.comment"))}</span><textarea id="f-comment" maxlength="500" rows="3">${esc(vals.comment)}</textarea></label>
+      ${photo}`;
+  }
+  box.innerHTML = `<form id="community-form" novalidate>${body}
+      <div id="ts-box" class="ts-box"></div>
+      <p class="fine">${esc(t("add.privacy"))}</p>
+      <p class="form-error" id="form-error" role="alert"${f.error ? "" : " hidden"}>${esc(f.error)}</p>
+      <button class="btn primary wide" id="form-submit"${f.sending ? " disabled" : ""}>${esc(t(f.sending ? "add.sending" : f.type === "place" ? "add.submit" : "report.submit"))}</button>
+    </form>`;
+  if (f.ts) { const el = document.getElementById("ts-box"); f.ts.remove(); f.ts = null; if (el) mountCaptcha(); }
+}
+function renderFormError() {
+  const el = document.getElementById("form-error");
+  if (!el || !state.form) return;
+  el.textContent = state.form.error;
+  el.hidden = !state.form.error;
+}
+async function onPhoto(file) {
+  const f = state.form;
+  if (!f || !file) return;
+  try {
+    const p = await COM.preparePhoto(file);
+    if (f.photo) URL.revokeObjectURL(f.photo.url);
+    f.photo = { blob: p.blob, url: URL.createObjectURL(p.blob) };
+    f.error = "";
+  } catch (e) {
+    f.error = t(COM.errorKey(e));
+  }
+  captureChoices();
+  renderForm();
+}
+function captureChoices() {
+  const f = state.form;
+  const val = (n) => document.querySelector(`#community-form input[name="${n}"]:checked`)?.value;
+  if (!f) return;
+  for (const n of ["category", "tobacco", "access", "kind"]) { const v = val(n); if (v) f[n] = v; }
+}
+async function submitForm() {
+  const f = state.form;
+  if (!f || f.sending) return;
+  captureChoices();
+  f.error = "";
+  if (f.photo && !$("f-consent").checked) { f.error = t("add.consent"); renderFormError(); return; }
+  const token = f.ts && f.ts.token;
+  if (!token) { f.error = t("err.captcha"); renderFormError(); return; }
+  const common = { turnstile: token, lang: t.lang, consent: f.photo ? "1" : "" };
+  let fields;
+  if (f.type === "place") {
+    if (!map) { f.error = t("add.needPosition"); renderFormError(); return; }
+    const c = map.getCenter();
+    if (!C.inJapan(c.lat, c.lng)) { f.error = t("add.outside"); renderFormError(); return; }
+    fields = Object.assign(common, {
+      lat: c.lat.toFixed(6), lon: c.lng.toFixed(6), category: f.category || "public", tobacco: f.tobacco || "unknown", access: f.access || "unknown",
+      name: $("f-name").value.trim(), floor: $("f-floor").value.trim(), note: $("f-note").value.trim(),
+    });
+  } else {
+    fields = Object.assign(common, { spot_id: f.spotId, kind: f.kind || "found", comment: $("f-comment").value.trim() });
+  }
+  f.sending = true;
+  $("form-submit").disabled = true;
+  $("form-submit").textContent = t("add.sending");
+  try {
+    if (f.type === "place") await COM.submitPlace(fields, f.photo && f.photo.blob);
+    else await COM.submitReport(fields, f.photo && f.photo.blob);
+    f.done = true;
+    if (f.ts) { f.ts.remove(); f.ts = null; }
+    $("add-pin").hidden = true;
+    renderForm();
+  } catch (e) {
+    f.sending = false;
+    const key = COM.errorKey(e);
+    f.error = t(key, { detail: e.detail || "" });
+    if (f.ts) f.ts.reset();
+    $("form-submit").disabled = false;
+    $("form-submit").textContent = t(f.type === "place" ? "add.submit" : "report.submit");
+    renderFormError();
+  }
+}
+
 // ---------- Filter ----------
-const TOBACCO_LABEL = { cig: "Nur Zigaretten", heated: "Tabakerhitzer", both: "Zigarette & IQOS" };
-const TOBACCO_HINT = {
-  cig: "Plätze nur für Tabakerhitzer werden ausgeblendet.",
-  heated: "Alle Plätze werden gezeigt. Plätze nur für Tabakerhitzer gelten für dich nicht als Einschränkung.",
-  both: "Alle Plätze werden gezeigt. Plätze nur für Tabakerhitzer sind markiert.",
-};
 function syncFilters() {
   const p = state.prefs;
   $("q-public").setAttribute("aria-pressed", String(p.showPublic));
   $("q-business").setAttribute("aria-pressed", String(p.showBusiness));
-  $("q-tobacco-label").textContent = TOBACCO_LABEL[p.tobacco];
+  $("q-tobacco-label").textContent = t(`tobacco.${p.tobacco}.short`);
   $(`t-${p.tobacco}`).checked = true;
   $(`r-${routeApp()}`).checked = true;
   $("s-public").checked = p.showPublic;
   $("s-business").checked = p.showBusiness;
+  $("s-unverified").checked = p.showUnverified;
   $("s-hidden").checked = p.showHidden;
-  $("tobacco-hint").textContent = TOBACCO_HINT[p.tobacco];
-  const changed = p.tobacco !== C.DEFAULT_PREFS.tobacco || p.showPublic !== C.DEFAULT_PREFS.showPublic || p.showBusiness !== C.DEFAULT_PREFS.showBusiness || p.showHidden;
+  $("tobacco-hint").textContent = t(`filters.hint.${p.tobacco}`);
+  const d = C.DEFAULT_PREFS;
+  const changed = p.tobacco !== d.tobacco || p.showPublic !== d.showPublic || p.showBusiness !== d.showBusiness || p.showHidden || p.showUnverified;
   $("filter-badge").hidden = !changed;
 }
 function setPref(change) {
@@ -641,20 +868,18 @@ function setPref(change) {
   savePrefs();
   syncFilters();
   updateMapData();
-  if (state.view === "list") renderList();
-  if (state.view === "detail" && state.selected) renderDetail(state.byId.get(state.selected));
-  if (state.view === "search") renderSearch($("q").value);
+  rerender();
 }
 function renderLegend() {
   const items = [
-    ["public", false, "Öffentlicher Raucherplatz", "Ohne Einkauf nutzbar"],
-    ["business", false, "Geschäft oder Lokal", "Nur für Kunden, oder Zugang unklar"],
-    ["heated", false, "Nur Tabakerhitzer", "IQOS, glo, Ploom. Keine Zigaretten"],
-    ["public", true, "Weniger verlässlich", "Hohl: nur OpenStreetMap ohne Prüfdatum, oder Position ungefähr"],
-    ["gone", false, "Von dir nicht gefunden", "Nur sichtbar, wenn eingeblendet"],
+    ["public", false, "legend.public", "legend.publicSub"],
+    ["business", false, "legend.business", "legend.businessSub"],
+    ["heated", false, "legend.heated", "legend.heatedSub"],
+    ["public", true, "legend.weak", "legend.weakSub"],
+    ["gone", false, "legend.gone", "legend.goneSub"],
   ];
-  $("legend-list").innerHTML = items.map(([k, hollow, t, d]) => `<li>${M.svg(k, hollow, 32)}<span><b>${t}</b>${d}</span></li>`).join("")
-    + `<li><svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="#000" stroke="#fff" stroke-width="2"/><text x="16" y="20.5" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif">12</text></svg><span><b>Gruppe</b>Mehrere Plätze, antippen zum Vergrößern. Grau: nur Geschäfte</span></li>`;
+  $("legend-list").innerHTML = items.map(([k, hollow, a, b]) => `<li>${M.svg(k, hollow, 32)}<span><b>${esc(t(a))}</b>${esc(t(b))}</span></li>`).join("")
+    + `<li><svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="#000" stroke="#fff" stroke-width="2"/><text x="16" y="20.5" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif">12</text></svg><span><b>${esc(t("legend.cluster"))}</b>${esc(t("legend.clusterSub"))}</span></li>`;
 }
 
 // ---------- Verdrahtung ----------
@@ -677,9 +902,7 @@ function wire() {
   $("search-btn").onclick = openSearch;
   $("search-cancel").onclick = closeSearch;
   $("q").addEventListener("input", (e) => renderSearch(e.target.value));
-  $("q").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); $("q").blur(); }
-  });
+  $("q").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("q").blur(); } });
   $("search-results").onclick = (e) => {
     const r = e.target.closest("[data-region]");
     if (r) { $("q").blur(); flyRegion(r.dataset.region); return; }
@@ -691,15 +914,19 @@ function wire() {
   $("q-public").onclick = () => setPref((p) => { p.showPublic = !p.showPublic; });
   $("q-business").onclick = () => setPref((p) => { p.showBusiness = !p.showBusiness; });
   $("filters").addEventListener("change", (e) => {
-    const t = e.target;
-    if (t.name === "tobacco") setPref((p) => { p.tobacco = t.value; });
-    if (t.name === "route") setPref((p) => { p.route = t.value; });
-    if (t.id === "s-public") setPref((p) => { p.showPublic = t.checked; });
-    if (t.id === "s-business") setPref((p) => { p.showBusiness = t.checked; });
-    if (t.id === "s-hidden") setPref((p) => { p.showHidden = t.checked; });
+    const el = e.target;
+    if (el.name === "tobacco") setPref((p) => { p.tobacco = el.value; });
+    if (el.name === "route") setPref((p) => { p.route = el.value; });
+    if (el.name === "lang") setLang(el.value);
+    if (el.id === "s-public") setPref((p) => { p.showPublic = el.checked; });
+    if (el.id === "s-business") setPref((p) => { p.showBusiness = el.checked; });
+    if (el.id === "s-unverified") setPref((p) => { p.showUnverified = el.checked; });
+    if (el.id === "s-hidden") setPref((p) => { p.showHidden = el.checked; });
   });
   $("locate").onclick = () => dispatchLoc({ type: "locate" });
+  $("add-btn").onclick = () => openForm("place");
   $("back").onclick = closeDetail;
+  $("form-back").onclick = closeForm;
   $("list").onclick = (e) => {
     const b = e.target.closest("[data-id]");
     if (b) select(b.dataset.id, { fly: true });
@@ -709,10 +936,30 @@ function wire() {
     if (r) retryRegion(r.dataset.retry);
     if (e.target.closest("[data-locate]")) dispatchLoc({ type: "locate" });
   };
-  $("detail").onclick = (e) => {
+  $("detail").onclick = async (e) => {
     const r = e.target.closest("[data-report]");
     if (r) report(r.dataset.report);
+    if (e.target.closest("[data-community-report]")) openForm("report");
+    const fl = e.target.closest("[data-flag]");
+    if (fl) {
+      fl.disabled = true;
+      try { await COM.flagPhoto(fl.dataset.flag, "other"); toast(t("toast.photoReported")); }
+      catch (err) { toast(t(COM.errorKey(err), { detail: err.detail || "" })); fl.disabled = false; }
+    }
   };
+  $("form-scroll").addEventListener("change", (e) => {
+    if (e.target.id === "f-photo" && e.target.files && e.target.files[0]) onPhoto(e.target.files[0]);
+    if (e.target.type === "radio") captureChoices();
+  });
+  $("form-scroll").addEventListener("click", (e) => {
+    if (e.target.closest("[data-photo-remove]") && state.form) { URL.revokeObjectURL(state.form.photo.url); state.form.photo = null; captureChoices(); renderForm(); }
+    if (e.target.closest("[data-form-close]")) closeForm();
+    if (e.target.closest("[data-form-gps]")) {
+      if (state.loc.pos && map) map.easeTo({ center: state.loc.pos, zoom: Math.max(map.getZoom(), 17), padding: mapPadding() });
+      else dispatchLoc({ type: "locate" });
+    }
+  });
+  $("form-scroll").addEventListener("submit", (e) => { e.preventDefault(); submitForm(); });
   document.addEventListener("click", (e) => {
     const o = e.target.closest("[data-open]");
     if (o) { e.preventDefault(); openDialog(o.dataset.open); }
@@ -726,11 +973,12 @@ function wire() {
       if (!$("city-menu").hidden) { toggleCityMenu(false); $("city-btn").focus(); return; }
       if (state.view === "search") { closeSearch(); return; }
       if (state.view === "detail") { closeDetail(); return; }
+      if (state.view === "form") { closeForm(); return; }
     }
     if (e.key === "/" && state.view !== "search" && !/INPUT|TEXTAREA/.test(e.target.tagName)) { e.preventDefault(); openSearch(); }
   });
-  window.addEventListener("online", () => { state.online = true; if (state.view === "list") renderList(); retryFailed(); });
-  window.addEventListener("offline", () => { state.online = false; if (state.view === "list") renderList(); });
+  window.addEventListener("online", () => { state.online = true; rerender(); retryFailed(); loadCommunity(); });
+  window.addEventListener("offline", () => { state.online = false; rerender(); });
 
   // Tastatur auf dem iPhone: Inhalt bleibt über der Tastatur scrollbar
   if (window.visualViewport) {
@@ -752,15 +1000,14 @@ function initSheet() {
     panelQuery: PANEL_QUERY,
     initial: "half",
     peek: () => 150,
+    labels: () => ({ grow: t("sheet.grow"), shrink: t("sheet.shrink") }),
     onSettle: (name) => {
       document.body.dataset.sheet = name;
       applyPadding();
-      // Fokus nicht im verdeckten Teil lassen
       if (name === "collapsed" && document.activeElement && document.activeElement.closest(".scroll")) $("grab").focus({ preventScroll: true });
     },
   });
   document.body.dataset.sheet = sheet.state;
-  // Tastaturfokus im Blatt: Blatt öffnen, damit das Ziel sichtbar ist
   $("sheet").addEventListener("focusin", (e) => {
     if (sheet.isPanel() || sheet.state !== "collapsed") return;
     if (e.target.closest(".scroll")) sheet.snap("half");
@@ -769,9 +1016,11 @@ function initSheet() {
 
 // ---------- Start ----------
 for (const el of document.querySelectorAll("[data-mk]")) el.innerHTML = M.svg(el.dataset.mk, false, 18);
+applyStatic();
 renderLegend();
 syncFilters();
 wire();
+$("add-btn").hidden = !COM.enabled();
 initSheet();
 initMap();
 updateCityPill();
@@ -784,4 +1033,4 @@ if ("serviceWorker" in navigator && window.isSecureContext) {
 }
 
 // Für automatische Tests (nur lesend gedacht)
-window.__smokr = { state, get map() { return map; }, get sheet() { return sheet; }, get mapReady() { return mapReady; } };
+window.__smokr = { state, get map() { return map; }, get sheet() { return sheet; }, get mapReady() { return mapReady; }, get t() { return t; } };

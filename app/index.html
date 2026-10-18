@@ -1,16 +1,17 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Smokr</title>
-<meta name="description" content="Raucherplätze in Tokio, Kamakura, Kyoto, Okinawa und Osaka">
+<meta name="description" content="Smoking areas in Tokyo, Kamakura, Kyoto, Okinawa and Osaka. Free beta.">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Smokr">
 <meta name="format-detection" content="telephone=no">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" href="icons/icon-192.png">
@@ -18,64 +19,73 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="map" aria-label="Karte mit Raucherplätzen"></div>
+<div id="map" data-i18n-attr="aria-label:sheet.aria"></div>
+<div class="add-pin" id="add-pin" hidden aria-hidden="true">
+  <svg viewBox="0 0 40 52" width="40" height="52"><path d="M20 2C10 2 2 10 2 20c0 13 18 30 18 30s18-17 18-30C38 10 30 2 20 2z" fill="#000"/><circle cx="20" cy="20" r="7" fill="#fff"/></svg>
+</div>
 
 <header class="topbar" id="topbar">
   <div class="bar">
-    <button class="pill city" id="city-btn" aria-haspopup="true" aria-expanded="false" aria-controls="city-menu">
-      <span class="city-name" id="city-name">Tokio</span>
+    <button class="pill city" id="city-btn" aria-haspopup="true" aria-expanded="false" aria-controls="city-menu" data-i18n-attr="title:top.city.aria">
+      <span class="city-name" id="city-name">Tokyo</span>
       <svg class="chev" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <button class="pill search" id="search-btn" aria-label="Suche öffnen">
+    <button class="pill search" id="search-btn" data-i18n-attr="aria-label:top.search.aria">
       <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <span>Suchen</span>
+      <span data-i18n="top.search">Search</span>
     </button>
-    <button class="round" id="filter-btn" aria-label="Filter und Einstellungen">
+    <button class="round" id="filter-btn" data-i18n-attr="aria-label:top.filter.aria">
       <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h9M15 6h2M3 14h2M8 14h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="13.5" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6.5" cy="14" r="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
       <span class="badge" id="filter-badge" hidden></span>
     </button>
   </div>
-  <div class="menu" id="city-menu" role="menu" aria-label="Orte der Reise" hidden></div>
+  <div class="menu" id="city-menu" role="menu" hidden></div>
 </header>
 
 <div class="fab-rail" id="fab-rail">
-  <button class="round locate" id="locate" aria-label="Zu meinem Standort" aria-pressed="false">
+  <button class="round add" id="add-btn" hidden data-i18n-attr="aria-label:add.button;title:add.button">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+  </button>
+  <button class="round locate" id="locate" aria-pressed="false" data-i18n-attr="aria-label:locate.aria">
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M20.5 3.5L3.8 10.6c-.8.3-.7 1.5.2 1.7l6.5 1.2 1.2 6.5c.2.9 1.4 1 1.7.2z" fill="currentColor"/></svg>
   </button>
 </div>
 
-<section class="sheet" id="sheet" aria-label="Raucherplätze">
-  <button class="grab" id="grab" data-grab aria-label="Blatt vergrößern"><span aria-hidden="true"></span></button>
+<section class="sheet" id="sheet" data-i18n-attr="aria-label:sheet.aria">
+  <button class="grab" id="grab" data-grab><span aria-hidden="true"></span></button>
 
   <div class="view" id="view-list">
     <div class="sheet-head">
-      <h1 id="list-title">Raucherplätze</h1>
-      <p class="sub" id="list-sub">Daten werden geladen …</p>
+      <div class="head-row">
+        <h1 id="list-title">Smoking areas</h1>
+        <button class="beta" data-open="info" data-i18n="beta.badge">Beta</button>
+      </div>
+      <p class="sub" id="list-sub"></p>
       <div class="banner" id="banner" role="status" hidden></div>
     </div>
     <div class="scroll" data-scroll id="list-scroll">
-      <div class="quick" role="group" aria-label="Schnellfilter">
-        <button class="chip" id="q-public" aria-pressed="true"><span class="chip-mk" data-mk="public"></span>Öffentlich</button>
-        <button class="chip" id="q-business" aria-pressed="false"><span class="chip-mk" data-mk="business"></span>Geschäfte</button>
-        <button class="chip" id="q-tobacco"><span id="q-tobacco-label">Zigaretten und IQOS</span>
+      <div class="quick" role="group" data-i18n-attr="aria-label:quick.aria">
+        <button class="chip" id="q-public" aria-pressed="true"><span class="chip-mk" data-mk="public"></span><span data-i18n="quick.public">Public</span></button>
+        <button class="chip" id="q-business" aria-pressed="false"><span class="chip-mk" data-mk="business"></span><span data-i18n="quick.shops">Shops</span></button>
+        <button class="chip" id="q-tobacco"><span id="q-tobacco-label"></span>
           <svg class="chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
       <details class="rules" id="rules" hidden>
-        <summary><span id="rules-title">Regeln vor Ort</span></summary>
+        <summary><span id="rules-title"></span><span class="more" data-i18n="rules.more">More</span><span class="less" data-i18n="rules.less">Less</span></summary>
         <p id="rules-text"></p>
       </details>
-      <ol class="results" id="list" aria-label="Ergebnisse"></ol>
+      <ol class="results" id="list" data-i18n-attr="aria-label:list.aria"></ol>
       <div class="list-foot">
-        <button class="text-btn" data-open="legend">Was bedeuten die Zeichen?</button>
-        <button class="text-btn" data-open="info">Info und Quellen</button>
+        <button class="text-btn" data-open="legend" data-i18n="list.legend">What do the symbols mean?</button>
+        <button class="text-btn" data-open="info" data-i18n="list.info">About, sources and contact</button>
       </div>
     </div>
   </div>
 
   <div class="view" id="view-detail" hidden>
     <div class="detail-bar">
-      <button class="icon-btn" id="back" aria-label="Zurück zur Liste">
+      <button class="icon-btn" id="back" data-i18n-attr="aria-label:detail.back">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
@@ -86,11 +96,20 @@
     <div class="search-head">
       <label class="field">
         <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <input id="q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Bahnhof, Ort oder Name" aria-label="Suche">
+        <input id="q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-attr="placeholder:search.placeholder;aria-label:search.aria">
       </label>
-      <button class="text-btn strong" id="search-cancel">Abbrechen</button>
+      <button class="text-btn strong" id="search-cancel" data-i18n="search.cancel">Cancel</button>
     </div>
     <div class="scroll" data-scroll id="search-results"></div>
+  </div>
+
+  <div class="view" id="view-form" hidden>
+    <div class="detail-bar">
+      <button class="icon-btn" id="form-back" data-i18n-attr="aria-label:add.cancel">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="scroll" data-scroll id="form-scroll"></div>
   </div>
 </section>
 
@@ -98,70 +117,87 @@
 
 <dialog class="modal" id="filters" aria-labelledby="filters-title">
   <form method="dialog" class="modal-inner">
-    <h2 id="filters-title" tabindex="-1" autofocus>Filter</h2>
+    <h2 id="filters-title" tabindex="-1" autofocus data-i18n="filters.title">Filters</h2>
     <fieldset>
-      <legend>Ich rauche</legend>
+      <legend data-i18n="filters.smoke">I smoke</legend>
       <div class="segmented">
-        <label><input type="radio" name="tobacco" value="cig" id="t-cig"><span>Zigaretten</span></label>
-        <label><input type="radio" name="tobacco" value="heated" id="t-heated"><span>Tabakerhitzer</span></label>
-        <label><input type="radio" name="tobacco" value="both" id="t-both"><span>Beides</span></label>
+        <label><input type="radio" name="tobacco" value="cig" id="t-cig"><span data-i18n="filters.cig">Cigarettes</span></label>
+        <label><input type="radio" name="tobacco" value="heated" id="t-heated"><span data-i18n="filters.heated">Heated tobacco</span></label>
+        <label><input type="radio" name="tobacco" value="both" id="t-both"><span data-i18n="filters.both">Both</span></label>
       </div>
       <p class="hint-text" id="tobacco-hint"></p>
     </fieldset>
     <fieldset>
-      <legend>Anzeigen</legend>
-      <label class="switch-row"><span><b>Öffentliche Raucherplätze</b><small>Ohne Einkauf nutzbar</small></span><input type="checkbox" id="s-public" role="switch"></label>
-      <label class="switch-row"><span><b>Geschäfte und Lokale</b><small>Nur für Kunden, oder Zugang unklar</small></span><input type="checkbox" id="s-business" role="switch"></label>
-      <label class="switch-row"><span><b>Nicht gefundene Plätze</b><small>Die du selbst ausgeblendet hast</small></span><input type="checkbox" id="s-hidden" role="switch"></label>
+      <legend data-i18n="filters.show">Show</legend>
+      <label class="switch-row"><span><b data-i18n="filters.public">Public smoking areas</b><small data-i18n="filters.publicSub"></small></span><input type="checkbox" id="s-public" role="switch"></label>
+      <label class="switch-row"><span><b data-i18n="filters.shops">Shops and cafés</b><small data-i18n="filters.shopsSub"></small></span><input type="checkbox" id="s-business" role="switch"></label>
+      <label class="switch-row"><span><b data-i18n="filters.unverified">Unconfirmed konbini ashtrays</b><small data-i18n="filters.unverifiedSub"></small></span><input type="checkbox" id="s-unverified" role="switch"></label>
+      <label class="switch-row"><span><b data-i18n="filters.hidden">Spots you did not find</b><small data-i18n="filters.hiddenSub"></small></span><input type="checkbox" id="s-hidden" role="switch"></label>
     </fieldset>
     <fieldset>
-      <legend>Route öffnen mit</legend>
+      <legend data-i18n="filters.route">Open routes in</legend>
       <div class="segmented">
-        <label><input type="radio" name="route" value="apple" id="r-apple"><span>Apple Karten</span></label>
-        <label><input type="radio" name="route" value="google" id="r-google"><span>Google Maps</span></label>
+        <label><input type="radio" name="route" value="apple" id="r-apple"><span data-i18n="app.apple">Apple Maps</span></label>
+        <label><input type="radio" name="route" value="google" id="r-google"><span data-i18n="app.google">Google Maps</span></label>
       </div>
     </fieldset>
-    <button class="btn primary wide" value="done">Fertig</button>
+    <fieldset>
+      <legend data-i18n="filters.lang">Language</legend>
+      <div class="segmented">
+        <label><input type="radio" name="lang" value="en" id="l-en"><span lang="en">English</span></label>
+        <label><input type="radio" name="lang" value="de" id="l-de"><span lang="de">Deutsch</span></label>
+        <label><input type="radio" name="lang" value="ja" id="l-ja"><span lang="ja">日本語</span></label>
+      </div>
+    </fieldset>
+    <button class="btn primary wide" value="done" data-i18n="filters.done">Done</button>
   </form>
 </dialog>
 
 <dialog class="modal" id="legend" aria-labelledby="legend-title">
   <form method="dialog" class="modal-inner">
-    <h2 id="legend-title" tabindex="-1" autofocus>Zeichen auf der Karte</h2>
+    <h2 id="legend-title" tabindex="-1" autofocus data-i18n="legend.title">Map symbols</h2>
     <ul class="legend" id="legend-list"></ul>
-    <p class="fine">Entfernungen sind Luftlinie. Den echten Fußweg zeigt dir Apple Karten oder Google Maps.</p>
-    <button class="btn primary wide" value="done">Verstanden</button>
+    <p class="fine" data-i18n="legend.note"></p>
+    <button class="btn primary wide" value="done" data-i18n="legend.ok">Got it</button>
   </form>
 </dialog>
 
 <dialog class="modal" id="ask" aria-labelledby="ask-ja">
   <form method="dialog" class="modal-inner">
     <p class="ask-ja" id="ask-ja" lang="ja" tabindex="-1" autofocus>喫煙所はどこですか？</p>
-    <p class="ask-romaji">Kitsuenjo wa doko desu ka?</p>
-    <p class="ask-de">Wo ist hier ein Raucherplatz?</p>
+    <p class="ask-romaji" lang="ja-Latn">Kitsuenjo wa doko desu ka?</p>
+    <p class="ask-de" data-i18n="ask.de"></p>
     <p class="ask-ja small" lang="ja">タバコを吸える場所はありますか？</p>
-    <p class="ask-de">Gibt es hier einen Ort zum Rauchen?</p>
-    <button class="btn primary wide" value="done">Schließen</button>
+    <p class="ask-de" data-i18n="ask.de2"></p>
+    <button class="btn primary wide" value="done" data-i18n="close">Close</button>
   </form>
 </dialog>
 
 <dialog class="modal" id="info" aria-labelledby="info-title">
   <form method="dialog" class="modal-inner">
-    <h2 id="info-title" tabindex="-1" autofocus>Über Smokr</h2>
-    <p>Smokr zeigt Raucherplätze für Tokio, Kamakura, Kyoto, Okinawa und Osaka. Alle Daten sind in der App gespeichert und funktionieren auch ohne Netz.</p>
-    <h3>Datenstand</h3>
+    <h2 id="info-title" tabindex="-1" autofocus data-i18n="info.title">About Smokr</h2>
+    <p class="callout" data-i18n="info.beta"></p>
+    <p data-i18n="info.text"></p>
+    <h3 data-i18n="info.data">Data</h3>
     <ul class="fine" id="data-status"></ul>
-    <h3>Quellen und Lizenzen</h3>
-    <p class="fine">Offizielle Listen der Bezirke und Städte, die Quelle steht bei jedem Platz. Liste der Stadt Osaka: Stadt Osaka, CC BY 4.0. Weitere Plätze und Bahnhöfe: © OpenStreetMap-Mitwirkende, ODbL. Karte: OpenFreeMap, © OpenMapTiles, Daten von OpenStreetMap.</p>
-    <p class="fine">Smokr braucht kein Konto und sendet keine Daten. Deine Rückmeldungen und Einstellungen bleiben auf diesem Gerät.</p>
-    <button class="btn primary wide" value="done">Schließen</button>
+    <h3 data-i18n="info.sources">Sources and licenses</h3>
+    <p class="fine" data-i18n="info.sourcesText"></p>
+    <h3 data-i18n="info.privacy">Privacy</h3>
+    <p class="fine" data-i18n="info.privacyText"></p>
+    <h3 data-i18n="info.contact">Contact and feedback</h3>
+    <p class="fine"><span data-i18n="info.contactText"></span> <a id="contact-link" target="_blank" rel="noopener"></a></p>
+    <p class="fine" id="legal-row" hidden><a id="legal-link" target="_blank" rel="noopener" data-i18n="info.legal">Legal notice</a></p>
+    <button class="btn primary wide" value="done" data-i18n="close">Close</button>
   </form>
 </dialog>
 
+<script src="config.js"></script>
 <script src="vendor/maplibre-gl.js"></script>
+<script src="i18n.js"></script>
 <script src="core.js"></script>
 <script src="markers.js"></script>
 <script src="sheet.js"></script>
+<script src="community.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

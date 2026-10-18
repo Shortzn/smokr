@@ -417,3 +417,67 @@ test.describe("Tastatur und Bewegung", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 });
+
+test.describe("Sprachen und Konbinis", () => {
+  test.use({ locale: "en-US" });
+
+  test("Englisch als Standard, Wechsel auf Japanisch bleibt gespeichert", async ({ page, context }) => {
+    const errors = await H.open(page, context);
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.locator("#list-title")).toHaveText("In Tokyo");
+    await expect(page.locator("#list-sub")).toHaveText("From the map center, straight-line distance");
+    await expect(page.locator("#search-btn")).toContainText("Search");
+    await page.click("#filter-btn");
+    await page.locator("label:has(#l-ja)").click();
+    await expect(page.locator("#filters-title")).toHaveText("フィルター");
+    await page.locator("#filters .btn.primary").click();
+    await expect(page.locator("#list-title")).toHaveText("東京");
+    await expect(page.locator("#list .row-dist span").first()).toHaveText("直線距離");
+    await page.reload();
+    await H.ready(page);
+    await expect(page.locator("html")).toHaveAttribute("lang", "ja");
+    await expect(page.locator("#city-name")).toHaveText("東京");
+    // Japanische Ortsbeschreibungen bleiben Original, auch auf Englisch
+    await page.click("#filter-btn");
+    await page.locator("label:has(#l-en)").click();
+    await page.locator("#filters .btn.primary").click();
+    await page.evaluate(() => {
+      const s = window.__smokr.state.byId.get("off-chiyoda-26");
+      window.__smokr.map.jumpTo({ center: [s.lon, s.lat], zoom: 16 });
+    });
+    await H.waitIdle(page);
+    await page.locator('#list .row[data-id="off-chiyoda-26"]').click();
+    await expect(page.locator("#detail .hint")).toHaveAttribute("lang", "ja");
+    await expect(page.locator("#detail")).toContainText("7:00–20:00");
+    await expect(page.locator("#detail")).toContainText("Chiyoda City, as of");
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
+  test("Unbestätigte Konbinis sind aus und nur per Filter sichtbar", async ({ page, context }) => {
+    const errors = await H.open(page, context);
+    const unv = await page.evaluate(() => window.__smokr.state.spots.filter((s) => s.unv).map((s) => s.id));
+    expect(unv.length).toBeGreaterThan(40);
+    const onMap = () => page.evaluate((ids) => window.__smokr.map.getSource("spots")._data.features.filter((f) => ids.includes(f.properties.id)).length, unv);
+    await page.click("#q-business");
+    expect(await onMap()).toBe(0);
+    await page.click("#filter-btn");
+    await page.locator("label:has(#s-unverified)").click();
+    await page.locator("#filters .btn.primary").click();
+    expect(await onMap()).toBe(unv.length);
+    // Detail warnt deutlich
+    await page.evaluate((id) => { const s = window.__smokr.state.byId.get(id); window.__smokr.map.jumpTo({ center: [s.lon, s.lat], zoom: 18 }); }, unv[0]);
+    await H.waitIdle(page);
+    await page.locator(`#list .row[data-id="${unv[0]}"]`).click();
+    await expect(page.locator("#detail")).toContainText("Unconfirmed");
+    await expect(page.locator("#detail .callout").first()).toContainText("ashtrays at convenience stores have been removed");
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
+  test("Ohne Backend gibt es keine Community-Knöpfe", async ({ page, context }) => {
+    const errors = await H.open(page, context);
+    await expect(page.locator("#add-btn")).toBeHidden();
+    await page.locator("#list .row").first().click();
+    await expect(page.locator("[data-community-report]")).toHaveCount(0);
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+});
