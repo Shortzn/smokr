@@ -363,6 +363,46 @@ test("Nächtliches Aufräumen löscht Texte abgelehnter Beiträge nach 30 Tagen"
   assert.equal(fresh.name, "[TEST] fresh rejected", "jüngere Ablehnungen bleiben 30 Tage");
 });
 
+test("Genauigkeit, Herkunft und Adresse der Position werden gespeichert und geprüft", async () => {
+  ip = "203.0.113.60";
+  let r = await post("/v1/submissions", form(place({ lat: "35.661075", lon: "139.700933", name: "[TEST] Suche", pos_quality: "building", pos_source: "address", address: "東京都渋谷区神南一丁目22-7" })));
+  assert.equal(r.status, 201);
+  const id = (await r.json()).id;
+  for (const [over, why] of [[{ pos_quality: "perfect" }, "unbekannte Genauigkeit"], [{ pos_source: "google" }, "unbekannte Herkunft"], [{ address: "x".repeat(201) }, "Adresse zu lang"], [{ address: "see https://spam.example" }, "Link in Adresse"]]) {
+    r = await post("/v1/submissions", form(place(Object.assign({ lat: "35.70", lon: "139.80" }, over))));
+    assert.equal(r.status, 400, why);
+  }
+  const q = await (await admin("/admin/api/queue")).json();
+  const sub = q.submissions.find((x) => x.id === id);
+  assert.equal(sub.pos_quality, "building");
+  assert.equal(sub.pos_source, "address");
+  assert.equal(sub.address, "東京都渋谷区神南一丁目22-7");
+  // Admin kann die Genauigkeit korrigieren, öffentlich erscheint sie mit
+  assert.equal((await admin(`/admin/api/submissions/${id}`, { action: "edit", fields: { pos_quality: "exact" } })).status, 200);
+  assert.equal((await admin(`/admin/api/submissions/${id}`, { action: "edit", fields: { pos_quality: "nope" } })).status, 400);
+  await admin(`/admin/api/submissions/${id}`, { action: "approve" });
+  const c = await (await fetch(API + "/v1/community")).json();
+  const p = c.places.find((x) => x.id === id);
+  assert.equal(p.pos_quality, "exact");
+  assert.equal(p.address, "東京都渋谷区神南一丁目22-7");
+  const st = await (await fetch(API + "/v1/status")).json();
+  assert.equal(st.geocode, true, "Ortssuche eingeschaltet, abschaltbar per GEOCODE=off");
+});
+
+test("Kurzlinks: nur Google-Maps-Kurzlinks, nur mit Testercode, begrenzt", async () => {
+  ip = "203.0.113.61";
+  const call = (body, h) => post("/v1/resolve-link", JSON.stringify(body), Object.assign({ "content-type": "application/json" }, h));
+  let r = await call({ url: "https://maps.app.goo.gl/abc" });
+  assert.equal(r.status, 403, "ohne Testercode");
+  r = await call({ url: "https://maps.app.goo.gl/abc", tester: TESTER }, { origin: "https://evil.example" });
+  assert.equal(r.status, 403, "fremder Ursprung");
+  for (const url of ["https://evil.example/redirect", "http://maps.app.goo.gl/abc", "javascript:alert(1)", "https://maps.app.goo.gl.evil.example/x", ""]) {
+    r = await call({ url, tester: TESTER });
+    assert.equal(r.status, 400, url);
+    assert.equal((await r.json()).error, "link", url);
+  }
+});
+
 test("Sicherung enthält alles außer Bilddaten", async () => {
   const r = await admin("/admin/api/export");
   assert.equal(r.status, 200);

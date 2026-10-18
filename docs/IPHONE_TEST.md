@@ -42,6 +42,12 @@ Wir testen mit einem echten Platz, den ihr gefunden habt. Erfundene Plätze komm
 
 - [ ] **C1 Freischalten:** In Safari `https://shortzn.github.io/smokr/#community` öffnen. Ein Fenster „Privater Test“ fragt nach dem Testcode. Code aus `smokr-testcode.txt` einfügen, „Freischalten“. Danach erscheint rechts über der Liste der „+“-Knopf.
 - [ ] **C2 Platz hinzufügen:** Vor Ort „+“ antippen. Unten öffnet sich das Formular, auf der Karte steht eine Nadel.
+- [ ] **C2b Ohne vor Ort zu sein:** Unter „Wo ist er?“ ist „Suchen“ gewählt.
+  - Restaurantnamen eingeben (lateinisch oder japanisch), „Suchen“. Treffer antippen: Die Karte springt hin, „Position: …“ steht direkt unter den Knöpfen, der Name ist eingetragen.
+  - Oder eine Adresse wie 東京都渋谷区神南1-22-7.
+  - Oder in Google Maps den Ort öffnen, Teilen, Link kopieren, hier einfügen, „Suchen“.
+  - Verdeckt die Tastatur Feld oder Knopf?
+  - „Wie genau sitzt die Nadel?“ steht auf „Am Gebäude oder Eingang“. Wenn du weißt, wo der Raucherplatz genau ist, Karte verschieben und „Genau am Raucherplatz“ wählen.
 - [ ] **C3 Standort per Karte:** „Meinen Standort verwenden“ oder die Karte verschieben, bis die Nadel genau auf dem Platz steht.
 - [ ] **C4 Angaben:** Art, Tabak und Zugang wählen. Name, Stockwerk oder Ausgang und eine kurze Beschreibung eintippen. Die Tastatur verdeckt die Felder nicht.
 - [ ] **C5 Foto:** „Foto aufnehmen oder auswählen“. Ein echtes iPhone-Foto vom Platz oder Schild, ohne erkennbare Personen. HEIC aus der Mediathek geht auch. Die Vorschau erscheint.

@@ -149,6 +149,8 @@ function renderStatus(q) {
     el("div", { class: "bar" }, el("span", { style: "width:" + pct + "%" })),
     el("div", { class: "meta", text: "Heute: " + u.writes_today + " von " + u.writes_limit + " Einsendungen, " + u.photos_today + " von " + u.photos_limit + " Fotos. Gesamt: " + u.submissions + " Plätze, " + u.reports + " Meldungen." }));
 }
+const POSQ = { exact: "genau am Raucherplatz", building: "am Gebäude oder Eingang, Raucherplatz kann woanders darin sein", approx: "nur ungefähr" };
+const POSS = { gps: "GPS", map: "Karte", search: "Namenssuche", address: "Adresse", link: "Karten-Link" };
 function editForm(s) {
   const f = {};
   const field = (name, value, type) => {
@@ -167,6 +169,7 @@ function editForm(s) {
     field("name", s.name), field("floor", s.floor), field("note", s.note, "textarea"),
     select("category", s.category, ["public", "shop", "room"]), select("tobacco", s.tobacco, ["all", "heated", "unknown"]),
     select("access", s.access, ["public", "customers", "unknown"]),
+    select("pos_quality", s.pos_quality || "exact", ["exact", "building", "approx"]),
     field("lat", s.lat, "number"), field("lon", s.lon, "number"),
     el("button", { text: "Korrektur speichern", onclick: async () => {
       const fields = {};
@@ -194,6 +197,8 @@ async function load() {
     const card = el("div", { class: "card" },
       el("div", { class: "row" }, el("b", { text: "#" + s.id + " " + (s.name || "(ohne Namen)") }), el("span", { class: "pill", text: DE[s.category] || s.category }), el("span", { class: "pill", text: "Tabak: " + (DE[s.tobacco] || s.tobacco) }), el("span", { class: "pill", text: "Zugang: " + (DE[s.access] || s.access) })),
       el("div", { class: "meta" }, osmLink(s.lat, s.lon), document.createTextNode(" · " + s.created_at + " · " + (s.lang || "?"))),
+      el("div", { class: s.pos_quality && s.pos_quality !== "exact" ? "warn" : "meta", text: "Position: " + (POSQ[s.pos_quality] || "keine Angabe (ältere App)") + (s.pos_source ? " · über " + (POSS[s.pos_source] || s.pos_source) : "") }),
+      s.address ? el("div", { class: "meta", text: "Gefunden: " + s.address }) : null,
       s.floor ? el("div", { class: "text", text: "Stockwerk/Ausgang: " + s.floor }) : null,
       s.note ? el("div", { class: "text", text: s.note }) : null,
       photo(s.photo_id),

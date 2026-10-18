@@ -180,6 +180,7 @@
     if (s.unk) out.push({ id: "status", text: t("warn.status") });
     if (s.pos === "area") out.push({ id: "pos", text: t("warn.posArea") });
     if (s.pos === "address") out.push({ id: "pos", text: t("warn.posAddress") });
+    if (s.pos === "building") out.push({ id: "pos", text: t("warn.posBuilding") });
     const issues = (s.com && s.com.issues) || {};
     if (issues.missing) out.push({ id: "comMissing", text: t("warn.communityMissing", { date: fmtMonth(issues.missing.last) }) });
     if (issues.closed) out.push({ id: "comClosed", text: t("warn.communityClosed", { date: fmtMonth(issues.closed.last) }) });
@@ -447,11 +448,14 @@
       const spot = {
         // Zugang nur so, wie er gemeldet und geprüft wurde; "unklar" bleibt unklar
         id, k, acc: p.access === "customers" ? "customers" : p.access === "public" ? "public" : "unknown",
-        lat: p.lat, lon: p.lon, nj: "", ne: String(p.name || ""), pos: "exact",
+        lat: p.lat, lon: p.lon, nj: "", ne: String(p.name || ""),
+        // Wie genau ist die Position? Suche nach Name oder Adresse findet das Gebäude, nicht den Raucherraum
+        pos: p.pos_quality === "building" ? "building" : p.pos_quality === "approx" ? "area" : "exact",
         com: { added: p.approved_at || null, n: 0, last: null, photos: photoIds(p.photos) },
         region: (regionFor([p.lon, p.lat]) || {}).id || null,
       };
       if (p.note) spot.hint = String(p.note);
+      if (p.address) spot.addr = String(p.address);
       if (p.floor) spot.floor = String(p.floor);
       if (p.tobacco === "heated") spot.heated = true;
       if (k === "v") spot.vt = "shop";

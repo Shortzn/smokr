@@ -37,6 +37,8 @@ Cloudflare-Ressourcen am 18.10.2026: genau ein Worker (`smokr-api`), genau eine 
 | Anonyme Löschung | Eine Meldung „gibt es nicht“ ändert nichts; nur der Admin blendet aus | API-Test „Meldungen“ |
 | Personenbezug | Kein Konto, IP nur als täglich gesalzener Hash, nach 30 Tagen gelöscht; Texte abgelehnter Beiträge nach 30 Tagen gelöscht | Code, Test „Nächtliches Aufräumen“ |
 | Kontakt zu Cloudflare ohne Grund | Ohne Testercode oder Testlink fragt die App die API gar nicht an | Browser-Test, live geprüft |
+| Kurzlink-Auflöser als offener Weiterleiter | Nur `https://maps.app.goo.gl`, `goo.gl`, `g.co`; nur Location-Header, kein Seiteninhalt; Ziel muss Google Maps sein; nur mit Testercode; 30 pro Gerät und Tag | API-Test „Kurzlinks“, echte Links lokal aufgelöst |
+| Suche überlastet fremde Dienste | Nur auf Knopfdruck, 1 Anfrage pro Sekunde, Ergebnisse im Speicher, abschaltbar per `GEOCODE=off` | Unit-Test „Namen: Nominatim …“ |
 | Secrets im Repository | Keine; Suche über alle 28 Commits nach Token-, Schlüssel- und Hash-Mustern | 18.10.2026, nur ein Code-Kommentar zum Hash-Format |
 | Secrets in Logs | Workflow maskiert Konto-ID und Testpasswort; Token nur über Umgebungsvariable | Workflow-Läufe angesehen |
 

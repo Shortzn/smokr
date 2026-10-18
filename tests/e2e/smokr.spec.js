@@ -559,6 +559,103 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test("Platz hinzufügen ohne vor Ort zu sein: Name, Adresse, Google-Maps-Link", async ({ page, context }, info) => {
+    const FX = require("../unit/locate-fixtures.js");
+    const api = (req) => req.url().endsWith("/v1/status") ? { json: { mode: "private", geocode: true } }
+      : req.url().endsWith("/v1/community") ? { json: { places: [], confirmations: [], hidden: [] } } : { status: 404, json: {} };
+    await context.route("https://challenges.cloudflare.com/**", (r) => r.fulfill({ contentType: "text/javascript",
+      body: 'window.turnstile={render(el,o){setTimeout(()=>o.callback("XXXX.DUMMY.TOKEN.XXXX"),20);return "w"},reset(){},remove(){}};' }));
+    // Externe Dienste mit festen Antworten, damit der Test nichts ins Netz schickt
+    const searches = [];
+    await context.route("https://nominatim.openstreetmap.org/**", (r) => { searches.push(r.request().url()); r.fulfill({ contentType: "application/json", body: JSON.stringify(FX.NOMINATIM) }); });
+    await context.route("https://japanese-addresses-v2.geoloniamaps.com/**", async (r) => {
+      const fake = await FX.fakeFetch()(r.request().url(), { headers: { Range: r.request().headers().range } });
+      r.fulfill({ status: fake.status, contentType: "text/plain; charset=utf-8", body: await fake.text(), headers: { "access-control-allow-origin": "*" } });
+    });
+    const errors = await H.open(page, context, { api, storage: { "kitsuen.tester": "TEST-CODE-0000-0000" } });
+    let sent = null;
+    await context.route("https://*.workers.dev/v1/submissions", (r) => { sent = r.request().postDataBuffer().toString("latin1"); r.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":1,"status":"pending"}', headers: { "access-control-allow-origin": "*" } }); });
+    await context.route("https://*.workers.dev/v1/resolve-link", (r) => {
+      const body = JSON.parse(r.request().postData());
+      r.fulfill({ contentType: "application/json", headers: { "access-control-allow-origin": "*" },
+        body: JSON.stringify(body.url.includes("goo.gl") ? { ok: true, url: "https://www.google.com/maps/place/Test+Bar/@35.69,139.70,17z/data=!3d35.6905!4d139.7004" } : { error: "link" }) });
+    });
+    const center = () => page.evaluate(() => { const c = window.__smokr.map.getCenter(); return [+c.lng.toFixed(4), +c.lat.toFixed(4)]; });
+    await page.click("#add-btn");
+    await expect(page.locator(".seg-btn[data-loc-mode=search]")).toHaveAttribute("aria-pressed", "true");
+    // Erst etwas ins Formular schreiben: darf beim Methodenwechsel nicht verloren gehen
+    await page.fill("#f-floor", "2F, hinten links");
+
+    // 1. Name: Treffer zur Auswahl, Nadel auf den gewählten, Name übernommen, Genauigkeit "Gebäude"
+    await page.fill("#loc-q", "Ichiran Shibuya");
+    await page.locator("#loc-q").press("Enter");
+    await expect(page.locator(".loc-result")).toHaveCount(2);
+    await expect(page.locator("#view-form")).toBeVisible();
+    await page.locator(".loc-result").first().click();
+    await expect.poll(center).toEqual([139.7009, 35.661]);
+    await expect(page.locator("#f-name")).toHaveValue("Ichiran");
+    await expect(page.locator("#loc-label")).toHaveText("Ichiran");
+    await expect(page.locator('input[name="posq"][value="building"]')).toBeChecked();
+    await expect(page.locator(".loc-attr")).toContainText("OpenStreetMap");
+    expect(new URL(searches[0]).searchParams.get("countrycodes")).toBe("jp");
+
+    // 2. Japanische Adresse: direkt übernommen, bis zur Hausnummer
+    await page.fill("#loc-q", "東京都渋谷区神南1-22-7");
+    await page.click("[data-loc-search]");
+    await expect(page.locator("#loc-label")).toHaveText("東京都渋谷区神南一丁目22-7");
+    await expect.poll(center).toEqual([139.7009, 35.6611]);
+    await expect(page.locator(".loc-card")).toContainText(/Hausnummer|house number/);
+
+    // 3. Google-Maps-Link mit Ortsmarke, dann Kurzlink über den Worker
+    await page.fill("#loc-q", "https://www.google.com/maps/place/Bar+X/@35.70,139.77,17z/data=!3d35.7012!4d139.7745");
+    await page.click("[data-loc-search]");
+    await expect.poll(center).toEqual([139.7745, 35.7012]);
+    await expect(page.locator("#loc-label")).toHaveText("Bar X");
+    await page.fill("#loc-q", "https://maps.app.goo.gl/AbCdEf123");
+    await page.click("[data-loc-search]");
+    await expect.poll(center).toEqual([139.7004, 35.6905]);
+
+    // 4. Fehler: Link ohne Position, nichts gefunden
+    await page.fill("#loc-q", "https://example.com/irgendwas");
+    await page.click("[data-loc-search]");
+    await expect(page.locator(".loc-error")).toContainText(/keine Position|no position/);
+    await context.unroute("https://nominatim.openstreetmap.org/**");
+    await context.route("https://nominatim.openstreetmap.org/**", (r) => r.fulfill({ contentType: "application/json", body: "[]" }));
+    await page.fill("#loc-q", "gibt es nicht 12345");
+    await page.click("[data-loc-search]");
+    await expect(page.locator(".loc-error")).toContainText(/Nichts gefunden|Nothing found/);
+    await expect.poll(center).toEqual([139.7004, 35.6905], { message: "Fehlschlag bewegt die Karte nicht" });
+
+    // 5. Methoden wechseln: Eingaben bleiben
+    await page.click(".seg-btn[data-loc-mode=map]");
+    await page.click(".seg-btn[data-loc-mode=search]");
+    await expect(page.locator("#loc-q")).toHaveValue("gibt es nicht 12345");
+    await expect(page.locator("#f-floor")).toHaveValue("2F, hinten links");
+    await expect(page.locator("#f-name")).toHaveValue("Ichiran");
+
+    // 6. Nadel von Hand verschieben: als selbst gesetzt erkennbar
+    if (!info.project.name.startsWith("pixel") && !/iphone/.test(info.project.name)) {
+      const box = await page.locator("#map").boundingBox();
+      await page.mouse.move(box.x + box.width / 2, box.y + 120);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width / 2 + 40, box.y + 160, { steps: 6 });
+      await page.mouse.up();
+      await expect(page.locator("#loc-label")).toHaveText(/von Hand|by hand/);
+    }
+    await page.locator('label:has(input[name="posq"][value="exact"])').click();
+
+    // 7. Absenden: Position der Nadel, Genauigkeit, Herkunft und Adresse gehen mit
+    const pin = await center();
+    await page.click("#form-submit");
+    await expect(page.locator(".form-done")).toBeVisible();
+    const field = (n) => (sent.match(new RegExp(`name="${n}"\\r\\n\\r\\n([^\\r]*)`)) || [])[1];
+    expect(+field("lat")).toBeCloseTo(pin[1], 4);
+    expect(+field("lon")).toBeCloseTo(pin[0], 4);
+    expect(field("pos_quality")).toBe("exact");
+    expect(["link", "map"]).toContain(field("pos_source"));
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   test("Normale Besucher fragen die Community-API gar nicht an", async ({ page, context }) => {
     const calls = [];
     const errors = await H.open(page, context, { api: (req) => { calls.push(req.url()); return { json: { mode: "public" } }; } });

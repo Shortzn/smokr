@@ -10,6 +10,7 @@
   const LANGS = ["en", "de", "ja"];
 
   const en = {
+    "loc.tabSearch": "Search", "loc.tabGps": "My location", "loc.tabMap": "Map", "loc.placeholder": "Name, address or Google Maps link", "loc.search": "Search", "loc.searching": "Searching…", "loc.searchHint": "For example a restaurant, a station or 東京都渋谷区神南1-22-7. From Google Maps: open the place, tap Share, copy the link and paste it here.", "loc.noResults": "Nothing found. Try the Japanese name, the address or a Google Maps link.", "loc.badLink": "This link contains no position. In Google Maps open the place, tap Share and copy the link.", "loc.outside": "This place is outside Japan.", "loc.failed": "The search is not available right now. Move the map to the spot instead.", "loc.tooShort": "Please enter at least 2 characters.", "loc.gpsHint": "Your current position is used. Move the map if the pin is not exactly at the smoking area.", "loc.gpsBusy": "Finding your location…", "loc.gpsDenied": "Your location is not available. Use the search or the map.", "loc.chosen": "Position", "loc.moved": "Pin moved by hand", "loc.gpsLabel": "Your location", "loc.mapLabel": "Pin in the middle of the map", "loc.quality": "How exact is the pin?", "loc.q.exact": "Exactly at the smoking area", "loc.q.building": "At the building or entrance", "loc.q.approx": "Only roughly", "loc.qualityHint": "A search finds the building, not the smoking area inside. Move the map to the smoking area if you know where it is, and write floor or entrance below.", "loc.attrOsm": "Search: © OpenStreetMap contributors (Nominatim)", "loc.attrAddr": "Addresses: Geolonia, from the Address Base Registry of Japan's Digital Agency (CC BY 4.0)", "loc.lvl.house": "Address found to the house number", "loc.lvl.block": "Only the block of this address was found", "loc.lvl.district": "Only the neighbourhood was found", "loc.lvl.city": "Only the city was found", "loc.linkView": "The link only shows a map section, not a place. Please check the pin.", "src.posBuilding": "position of the building", "warn.posBuilding": "The pin marks the building. The smoking area may be elsewhere inside or around it.",
     "err.tester": "This test code is not valid. Ask for a new one.",
     "err.storage": "Photo storage is full right now. Please send it without a photo.",
     "err.duplicate": "You already sent this. Thanks!",
@@ -271,7 +272,7 @@
     "add.photoHint": "Your own photo of the area, entrance or sign. No faces or license plates. Location data is removed.",
     "add.photoPick": "Take or choose a photo",
     "add.photoRemove": "Remove photo",
-    "add.textNote": "Everything is reviewed before it appears. Approved texts are published under CC BY 4.0. Please no personal data.", "add.privacy": "Privacy",
+    "add.textNote": "Everything is reviewed before it appears. Approved texts are published under CC BY 4.0. Please no personal data.", "add.privacyLink": "Privacy",
     "add.consent": "This is my own photo and text, and I allow Smokr to publish it under CC BY 4.0 after review.",
     "add.privacy": "We store your text, photo and position until the entry is reviewed and, if approved, publicly. Your IP address is only kept as a short-lived, salted hash against abuse. Protected by Cloudflare Turnstile.",
     "add.submit": "Send for review",
@@ -307,6 +308,7 @@
   };
 
   const de = {
+    "loc.tabSearch": "Suchen", "loc.tabGps": "Mein Standort", "loc.tabMap": "Karte", "loc.placeholder": "Name, Adresse oder Google-Maps-Link", "loc.search": "Suchen", "loc.searching": "Suche …", "loc.searchHint": "Zum Beispiel ein Restaurant, ein Bahnhof oder 東京都渋谷区神南1-22-7. Aus Google Maps: Ort öffnen, Teilen, Link kopieren und hier einfügen.", "loc.noResults": "Nichts gefunden. Versuch den japanischen Namen, die Adresse oder einen Google-Maps-Link.", "loc.badLink": "In diesem Link steht keine Position. In Google Maps den Ort öffnen, Teilen tippen und den Link kopieren.", "loc.outside": "Dieser Ort liegt nicht in Japan.", "loc.failed": "Die Suche ist gerade nicht erreichbar. Verschieb stattdessen die Karte.", "loc.tooShort": "Bitte mindestens 2 Zeichen eingeben.", "loc.gpsHint": "Dein aktueller Standort wird verwendet. Verschieb die Karte, wenn die Nadel nicht genau am Raucherplatz steht.", "loc.gpsBusy": "Standort wird ermittelt …", "loc.gpsDenied": "Dein Standort ist nicht verfügbar. Nutze die Suche oder die Karte.", "loc.chosen": "Position", "loc.moved": "Nadel von Hand verschoben", "loc.gpsLabel": "Dein Standort", "loc.mapLabel": "Nadel in der Kartenmitte", "loc.quality": "Wie genau sitzt die Nadel?", "loc.q.exact": "Genau am Raucherplatz", "loc.q.building": "Am Gebäude oder Eingang", "loc.q.approx": "Nur ungefähr", "loc.qualityHint": "Die Suche findet das Gebäude, nicht den Raucherplatz darin. Verschieb die Karte zum Raucherplatz, wenn du weißt, wo er ist, und schreib Stockwerk oder Eingang unten dazu.", "loc.attrOsm": "Suche: © OpenStreetMap-Mitwirkende (Nominatim)", "loc.attrAddr": "Adressen: Geolonia, aus dem Adress-Basisregister der japanischen Digital Agency (CC BY 4.0)", "loc.lvl.house": "Adresse bis zur Hausnummer gefunden", "loc.lvl.block": "Nur der Häuserblock dieser Adresse wurde gefunden", "loc.lvl.district": "Nur der Ortsteil wurde gefunden", "loc.lvl.city": "Nur die Stadt wurde gefunden", "loc.linkView": "Der Link zeigt nur einen Kartenausschnitt, keinen Ort. Bitte die Nadel prüfen.", "src.posBuilding": "Position des Gebäudes", "warn.posBuilding": "Die Nadel zeigt das Gebäude. Der Raucherplatz kann woanders darin oder daneben liegen.",
     "err.tester": "Dieser Testcode gilt nicht. Bitte einen neuen anfordern.",
     "err.storage": "Der Fotospeicher ist gerade voll. Bitte ohne Foto senden.",
     "err.duplicate": "Das hast du schon gesendet. Danke!",
@@ -568,7 +570,7 @@
     "add.photoHint": "Eigenes Foto vom Bereich, Eingang oder Schild. Keine Gesichter oder Kennzeichen. Standortdaten werden entfernt.",
     "add.photoPick": "Foto aufnehmen oder auswählen",
     "add.photoRemove": "Foto entfernen",
-    "add.textNote": "Alles wird vor der Veröffentlichung geprüft. Freigegebene Texte erscheinen unter CC BY 4.0. Bitte keine persönlichen Daten.", "add.privacy": "Datenschutz",
+    "add.textNote": "Alles wird vor der Veröffentlichung geprüft. Freigegebene Texte erscheinen unter CC BY 4.0. Bitte keine persönlichen Daten.", "add.privacyLink": "Datenschutz",
     "add.consent": "Foto und Text sind von mir, und ich erlaube Smokr, sie nach Prüfung unter CC BY 4.0 zu veröffentlichen.",
     "add.privacy": "Wir speichern Text, Foto und Position bis zur Prüfung und nach Freigabe öffentlich. Deine IP-Adresse wird nur als kurzlebiger, gesalzener Hashwert gegen Missbrauch gespeichert. Geschützt durch Cloudflare Turnstile.",
     "add.submit": "Zur Prüfung senden",
@@ -604,6 +606,7 @@
   };
 
   const ja = {
+    "loc.tabSearch": "検索", "loc.tabGps": "現在地", "loc.tabMap": "地図", "loc.placeholder": "名前、住所、Googleマップのリンク", "loc.search": "検索", "loc.searching": "検索中…", "loc.searchHint": "例：飲食店、駅、東京都渋谷区神南1-22-7。Googleマップから：場所を開き、共有、リンクをコピーしてここに貼り付けます。", "loc.noResults": "見つかりませんでした。日本語の名前、住所、Googleマップのリンクをお試しください。", "loc.badLink": "このリンクには位置が含まれていません。Googleマップで場所を開き、共有からリンクをコピーしてください。", "loc.outside": "この場所は日本国外です。", "loc.failed": "現在検索を利用できません。代わりに地図を動かしてください。", "loc.tooShort": "2文字以上入力してください。", "loc.gpsHint": "現在地を使用します。ピンが喫煙所の位置と違う場合は地図を動かしてください。", "loc.gpsBusy": "現在地を取得中…", "loc.gpsDenied": "現在地を取得できません。検索か地図をご利用ください。", "loc.chosen": "位置", "loc.moved": "ピンを手動で移動", "loc.gpsLabel": "現在地", "loc.mapLabel": "地図の中央のピン", "loc.quality": "ピンの正確さ", "loc.q.exact": "喫煙所の正確な位置", "loc.q.building": "建物または入口", "loc.q.approx": "おおよそ", "loc.qualityHint": "検索で見つかるのは建物で、建物内の喫煙所ではありません。場所が分かれば地図を喫煙所まで動かし、階や入口を下に書いてください。", "loc.attrOsm": "検索：© OpenStreetMap contributors（Nominatim）", "loc.attrAddr": "住所：Geolonia、デジタル庁アドレス・ベース・レジストリより（CC BY 4.0）", "loc.lvl.house": "住所を番地まで特定", "loc.lvl.block": "この住所の街区のみ特定", "loc.lvl.district": "町名のみ特定", "loc.lvl.city": "市区町村のみ特定", "loc.linkView": "このリンクは地図の範囲のみで、場所を示していません。ピンを確認してください。", "src.posBuilding": "建物の位置", "warn.posBuilding": "ピンは建物を示しています。喫煙所は建物内や周辺の別の場所にあることがあります。",
     "err.tester": "このテストコードは無効です。新しいコードを依頼してください。",
     "err.storage": "写真の保存容量がいっぱいです。写真なしで送信してください。",
     "err.duplicate": "すでに送信済みです。ありがとうございます。",
@@ -865,7 +868,7 @@
     "add.photoHint": "喫煙スペース、入口、案内表示の自分で撮った写真。顔やナンバープレートは写さないでください。位置情報は削除されます。",
     "add.photoPick": "写真を撮る・選ぶ",
     "add.photoRemove": "写真を削除",
-    "add.textNote": "公開前にすべて確認します。承認された文章はCC BY 4.0で公開されます。個人情報は書かないでください。", "add.privacy": "プライバシー",
+    "add.textNote": "公開前にすべて確認します。承認された文章はCC BY 4.0で公開されます。個人情報は書かないでください。", "add.privacyLink": "プライバシー",
     "add.consent": "写真と文章は自分のもので、審査後にCC BY 4.0でSmokrが公開することに同意します。",
     "add.privacy": "文章・写真・位置は審査まで保存され、承認後に公開されます。IPアドレスは不正対策のため、短期間のみソルト付きハッシュとして保存します。Cloudflare Turnstileで保護されています。",
     "add.submit": "審査に送る",

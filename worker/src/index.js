@@ -8,6 +8,7 @@
 //   POST /v1/photos/:id/flag      Foto melden
 //   GET  /v1/status               Modus (off | private | public), damit die App weiß, was sie zeigen darf
 //   POST /v1/tester               Testercode prüfen (nur im privaten Modus nötig)
+//   POST /v1/resolve-link         Google-Maps-Kurzlink auflösen (nur Weiterleitung, keine Inhalte)
 // COMMUNITY_MODE (wrangler.toml): "off" nimmt nichts an, "private" nur mit gültigem Testercode,
 // "public" für alle. Die Sperre wirkt hier auf dem Server, nicht nur in der App.
 // Admin (Cookie-Sitzung, nur gleicher Ursprung):
@@ -28,7 +29,7 @@ const MAX_PHOTO = 1024 * 1024;
 const DEFAULT_PHOTO_BUDGET = 300 * 1024 * 1024;
 const SESSION_TTL = 12 * 3600;
 const DEFAULT_LIMITS = {
-  submission: 10, report: 30, photo: 10, flag: 20, login: 8, tester: 20,
+  submission: 10, report: 30, photo: 10, flag: 20, login: 8, tester: 20, resolve: 30,
   "global:write": 500, "global:photo": 60,
 };
 // Grenzen lassen sich für Staging-Tests über LIMIT_<NAME> setzen
@@ -56,6 +57,8 @@ const TOBACCO = ["all", "heated", "unknown"];
 const ACCESS = ["public", "customers", "unknown"];
 const KINDS = ["found", "missing", "closed", "position", "info", "other"];
 const LANGS = ["en", "de", "ja"];
+const POS_QUALITY = ["exact", "building", "approx"];
+const POS_SOURCE = ["gps", "map", "search", "address", "link"];
 const SPOT_ID = /^(off|osm|com)-[a-z0-9-]{1,48}$/;
 const PHOTO_ID = /^[0-9a-f]{32}$/;
 
@@ -196,6 +199,10 @@ async function postSubmission(request, env) {
     floor: clean(form.get("floor"), 60),
     note: clean(form.get("note"), 500),
     lang: LANGS.includes(form.get("lang")) ? form.get("lang") : null,
+    // Ältere App-Versionen schicken das nicht mit: dann unbekannt
+    posQuality: form.get("pos_quality") ? oneOf(form.get("pos_quality"), POS_QUALITY, "pos_quality") : null,
+    posSource: form.get("pos_source") ? oneOf(form.get("pos_source"), POS_SOURCE, "pos_source") : null,
+    address: clean(form.get("address"), 200),
   };
   // Dasselbe Gerät hat in den letzten 24 Stunden schon einen Platz in 30 m Umkreis eingereicht
   const recent = await env.DB.prepare(
@@ -205,8 +212,8 @@ async function postSubmission(request, env) {
   if (!(await guardPhoto(env, request, g.ip, form))) return fail(request, env, 429, "rate_limited");
   const photoId = await storePhoto(env, form.get("photo"), "submission", form.get("consent") === "1");
   const res = await env.DB.prepare(
-    "INSERT INTO submissions (lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, ip_hash, tester_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12) RETURNING id",
-  ).bind(lat, lon, row.category, row.tobacco, row.access, row.name, row.floor, row.note, row.lang, photoId, g.ip, g.testerId).first();
+    "INSERT INTO submissions (lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, ip_hash, tester_id, pos_quality, pos_source, address) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15) RETURNING id",
+  ).bind(lat, lon, row.category, row.tobacco, row.access, row.name, row.floor, row.note, row.lang, photoId, g.ip, g.testerId, row.posQuality, row.posSource, row.address).first();
   if (photoId) await env.DB.prepare("UPDATE photos SET owner_id = ?1 WHERE id = ?2").bind(res.id, photoId).run();
   return json(request, env, { ok: true, id: res.id, status: "pending" }, 201);
 }
@@ -284,7 +291,7 @@ async function purgeCommunityCache() {
 
 async function buildCommunity(env) {
   const places = await env.DB.prepare(
-    "SELECT id, lat, lon, category, tobacco, access, name, floor, note, reviewed_at AS approved_at FROM submissions WHERE status = 'approved' ORDER BY id",
+    "SELECT id, lat, lon, category, tobacco, access, name, floor, note, pos_quality, address, reviewed_at AS approved_at FROM submissions WHERE status = 'approved' ORDER BY id",
   ).all();
   const reports = await env.DB.prepare(
     "SELECT spot_id, kind, COUNT(*) AS n, MAX(created_at) AS last FROM reports WHERE status = 'approved' GROUP BY spot_id, kind",
@@ -329,6 +336,43 @@ async function testerCheck(request, env) {
   try { body = await request.json(); } catch (e) { /* leer */ }
   const tg = await testerGate(env, await ipHash(request, env), body.code);
   return tg.error ? fail(request, env, ...tg.error) : json(request, env, { ok: true, mode: "private" });
+}
+
+// ---------- Google-Maps-Kurzlinks ----------
+// maps.app.goo.gl/… verrät die Position erst nach der Weiterleitung. Der Worker folgt nur den
+// Weiterleitungen (Location-Header) und gibt die Ziel-Adresse zurück. Er liest keine Seiteninhalte von Google.
+const SHORT_LINK = /^(maps\.app\.goo\.gl|goo\.gl|g\.co)$/i;
+const MAPS_TARGET = /^((www|maps)\.)?google\.[a-z.]+$/i;
+async function resolveLink(request, env) {
+  if (mode(env) === "off" || !env.IP_SALT) return fail(request, env, 503, "disabled");
+  let body = {};
+  try { body = await request.json(); } catch (e) { /* leer */ }
+  const ip = await ipHash(request, env);
+  if (mode(env) === "private") {
+    const tg = await testerGate(env, ip, body.tester);
+    if (tg.error) return fail(request, env, ...tg.error);
+  }
+  if (!(await takeToken(env.DB, `resolve:${ip}`, limit(env, "resolve")))) return fail(request, env, 429, "rate_limited");
+  let url;
+  try { url = new URL(String(body.url || "").trim().slice(0, 300)); } catch (e) { return fail(request, env, 400, "link"); }
+  if (url.protocol !== "https:" || !SHORT_LINK.test(url.hostname)) return fail(request, env, 400, "link");
+  for (let hop = 0; hop < 4; hop++) {
+    let res;
+    try {
+      res = await fetch(url.toString(), { redirect: "manual", headers: { "user-agent": "Smokr link resolver (+https://shortzn.github.io/smokr/)" } });
+    } catch (e) {
+      return fail(request, env, 502, "link", "unreachable");
+    }
+    if (res.body) await res.body.cancel();
+    const loc = res.status >= 300 && res.status < 400 ? res.headers.get("location") : null;
+    if (!loc) return fail(request, env, 422, "link", "no redirect");
+    url = new URL(loc, url);
+    // Einwilligungsseite: das eigentliche Ziel steht im Parameter "continue"
+    if (/^consent\.google\./i.test(url.hostname) && url.searchParams.get("continue")) url = new URL(url.searchParams.get("continue"));
+    if (MAPS_TARGET.test(url.hostname)) return json(request, env, { ok: true, url: url.toString() });
+    if (!SHORT_LINK.test(url.hostname)) return fail(request, env, 422, "link", "unexpected target");
+  }
+  return fail(request, env, 422, "link", "too many redirects");
 }
 
 async function getPhoto(request, env, id, admin) {
@@ -390,7 +434,7 @@ async function audit(env, action, target, note) {
 async function queue(env) {
   const all = (sql) => env.DB.prepare(sql).all().then((r) => r.results);
   return {
-    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id FROM submissions WHERE status = 'pending' ORDER BY id LIMIT 200"),
+    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, pos_quality, pos_source, address FROM submissions WHERE status = 'pending' ORDER BY id LIMIT 200"),
     reports: await all("SELECT id, created_at, status, spot_id, kind, comment, lang, photo_id, sug_lat, sug_lon FROM reports WHERE status = 'pending' ORDER BY id LIMIT 200"),
     flagged: await all("SELECT p.id, p.status, p.flags, p.owner_type, p.owner_id, GROUP_CONCAT(f.reason) AS reasons FROM photos p JOIN photo_flags f ON f.photo_id = p.id AND f.handled = 0 GROUP BY p.id ORDER BY p.flags DESC LIMIT 100"),
     approved: await all("SELECT id, lat, lon, category, name, reviewed_at FROM submissions WHERE status = 'approved' ORDER BY id DESC LIMIT 300"),
@@ -490,9 +534,10 @@ async function moderate(request, env, type, id) {
         name: "name" in f ? clean(f.name, 80) : row.name,
         floor: "floor" in f ? clean(f.floor, 60) : row.floor,
         note: "note" in f ? clean(f.note, 500) : row.note,
+        posQuality: f.pos_quality != null ? oneOf(f.pos_quality, POS_QUALITY, "pos_quality") : row.pos_quality,
       };
-      await env.DB.prepare("UPDATE submissions SET lat = ?1, lon = ?2, category = ?3, tobacco = ?4, access = ?5, name = ?6, floor = ?7, note = ?8 WHERE id = ?9")
-        .bind(upd.lat, upd.lon, upd.category, upd.tobacco, upd.access, upd.name, upd.floor, upd.note, num).run();
+      await env.DB.prepare("UPDATE submissions SET lat = ?1, lon = ?2, category = ?3, tobacco = ?4, access = ?5, name = ?6, floor = ?7, note = ?8, pos_quality = ?10 WHERE id = ?9")
+        .bind(upd.lat, upd.lon, upd.category, upd.tobacco, upd.access, upd.name, upd.floor, upd.note, num, upd.posQuality).run();
     } catch (e) {
       if (e instanceof InputError) return adminJson({ error: "invalid", detail: e.message }, 400);
       throw e;
@@ -520,7 +565,7 @@ async function exportAll(env) {
   const all = (sql) => env.DB.prepare(sql).all().then((r) => r.results);
   return {
     exported: new Date().toISOString(),
-    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, reviewed_at, review_note, dup_of FROM submissions"),
+    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, pos_quality, pos_source, address, reviewed_at, review_note, dup_of FROM submissions"),
     reports: await all("SELECT id, created_at, status, spot_id, kind, comment, lang, photo_id, sug_lat, sug_lon, reviewed_at, review_note FROM reports"),
     testers: await all("SELECT id, created_at, label, revoked_at, last_used_at, uses FROM testers"),
     photos: await all("SELECT id, created_at, status, owner_type, owner_id, size, width, height, sha256, flags, reviewed_at FROM photos"),
@@ -587,7 +632,8 @@ export default {
       }
       if (path === "/v1/community" && request.method === "GET") return await getCommunity(request, env, ctx);
       if (path === "/v1/status" && request.method === "GET") {
-        return json(request, env, { mode: mode(env), photos: true, max_photo_bytes: MAX_PHOTO }, 200, { "cache-control": "public, max-age=60" });
+        // geocode: Ortssuche über Nominatim abschaltbar ohne neue App-Version (Bedingung der OSMF)
+        return json(request, env, { mode: mode(env), photos: true, max_photo_bytes: MAX_PHOTO, geocode: env.GEOCODE !== "off" }, 200, { "cache-control": "public, max-age=60" });
       }
       let m = path.match(/^\/v1\/photos\/([0-9a-f]{32})$/);
       if (m && request.method === "GET") return await getPhoto(request, env, m[1], false);
@@ -595,6 +641,7 @@ export default {
         // Schreiben nur von der eigenen App
         if (!allowedOrigin(request, env)) return fail(request, env, 403, "forbidden");
         if (path === "/v1/tester") return await testerCheck(request, env);
+        if (path === "/v1/resolve-link") return await resolveLink(request, env);
         if (path === "/v1/submissions") return await postSubmission(request, env);
         if (path === "/v1/reports") return await postReport(request, env);
         m = path.match(/^\/v1\/photos\/([0-9a-f]{32})\/flag$/);

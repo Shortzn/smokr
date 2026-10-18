@@ -26,6 +26,7 @@
       if (!res.ok) { runtime.mode = null; return null; }
       const j = await res.json();
       runtime.mode = ["off", "private", "public"].includes(j.mode) ? j.mode : null;
+      runtime.geocode = j.geocode !== false;
       return runtime.mode;
     } catch (e) {
       runtime.mode = null;
@@ -38,6 +39,10 @@
       if (code) localStorage.setItem("kitsuen.tester", JSON.stringify(code));
       else localStorage.removeItem("kitsuen.tester");
     } catch (e) { /* privater Modus */ }
+  }
+  /** Google-Maps-Kurzlink über den eigenen Worker auflösen (liest nur die Weiterleitung). */
+  async function resolveLink(url) {
+    return request("/v1/resolve-link", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ url, tester: runtime.tester || undefined }) });
   }
   async function checkTester(code) {
     return request("/v1/tester", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code }) });
@@ -177,11 +182,12 @@
     if (c === "tester") return "err.tester";
     if (c === "storage") return "err.storage";
     if (c === "duplicate") return "err.duplicate";
+    if (c === "link") return "loc.badLink";
     if (c === "photo_type") return "photo.type";
     if (c === "photo_big") return "photo.tooBig";
     if (c === "photo_read") return "photo.read";
     return "err.server";
   }
 
-  root.SmokrCommunity = { enabled, configured, runtime, fetchStatus, setTester, checkTester, fetchCommunity, photoUrl, mountTurnstile, preparePhoto, submitPlace, submitReport, flagPhoto, errorKey, CommunityError };
+  root.SmokrCommunity = { enabled, configured, runtime, fetchStatus, setTester, checkTester, resolveLink, fetchCommunity, photoUrl, mountTurnstile, preparePhoto, submitPlace, submitReport, flagPhoto, errorKey, CommunityError };
 })(window);

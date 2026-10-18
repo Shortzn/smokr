@@ -64,6 +64,22 @@ R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und das Fotobudget vo
   - Ausgeblendete Plätze verschwinden.
   - Offline nutzt die App den zuletzt geladenen Stand.
 
+### Ort finden beim Hinzufügen
+
+Drei Wege, die Nadel zu setzen. Die Nadel steht immer in der Kartenmitte, Suche und GPS bewegen nur die Karte.
+
+| Weg | Dienst | Bedingungen |
+|---|---|---|
+| Name (Restaurant, Geschäft, Bahnhof) | Nominatim der OpenStreetMap Foundation | nur auf Knopfdruck, kein Autocomplete, höchstens 1 Anfrage pro Sekunde, Ergebnisse im Speicher, Quelle angezeigt. Abschaltbar ohne neue App-Version: Variable `GEOCODE=off` im Worker, `/v1/status` meldet es. [Richtlinie](https://operations.osmfoundation.org/policies/nominatim/) |
+| Japanische Adresse | Geolonia-Adressdaten (Adress-Basisregister der Digital Agency) | CC BY 4.0, ohne Schlüssel, bis zur Hausnummer. Quelle angezeigt. |
+| Google-Maps-Link, Koordinaten | keiner, die Position steht im Link | Ortsmarke (`!3d…!4d…`) gilt als Ort, `@…` nur als Kartenausschnitt (ungefähr). |
+| Kurzlink `maps.app.goo.gl` | eigener Worker, `POST /v1/resolve-link` | liest nur die Weiterleitung, keine Inhalte von Google; nur mit Testercode, 30 pro Gerät und Tag, nur Google-Kurzlink-Adressen. |
+| GPS, Karte | keiner | wie bisher |
+
+**Genauigkeit:** Eine Suche findet das Gebäude, nicht den Raucherraum darin. Deshalb fragt das Formular „Wie genau sitzt die Nadel?“ (genau am Raucherplatz, am Gebäude oder Eingang, nur ungefähr). Voreinstellung: GPS und Karte „genau“, Suche „Gebäude“, Ortsteil oder Kartenausschnitt „ungefähr“. Gespeichert werden `pos_quality`, `pos_source` und die gefundene Adresse (Migration 0003). In der App erscheint „Position des Gebäudes“ mit Hinweis, in der Moderation lässt sich die Genauigkeit korrigieren.
+
+**Nicht verwendet:** die Adresssuche des GSI (laut GSI vor allem für die eigene Karte gedacht, ohne Zusage für Dritte) und keine kostenpflichtigen Dienste (Google Geocoding, Mapbox).
+
 ### Modus: aus, privat, öffentlich
 
 Der Schalter heißt `COMMUNITY_MODE` und steht in `worker/wrangler.toml`. Er wirkt auf dem Server, nicht nur in der App.

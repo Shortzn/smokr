@@ -1,0 +1,243 @@
+/* Ort finden beim Hinzufügen eines Raucherplatzes: Name, Adresse, Google-Maps-Link oder Koordinaten.
+   Läuft im Browser und in Node (Tests).
+
+   Dienste (nur wenn jemand ausdrücklich sucht, kein Autocomplete):
+   - Namen (Restaurant, Geschäft, Bahnhof): Nominatim von OpenStreetMap. Höchstens 1 Anfrage pro Sekunde,
+     Ergebnisse werden im Speicher behalten. https://operations.osmfoundation.org/policies/nominatim/
+   - Japanische Adressen: Geolonia-Adressdaten (Adress-Basisregister der Digital Agency, CC BY 4.0).
+     Bis zur Hausnummer, ohne Schlüssel. https://github.com/geolonia/japanese-addresses-v2
+   - Google-Maps-Links: Koordinaten stehen im Link selbst. Kurzlinks (maps.app.goo.gl) löst der eigene
+     Worker auf, er liest nur die Weiterleitung, keine Inhalte von Google. */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  else root.SmokrLocate = api;
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+  const ADDR_API = "https://japanese-addresses-v2.geoloniamaps.com/api/ja";
+
+  const inJapan = (lat, lon) => lat >= 24 && lat <= 46 && lon >= 122.9 && lon <= 146;
+  const num = (x) => (x == null || x === "" ? NaN : Number(x));
+
+  // ---------- Links und Koordinaten ----------
+  const SHORT_HOSTS = /^(maps\.app\.goo\.gl|goo\.gl|g\.co)$/i;
+  const MAP_HOSTS = /(^|\.)google\.[a-z.]+$|^maps\.apple\.com$|^(www\.)?openstreetmap\.org$/i;
+
+  /** Liest Position und Namen aus einem Karten-Link oder aus "35.68, 139.76".
+      {lat, lon, name, precise} | {short: url} | {error: "link"|"outside"} | null (kein Link) */
+  function parseLink(text) {
+    const s = String(text || "").trim();
+    if (!s) return null;
+    // Reine Koordinaten, auch aus der Zwischenablage von Google Maps ("35.6812, 139.7671")
+    const plain = s.match(/^(-?\d{1,2}\.\d{3,})\s*[, ]\s*(-?\d{2,3}\.\d{3,})$/);
+    if (plain) return point(+plain[1], +plain[2], "", true);
+    let url;
+    try { url = new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`); } catch (e) { return null; }
+    if (!/^[\w.-]+\.[a-z]{2,}$/i.test(url.hostname) || !/[./]/.test(s)) return null;
+    const host = url.hostname.toLowerCase();
+    if (SHORT_HOSTS.test(host)) return { short: url.toString() };
+    if (!MAP_HOSTS.test(host)) return /^https?:\/\//i.test(s) ? { error: "link" } : null;
+    const full = decodeURIComponent(url.pathname + url.search + url.hash);
+    let name = "";
+    const place = url.pathname.match(/\/maps\/place\/([^/@]+)/);
+    if (place) name = decodeURIComponent(place[1].replace(/\+/g, " ")).normalize("NFC").trim();
+    // 1. Genaue Ortsmarke eines Eintrags (!3d Breite !4d Länge)
+    let m = full.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (m) return point(+m[1], +m[2], name, true);
+    // 2. Ausdrückliche Position in Parametern
+    for (const key of ["q", "query", "ll", "destination", "daddr", "center", "coordinate", "mlat"]) {
+      const v = url.searchParams.get(key);
+      if (!v) continue;
+      if (key === "mlat") {
+        const lon = url.searchParams.get("mlon");
+        if (lon) return point(num(v), num(lon), name, true);
+        continue;
+      }
+      m = v.match(/^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/);
+      if (m) return point(+m[1], +m[2], name, true);
+      if (key === "q" || key === "query") name = name || v.trim();
+    }
+    // 3. Nur der Kartenausschnitt (@Breite,Länge,Zoom): ungefähr, nicht der Eintrag selbst
+    m = full.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (m) return point(+m[1], +m[2], name, false);
+    // OpenStreetMap: #map=Zoom/Breite/Länge
+    m = (url.hash || "").match(/map=\d+(?:\.\d+)?\/(-?\d+\.\d+)\/(-?\d+\.\d+)/);
+    if (m) return point(+m[1], +m[2], name, false);
+    return name ? { name, error: "nocoords" } : { error: "link" };
+  }
+  function point(lat, lon, name, precise) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return { error: "link" };
+    if (!inJapan(lat, lon)) return { error: "outside" };
+    return { lat: +lat.toFixed(6), lon: +lon.toFixed(6), name: name || "", precise: !!precise };
+  }
+
+  // ---------- Japanische Adressen ----------
+  const PREFS = ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県",
+    "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県", "滋賀県",
+    "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県",
+    "高知県", "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"];
+  const KANJI = { 〇: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+  function kanjiNum(s) {
+    if (/^\d+$/.test(s)) return +s;
+    if (s === "十") return 10;
+    const m = s.match(/^([一二三四五六七八九])?十([一二三四五六七八九])?$/);
+    if (m) return (m[1] ? KANJI[m[1]] : 1) * 10 + (m[2] ? KANJI[m[2]] : 0);
+    if ([...s].every((c) => c in KANJI)) return +[...s].map((c) => KANJI[c]).join("");
+    return NaN;
+  }
+  /** Vereinheitlicht Schreibweisen: Vollbreite, Bindestriche, 〒, Leerzeichen, "番地", "号". */
+  function normalizeAddress(text) {
+    return String(text || "").normalize("NFKC")
+      .replace(/^〒?\s*\d{3}-?\d{4}\s*/, "")
+      .replace(/^日本[、,\s]*/, "")
+      // Striche nur zwischen Zahlen vereinheitlichen; "ー" in Namen wie センター bleibt
+      .replace(/(\d)\s*[‐‑‒–—―−ーｰ－]\s*(?=\d)/g, "$1-")
+      .replace(/\s+/g, "")
+      .replace(/(\d)番地?の?(\d)/g, "$1-$2").replace(/(\d)番地?$/, "$1").replace(/(\d)号/g, "$1")
+      .replace(/([一二三四五六七八九十〇\d]+)丁目-?/g, (all, n) => `${kanjiNum(n)}丁目`);
+  }
+  /** Sieht der Text wie eine japanische Adresse aus (Präfektur, Stadt oder Bezirk mit Hausnummer)? */
+  function looksLikeAddress(text) {
+    const s = normalizeAddress(text);
+    if (PREFS.some((p) => s.startsWith(p))) return true;
+    return /[市区町村]/.test(s) && /\d/.test(s) && /[぀-ヿ一-鿿]/.test(s);
+  }
+  /** Zerlegt den Rest nach dem Ortsteil: "1丁目22-7", "1-22-7", "22-7" */
+  function splitNumbers(rest) {
+    const m = rest.match(/^(\d+)丁目(\d+)?(?:-(\d+))?/) || rest.match(/^(\d+)(?:-(\d+))?(?:-(\d+))?/);
+    if (!m) return { chome: null, blk: null, no: null };
+    if (/丁目/.test(m[0])) return { chome: +m[1], blk: m[2] ? +m[2] : null, no: m[3] ? +m[3] : null };
+    return { chome: +m[1], blk: m[2] ? +m[2] : null, no: m[3] ? +m[3] : null, ambiguous: true };
+  }
+
+  const cache = new Map();
+  async function getJson(fetchFn, url) {
+    if (cache.has(url)) return cache.get(url);
+    const p = fetchFn(url).then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
+    cache.set(url, p);
+    p.catch(() => cache.delete(url));
+    return p;
+  }
+  const enc = (s) => encodeURIComponent(s);
+
+  /** Japanische Adresse in eine Position. {lat, lon, label, level: "house"|"block"|"district"|"city"} oder null */
+  async function geocodeAddress(text, fetchFn, near) {
+    const f = fetchFn || fetch;
+    let s = normalizeAddress(text);
+    const ja = await getJson(f, `${ADDR_API}.json`);
+    let pref = ja.data.find((p) => s.startsWith(p.pref));
+    if (pref) s = s.slice(pref.pref.length);
+    // Stadt und, bei Großstädten, Stadtbezirk ("大阪市中央区"); längster Treffer gewinnt
+    const cityName = (c) => (c.city || "") + (c.ward || "");
+    const candidates = [];
+    for (const p of pref ? [pref] : ja.data) {
+      for (const c of p.cities) {
+        for (const n of [cityName(c), c.ward || null].filter(Boolean)) if (s.startsWith(n)) candidates.push([p, c, n]);
+      }
+    }
+    if (!candidates.length) return null;
+    candidates.sort((a, b) => b[2].length - a[2].length);
+    // Ohne Präfektur: "中央区" gibt es in Tokio, Osaka und anderswo. Dann entscheidet die Nähe zur Karte.
+    const best = candidates.filter((c) => c[2] === candidates[0][2]);
+    if (!pref && best.length > 1) {
+      if (!near) return null;
+      const d = (c) => (c.point ? (c.point[0] - near[0]) ** 2 + (c.point[1] - near[1]) ** 2 : Infinity);
+      best.sort((a, b) => d(a[1]) - d(b[1]));
+    }
+    let city;
+    [pref, city] = best[0];
+    s = s.slice(best[0][2].length);
+    const label0 = pref.pref + cityName(city);
+    const towns = (await getJson(f, `${ADDR_API}/${enc(pref.pref)}/${enc(cityName(city))}.json`)).data;
+    // Ortsteil: längster passender Name, bei mehreren Chōme der richtige
+    const names = [...new Set(towns.map((t) => t.oaza_cho))].filter((n) => n && s.startsWith(n)).sort((a, b) => b.length - a.length);
+    if (!names.length) return pointOf(city.point, label0, "city");
+    const oaza = names[0];
+    const rest = s.slice(oaza.length);
+    const nums = splitNumbers(rest);
+    let town = towns.find((t) => t.oaza_cho === oaza && nums.chome != null && t.chome_n === nums.chome);
+    let blk = nums.blk, no = nums.no;
+    if (!town) {
+      // Ortsteil ohne Chōme: die Zahlen sind Block und Hausnummer
+      town = towns.find((t) => t.oaza_cho === oaza && !t.chome_n) || towns.find((t) => t.oaza_cho === oaza);
+      if (nums.ambiguous && town && !town.chome_n) { blk = nums.chome; no = nums.blk; }
+    }
+    if (!town) return null;
+    const label = `${label0}${town.oaza_cho}${town.chome || ""}`;
+    if (blk == null) return pointOf(town.point, label, "district");
+    const kind = town.rsdt ? "住居表示" : "地番";
+    const range = town.csv_ranges && town.csv_ranges[kind];
+    if (!range) return pointOf(town.point, label, "district");
+    const rows = await getRows(f, `${ADDR_API}/${enc(pref.pref)}/${enc(`${cityName(city)}-${kind}.txt`)}`, range);
+    const key = town.rsdt ? ["blk_num", "rsdt_num"] : ["prc_num1", "prc_num2"];
+    const exact = no != null && rows.find((r) => +r[key[0]] === blk && +r[key[1]] === no && r.lat);
+    if (exact) return pointOf([+exact.lng, +exact.lat], `${label}${blk}-${no}`, "house");
+    const inBlock = rows.filter((r) => +r[key[0]] === blk && r.lat);
+    if (inBlock.length) {
+      const lon = inBlock.reduce((a, r) => a + +r.lng, 0) / inBlock.length;
+      const lat = inBlock.reduce((a, r) => a + +r.lat, 0) / inBlock.length;
+      return pointOf([lon, lat], `${label}${blk}`, "block");
+    }
+    return pointOf(town.point, label, "district");
+  }
+  function pointOf(lonlat, label, level) {
+    if (!lonlat || !inJapan(lonlat[1], lonlat[0])) return null;
+    return { lat: +(+lonlat[1]).toFixed(6), lon: +(+lonlat[0]).toFixed(6), label, level };
+  }
+  async function getRows(fetchFn, url, range) {
+    const key = `${url}#${range.start}`;
+    if (cache.has(key)) return cache.get(key);
+    const p = fetchFn(url, { headers: { Range: `bytes=${range.start}-${range.start + range.length - 1}` } })
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
+      .then((text) => {
+        const lines = text.split("\n").slice(1).filter(Boolean);
+        const head = lines.shift().split(",");
+        return lines.map((l) => Object.fromEntries(l.split(",").map((v, i) => [head[i], v])));
+      });
+    cache.set(key, p);
+    p.catch(() => cache.delete(key));
+    return p;
+  }
+
+  // ---------- Namen über Nominatim ----------
+  let lastCall = 0;
+  /** Sucht Orte in Japan. Höchstens eine Anfrage pro Sekunde, gleiche Suche kommt aus dem Speicher. */
+  async function searchPlaces(query, opts, fetchFn) {
+    const f = fetchFn || fetch;
+    const o = opts || {};
+    const q = String(query || "").trim().slice(0, 120);
+    if (q.length < 2) return [];
+    const p = new URLSearchParams({ q, format: "jsonv2", countrycodes: "jp", limit: "6", addressdetails: "1", "accept-language": o.lang || "en" });
+    if (o.near) {
+      // Nähe bevorzugen, ohne andere Orte auszuschließen
+      const [lon, lat] = o.near, d = 0.25;
+      p.set("viewbox", `${lon - d},${lat + d},${lon + d},${lat - d}`);
+    }
+    const url = `${NOMINATIM}?${p}`;
+    if (cache.has(url)) return cache.get(url);
+    const wait = lastCall + 1100 - Date.now();
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    lastCall = Date.now();
+    const res = f(url, { headers: { Accept: "application/json" } })
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then((list) => (Array.isArray(list) ? list : []).map(placeOf).filter(Boolean));
+    cache.set(url, res);
+    res.catch(() => cache.delete(url));
+    return res;
+  }
+  const AREA_TYPES = /^(city|town|village|suburb|quarter|neighbourhood|county|state|region|postcode|road|municipality|city_district|district|hamlet|island)$/;
+  function placeOf(x) {
+    const lat = num(x.lat), lon = num(x.lon);
+    if (!inJapan(lat, lon)) return null;
+    const a = x.address || {};
+    const name = x.name || (x.display_name || "").split(",")[0];
+    const area = [a.neighbourhood || a.quarter || a.suburb, a.city_district || a.city || a.town || a.village].filter(Boolean).join(", ");
+    // Einzelner Ort (Restaurant, Gebäude, Bahnhof) oder nur eine Gegend?
+    const level = AREA_TYPES.test(x.addresstype || "") || AREA_TYPES.test(x.type || "") ? "district" : "building";
+    return { lat: +lat.toFixed(6), lon: +lon.toFixed(6), name, area, label: x.display_name || name, level, kind: x.type || "" };
+  }
+
+  return { parseLink, normalizeAddress, looksLikeAddress, geocodeAddress, searchPlaces, kanjiNum, inJapan, _cache: cache };
+});

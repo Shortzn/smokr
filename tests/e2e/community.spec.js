@@ -213,3 +213,27 @@ test("Meldung: falsche Position schickt den Vorschlag aus der Kartenmitte", asyn
   expect(Math.abs(rep.sug_lat - c[1])).toBeLessThan(0.00001);
   expect(errors, errors.join("\n")).toEqual([]);
 });
+
+test("Platz per Namenssuche: Genauigkeit und Herkunft kommen in der Moderation an", async ({ page, context }, info) => {
+  test.skip(info.project.name !== "iphone-15-webkit", "ein Profil reicht");
+  const FX = require("../unit/locate-fixtures.js");
+  await withCommunity(context);
+  await context.route("https://nominatim.openstreetmap.org/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify(FX.NOMINATIM) }));
+  const errors = await H.open(page, context, await unlocked());
+  await page.click("#add-btn");
+  await page.fill("#loc-q", "Ichiran Shibuya");
+  await page.click("[data-loc-search]");
+  await page.locator(".loc-result").first().click();
+  await expect(page.locator("#loc-label")).toHaveText("Ichiran");
+  await page.fill("#f-floor", "B1");
+  await expect(page.locator(".ts-stub")).toBeVisible();
+  await page.click("#form-submit");
+  await expect(page.locator(".form-done")).toBeVisible();
+  const q = await adminCall("/admin/api/queue");
+  const sub = q.submissions.find((s) => s.name === "Ichiran" && s.floor === "B1");
+  expect(sub.pos_quality).toBe("building");
+  expect(sub.pos_source).toBe("search");
+  expect(sub.address).toBe("Ichiran, Jinnan 1, Shibuya");
+  expect(Math.abs(sub.lat - 35.6610233)).toBeLessThan(0.0002);
+  expect(errors, errors.join("\n")).toEqual([]);
+});

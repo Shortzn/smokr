@@ -315,3 +315,16 @@ test("Lage im Gebäude unterscheidet Räume am selben Ort", () => {
   assert.equal(C.dirText(a), "南西側");
   C.setLang("de");
 });
+
+test("Übersetzungen: kein Schlüssel doppelt (der zweite würde den ersten still überschreiben)", () => {
+  const src = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "..", "app", "i18n.js"), "utf8");
+  // Blöcke der drei Sprachen getrennt prüfen
+  const parts = src.split(/\n\s{2}const (?:en|de|ja) = \{/).slice(1);
+  assert.equal(parts.length, 3);
+  for (const part of parts) {
+    const body = part.split(/\n\s{2}\};/)[0];
+    const keys = [...body.matchAll(/"([a-zA-Z0-9_.]+)":/g)].map((m) => m[1]);
+    const dup = keys.filter((k, i) => keys.indexOf(k) !== i);
+    assert.deepEqual(dup, []);
+  }
+});

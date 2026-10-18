@@ -168,6 +168,7 @@ function rowHtml(d, s) {
   if (tr.community && tr.community.confirmed) src.push(`✓ ${tr.community.confirmed}`);
   if (tr.position === "area") src.push(t("src.posArea"));
   else if (tr.position === "address") src.push(t("src.posAddress"));
+  else if (tr.position === "building") src.push(t("src.posBuilding"));
   if (tr.mine) src.push(t(tr.mine.status === "ok" ? "src.mineOk" : "src.mineGone"));
   return `<li><button class="row${kind === "gone" ? " gone" : ""}" data-id="${esc(s.id)}">
     ${M.svg(kind, null, 30)}
@@ -595,7 +596,7 @@ function initMap() {
     updateMapData();
     applyPadding();
   });
-  map.on("dragstart", (e) => { if (e.originalEvent) dispatchLoc({ type: "userPan" }); });
+  map.on("dragstart", (e) => { if (e.originalEvent) { dispatchLoc({ type: "userPan" }); onFormPinMoved(); } });
   map.on("zoomstart", (e) => { if (e.originalEvent && e.originalEvent.type === "wheel") dispatchLoc({ type: "userPan" }); });
   map.on("move", () => { if (state.view === "form") positionPin(); });
   map.on("moveend", () => {
@@ -621,6 +622,15 @@ function applyPadding() {
 function dispatchLoc(ev) {
   const { state: next, effects } = C.locationReduce(state.loc, ev);
   state.loc = next;
+  // Formular wartet auf GPS ("Mein Standort")
+  const fl = state.form && state.form.loc;
+  if (fl && fl.awaitGps) {
+    if (ev.type === "fix" && state.loc.pos) setTimeout(applyGps, 0);
+    if (ev.type === "denied" || ev.type === "unavailable") {
+      Object.assign(fl, { awaitGps: false, busy: false, error: t("loc.gpsDenied") });
+      setTimeout(renderLocBox, 0);
+    }
+  }
   for (const fx of effects) {
     if (fx.type === "watch") startWatch();
     if (fx.type === "center" && map) {
@@ -777,10 +787,7 @@ function renderForm() {
   let body;
   if (f.type === "place") {
     body = `<h2 class="form-title">${esc(t("add.title"))}</h2>
-      <fieldset><legend>${esc(t("add.step.position"))}</legend>
-        <p class="hint-text">${esc(t("add.pinHint"))}</p>
-        <button type="button" class="btn secondary wide" data-form-gps>${esc(t("add.useGps"))}</button>
-      </fieldset>
+      <fieldset id="loc-box" class="loc-box"></fieldset>
       <fieldset><legend>${esc(t("add.category"))}</legend>${radios("category", [["public", "add.cat.public"], ["shop", "add.cat.shop"], ["room", "add.cat.room"]], f.category || "public")}</fieldset>
       <fieldset><legend>${esc(t("add.tobacco"))}</legend>${radios("tobacco", [["all", "add.tob.all"], ["heated", "add.tob.heated"], ["unknown", "add.tob.unknown"]], f.tobacco || "unknown")}</fieldset>
       <fieldset><legend>${esc(t("add.access"))}</legend>${radios("access", [["public", "add.acc.public"], ["customers", "add.acc.customers"], ["unknown", "add.acc.unknown"]], f.access || "unknown")}</fieldset>
@@ -802,9 +809,10 @@ function renderForm() {
       <p class="fine">${esc(t("add.privacy"))}</p>
       <p class="form-error" id="form-error" role="alert"${f.error ? "" : " hidden"}>${esc(f.error)}</p>
       <button class="btn primary wide" id="form-submit"${f.sending ? " disabled" : ""}>${esc(t(f.sending ? "add.sending" : f.type === "place" ? "add.submit" : "report.submit"))}</button>
-      <p class="fine form-note">${esc(t("add.textNote"))}${CFG.legalUrl ? ` <a href="${esc(CFG.legalUrl)}${t.lang === "de" ? "#de" : "#en-privacy"}" target="_blank" rel="noopener">${esc(t("add.privacy"))}</a>` : ""}</p>
+      <p class="fine form-note">${esc(t("add.textNote"))}${CFG.legalUrl ? ` <a href="${esc(CFG.legalUrl)}${t.lang === "de" ? "#de" : "#en-privacy"}" target="_blank" rel="noopener">${esc(t("add.privacyLink"))}</a>` : ""}</p>
     </form>`;
   renderPhotoBox();
+  renderLocBox();
   mountCaptcha();
 }
 /** Nur der Fotobereich wird neu gezeichnet, damit Eingaben und Turnstile erhalten bleiben. */
@@ -820,6 +828,164 @@ function renderPhotoBox() {
         : `<label class="btn secondary wide file-btn"><input type="file" id="f-photo" accept="image/*" hidden>${esc(t("add.photoPick"))}</label>`}
       ${f.photo ? `<label class="check-row"><input type="checkbox" id="f-consent"${agreed ? " checked" : ""}><span>${esc(t("add.consent"))}</span></label>` : ""}`;
 }
+// ---------- Position beim Hinzufügen: Suchen, Mein Standort, Karte ----------
+/* Die Nadel bleibt immer in der Kartenmitte. Suche und GPS bewegen nur die Karte; danach kann man
+   die Nadel durch Verschieben der Karte genau setzen. Wie genau sie sitzt, sagt die Person selbst. */
+const LOC = window.SmokrLocate;
+function locOf(f) {
+  if (!f.loc) f.loc = { mode: "search", source: "map", quality: "exact", label: "", address: "", query: "", results: null, attr: "", busy: false, error: "", note: "" };
+  return f.loc;
+}
+function renderLocBox() {
+  const f = state.form;
+  const box = document.getElementById("loc-box");
+  if (!f || !box) return;
+  const L = locOf(f);
+  const tab = (m, key) => `<button type="button" class="seg-btn" data-loc-mode="${m}" aria-pressed="${L.mode === m}">${esc(t(key))}</button>`;
+  let body = "";
+  if (L.mode === "search") {
+    body = `<div class="loc-search">
+        <input id="loc-q" type="search" enterkeyhint="search" inputmode="search" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="300"
+          placeholder="${esc(t("loc.placeholder"))}" aria-label="${esc(t("loc.placeholder"))}" value="${esc(L.query)}">
+        <button type="button" class="btn secondary" data-loc-search${L.busy ? " disabled" : ""}>${esc(t(L.busy ? "loc.searching" : "loc.search"))}</button>
+      </div>
+      ${L.label && !L.results ? "" : `<p class="hint-text">${esc(t("loc.searchHint"))}</p>`}`;
+    if (L.results && L.results.length) {
+      body += `<ul class="loc-results">${L.results.map((r, i) => `<li><button type="button" class="loc-result" data-loc-pick="${i}">
+        <span class="loc-name">${esc(r.name)}</span>${r.sub ? `<span class="loc-sub">${esc(r.sub)}</span>` : ""}</button></li>`).join("")}</ul>`;
+    }
+  } else if (L.mode === "gps") {
+    body = `<p class="hint-text">${esc(t(L.busy ? "loc.gpsBusy" : "loc.gpsHint"))}</p>`;
+  } else {
+    body = `<p class="hint-text">${esc(t("add.pinHint"))}</p>`;
+  }
+  if (L.error) body += `<p class="form-error loc-error" role="alert">${esc(L.error)}</p>`;
+  if (L.attr) body += `<p class="fine loc-attr">${esc(t(L.attr))}</p>`;
+  const label = L.label || t("loc.mapLabel");
+  const card = `<div class="loc-card" aria-live="polite">
+      <p class="loc-chosen"><strong>${esc(t("loc.chosen"))}:</strong> <span id="loc-label">${esc(label)}</span></p>
+      ${L.address && L.address !== label ? `<p class="fine">${esc(L.address)}</p>` : ""}
+      ${L.note ? `<p class="fine loc-note">${esc(L.note)}</p>` : ""}
+      <p class="loc-q-label">${esc(t("loc.quality"))}</p>
+      ${radios("posq", [["exact", "loc.q.exact"], ["building", "loc.q.building"], ["approx", "loc.q.approx"]], L.quality)}
+      ${L.quality !== "exact" ? `<p class="hint-text">${esc(t("loc.qualityHint"))}</p>` : ""}
+    </div>`;
+  // Ist eine Position übernommen, steht sie direkt unter den Knöpfen: im halb offenen Blatt sofort sichtbar
+  box.innerHTML = `<legend>${esc(t("add.step.position"))}</legend>
+    <div class="seg" role="group" aria-label="${esc(t("add.step.position"))}">${tab("search", "loc.tabSearch")}${tab("gps", "loc.tabGps")}${tab("map", "loc.tabMap")}</div>
+    ${L.label ? card + body : body + card}`;
+}
+function setLocMode(mode) {
+  const f = state.form;
+  if (!f) return;
+  const L = locOf(f);
+  L.mode = mode;
+  L.error = "";
+  if (mode === "gps") {
+    if (state.loc.pos && map) applyGps();
+    else { L.busy = true; L.awaitGps = true; dispatchLoc({ type: "locate" }); }
+  } else L.busy = false;
+  renderLocBox();
+  if (mode === "search") document.getElementById("loc-q")?.focus();
+  if (mode !== "search" && sheet && !sheet.isPanel()) sheet.snap("half");
+}
+function applyGps() {
+  const f = state.form;
+  if (!f || !state.loc.pos || !map) return;
+  const L = locOf(f);
+  L.busy = false; L.awaitGps = false;
+  map.easeTo({ center: state.loc.pos, zoom: Math.max(map.getZoom(), 18), padding: mapPadding() });
+  Object.assign(L, { source: "gps", quality: "exact", label: t("loc.gpsLabel"), address: "", note: "", attr: "", target: { lat: state.loc.pos[1], lon: state.loc.pos[0] } });
+  renderLocBox();
+}
+/** Gefundenen Ort übernehmen: Karte hinbewegen, Nadel steht dann darauf. */
+function applyPlace(p) {
+  const f = state.form;
+  if (!f || !map) return;
+  const L = locOf(f);
+  const zoom = p.level === "house" || p.level === "building" ? 18 : p.level === "block" ? 17 : 15.5;
+  map.easeTo({ center: [p.lon, p.lat], zoom, padding: mapPadding(), duration: 500 });
+  // Eine Suche findet das Gebäude, nicht den Raucherraum darin: höchstens "Gebäude", sonst "ungefähr"
+  const quality = p.level === "house" || p.level === "building" ? "building" : "approx";
+  // Genau diese Position senden, auch wenn die Karte beim Absenden noch dorthin gleitet
+  Object.assign(L, { source: p.source, quality, label: p.label, address: p.address || "", note: p.note || "", results: null, target: { lat: p.lat, lon: p.lon } });
+  const name = document.getElementById("f-name");
+  if (name && !name.value.trim() && p.name) name.value = p.name.slice(0, 80);
+  renderLocBox();
+  if (sheet && !sheet.isPanel()) sheet.snap("half");
+  const sc = document.getElementById("form-scroll");
+  if (sc) sc.scrollTop = 0;
+}
+async function runLocSearch() {
+  const f = state.form;
+  if (!f) return;
+  const L = locOf(f);
+  const q = (document.getElementById("loc-q")?.value || "").trim();
+  L.query = q; L.error = ""; L.results = null; L.attr = "";
+  if (q.length < 2) { L.error = t("loc.tooShort"); renderLocBox(); return; }
+  document.getElementById("loc-q")?.blur();
+  L.busy = true;
+  renderLocBox();
+  const near = map ? [map.getCenter().lng, map.getCenter().lat] : null;
+  try {
+    let link = LOC.parseLink(q);
+    if (link && link.short) {
+      const r = await COM.resolveLink(link.short);
+      link = LOC.parseLink(r && r.url);
+      if (!link || link.short) link = { error: "link" };
+    }
+    if (link && link.lat != null) {
+      applyPlace({ lat: link.lat, lon: link.lon, level: link.precise ? "building" : "district", source: "link",
+        label: link.name || `${link.lat.toFixed(5)}, ${link.lon.toFixed(5)}`, name: link.name, note: link.precise ? "" : t("loc.linkView") });
+    } else if (link && link.error && !(link.error === "nocoords" && link.name)) {
+      L.error = t(link.error === "outside" ? "loc.outside" : "loc.badLink");
+    } else {
+      const text = link && link.name ? link.name : q;
+      let done = false;
+      if (LOC.looksLikeAddress(text)) {
+        const a = await LOC.geocodeAddress(text, fetch, near);
+        if (a) {
+          L.attr = "loc.attrAddr";
+          applyPlace({ lat: a.lat, lon: a.lon, level: a.level, source: "address", label: a.label, address: a.label, note: t(`loc.lvl.${a.level}`) });
+          done = true;
+        }
+      }
+      if (!done) {
+        if (COM.runtime.geocode === false) throw new Error("geocode off");
+        const list = await LOC.searchPlaces(text, { lang: t.lang, near }, fetch);
+        if (!list.length) L.error = t("loc.noResults");
+        else {
+          L.results = list.map((r) => ({ ...r, sub: r.area }));
+          L.attr = "loc.attrOsm";
+        }
+      }
+    }
+  } catch (e) {
+    L.error = e && e.code === "link" ? t("loc.badLink") : e && e.code === "rate_limited" ? t("err.rate_limited") : t("loc.failed");
+  } finally {
+    L.busy = false;
+    renderLocBox();
+  }
+}
+function pickLocResult(i) {
+  const L = state.form && state.form.loc;
+  const r = L && L.results && L.results[i];
+  if (!r) return;
+  applyPlace({ lat: r.lat, lon: r.lon, level: r.level, source: "search", label: r.name, name: r.level === "building" ? r.name : "",
+    address: [r.name, r.area].filter(Boolean).join(", "), note: r.level === "building" ? "" : t("loc.lvl.district") });
+  L.attr = "loc.attrOsm";
+  renderLocBox();
+}
+/** Karte von Hand verschoben, während das Formular offen ist: die Nadel ist jetzt selbst gesetzt. */
+function onFormPinMoved() {
+  const f = state.form;
+  if (!f || f.type !== "place" || state.view !== "form") return;
+  const L = locOf(f);
+  if (L.source === "map" && L.label === t("loc.moved")) return;
+  Object.assign(L, { source: "map", label: t("loc.moved"), busy: false, awaitGps: false, target: null });
+  renderLocBox();
+}
+
 function renderFormError() {
   const el = document.getElementById("form-error");
   if (!el || !state.form) return;
@@ -858,12 +1024,18 @@ async function submitForm() {
   let fields;
   if (f.type === "place") {
     if (!map) { f.error = t("add.needPosition"); renderFormError(); return; }
-    const c = map.getCenter();
+    // Von Hand gesetzt: Kartenmitte. Aus Suche oder GPS: genau der gefundene Punkt.
+    const tg = state.form.loc && state.form.loc.target;
+    const c = tg ? { lat: tg.lat, lng: tg.lon } : map.getCenter();
     if (!C.inJapan(c.lat, c.lng)) { f.error = t("add.outside"); renderFormError(); return; }
     fields = Object.assign(common, {
       lat: c.lat.toFixed(6), lon: c.lng.toFixed(6), category: f.category || "public", tobacco: f.tobacco || "unknown", access: f.access || "unknown",
       name: $("f-name").value.trim(), floor: $("f-floor").value.trim(), note: $("f-note").value.trim(),
     });
+    const L = locOf(f);
+    fields.pos_quality = L.quality;
+    fields.pos_source = L.source;
+    if (L.address) fields.address = L.address.slice(0, 200);
   } else {
     fields = Object.assign(common, { spot_id: f.spotId, kind: f.kind || "found", comment: $("f-comment").value.trim() });
     if (fields.kind === "position" && map) {
@@ -1054,6 +1226,11 @@ function wire() {
   };
   $("form-scroll").addEventListener("change", (e) => {
     if (e.target.id === "f-photo" && e.target.files && e.target.files[0]) onPhoto(e.target.files[0]);
+    if (e.target.type === "radio" && e.target.name === "posq" && state.form) {
+      locOf(state.form).quality = e.target.value;
+      renderLocBox();
+      return;
+    }
     if (e.target.type === "radio") {
       captureChoices();
       if (e.target.name === "kind" && state.form) {
@@ -1070,10 +1247,18 @@ function wire() {
   $("form-scroll").addEventListener("click", (e) => {
     if (e.target.closest("[data-photo-remove]") && state.form) { URL.revokeObjectURL(state.form.photo.url); state.form.photo = null; renderPhotoBox(); }
     if (e.target.closest("[data-form-close]")) closeForm();
-    if (e.target.closest("[data-form-gps]")) {
-      if (state.loc.pos && map) map.easeTo({ center: state.loc.pos, zoom: Math.max(map.getZoom(), 17), padding: mapPadding() });
-      else dispatchLoc({ type: "locate" });
-    }
+    const mode = e.target.closest("[data-loc-mode]");
+    if (mode) setLocMode(mode.dataset.locMode);
+    if (e.target.closest("[data-loc-search]")) runLocSearch();
+    const pick = e.target.closest("[data-loc-pick]");
+    if (pick) pickLocResult(+pick.dataset.locPick);
+  });
+  // Enter im Suchfeld sucht, statt das ganze Formular abzuschicken
+  $("form-scroll").addEventListener("keydown", (e) => {
+    if (e.target.id === "loc-q" && e.key === "Enter") { e.preventDefault(); runLocSearch(); }
+  });
+  $("form-scroll").addEventListener("input", (e) => {
+    if (e.target.id === "loc-q" && state.form) locOf(state.form).query = e.target.value;
   });
   $("form-scroll").addEventListener("submit", (e) => { e.preventDefault(); submitForm(); });
   document.addEventListener("click", (e) => {
@@ -1125,6 +1310,8 @@ function initSheet() {
   });
   document.body.dataset.sheet = sheet.state;
   $("sheet").addEventListener("focusin", (e) => {
+    // Ortssuche: ganz öffnen, damit Feld und Knopf über der iPhone-Tastatur bleiben
+    if (e.target.id === "loc-q" && !sheet.isPanel() && sheet.state !== "expanded") { sheet.snap("expanded"); return; }
     if (sheet.isPanel() || sheet.state !== "collapsed") return;
     if (e.target.closest(".scroll")) sheet.snap("half");
   });
