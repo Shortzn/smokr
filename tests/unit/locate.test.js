@@ -22,7 +22,7 @@ test("Google-Maps-Links: genaue Ortsmarke, Parameter, nur Ausschnitt, Kurzlink",
 test("Links: ungültig, außerhalb Japans, ohne Position, kein Link", () => {
   assert.deepEqual(L.parseLink("https://www.google.com/maps/place/Paris/@48.85,2.35,12z"), { error: "outside" });
   assert.deepEqual(L.parseLink("https://example.com/foo"), { error: "link" });
-  assert.deepEqual(L.parseLink("https://www.google.com/maps/place/Nur+Name"), { name: "Nur Name", error: "nocoords" });
+  assert.deepEqual(L.parseLink("https://www.google.com/maps/place/Nur+Name"), { error: "nocoords", name: "Nur Name", address: "", idOnly: false });
   assert.equal(L.parseLink("Ichiran Shibuya"), null);
   assert.equal(L.parseLink("東京都渋谷区神南1-22-7"), null);
   assert.equal(L.parseLink(""), null);
@@ -80,4 +80,38 @@ test("Namen: Nominatim nur für Japan, mit Sprache, ohne Autocomplete, gespeiche
   await L.searchPlaces("Ichiran Shibuya", { lang: "de", near: [139.7, 35.66] }, f);
   assert.equal(f.calls.filter((c) => /nominatim/.test(c.url)).length, 1, "gleiche Suche nicht noch einmal anfragen");
   assert.deepEqual(await L.searchPlaces("x", {}, f), [], "zu kurz: keine Anfrage");
+});
+
+// Echter Link aus dem iPhone-Test am 19.10.2026 (aus der Google-Suche kopiert)
+const REAL_FTID = "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56?entry=s&sa=X&ved=2ahUKEwikkoHl08SXAxX5luEIHT1FOHoQ4kB6BAgaEAA&hl=de";
+
+test("Google-Link nur mit interner Kennung: erkannt, kein Ort vorgetäuscht", () => {
+  const r = L.parseLink(REAL_FTID);
+  assert.deepEqual(r, { error: "nocoords", name: "", address: "", idOnly: true });
+  assert.equal(r.lat, undefined, "keine Position erfunden");
+  // Ähnliche Formen
+  assert.equal(L.parseLink("https://www.google.com/maps?cid=4120480412192316502").idOnly, true);
+  assert.equal(L.parseLink("https://maps.apple.com/place?place-id=I6E2B7545FF8F3615&_provider=9902").idOnly, true);
+  const named = L.parseLink("https://maps.google.com/?q=Ichiran+Shibuya&ftid=0x60188ca8b7b3a1b1:0x22ae3f2c5d4f3e1a");
+  assert.equal(named.name, "Ichiran Shibuya", "Name im Link wird für die Suche genutzt");
+  assert.equal(L.parseLink("https://www.google.com/maps/search/?api=1&query=Ichiran&query_place_id=ChIJabc").name, "Ichiran");
+  const apple = L.parseLink("https://maps.apple.com/place?address=東京都渋谷区神南1-22-7&name=一蘭&place-id=Iabc");
+  assert.equal(apple.address, "東京都渋谷区神南1-22-7");
+  assert.equal(L.parseLink("https://www.google.com/search?q=ichiran+shibuya&ei=abc").name, "ichiran shibuya");
+});
+
+test("Weitere Linkformen aus Google Maps und Apple Karten auf iOS", () => {
+  const dir = L.parseLink("https://www.google.com/maps/dir//Ichiran+Shibuya/@35.66,139.70,17z/data=!4m8!4m7!1m0!1m5!1m1!1s0x60188ca8:0x22ae!2m2!1d139.700933!2d35.661075");
+  assert.deepEqual(dir, { lat: 35.661075, lon: 139.700933, name: "Ichiran Shibuya", precise: true }, "Routenziel");
+  assert.equal(L.parseLink("https://maps.apple.com/place?coordinate=35.661075,139.700933&name=Ichiran").precise, true);
+  assert.deepEqual(L.parseLink("https://maps.apple/p/NNRXb4W4EC0csw"), { short: "https://maps.apple/p/NNRXb4W4EC0csw" });
+  assert.deepEqual(L.parseLink("https://goo.gl/maps/abc123"), { short: "https://goo.gl/maps/abc123" });
+});
+
+test("Referenz-Link für die Moderation: ohne Klickverfolgung, nur Karten-Adressen", () => {
+  assert.equal(L.referenceUrl(REAL_FTID), "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56");
+  assert.equal(L.referenceUrl("https://www.google.com/maps?cid=1&ved=x&ei=y"), "https://www.google.com/maps?cid=1");
+  assert.equal(L.referenceUrl("https://evil.example/maps/place/x"), "");
+  assert.equal(L.referenceUrl("http://maps.google.com/?q=1,2"), "", "nur https");
+  assert.equal(L.referenceUrl("javascript:alert(1)"), "");
 });

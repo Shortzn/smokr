@@ -656,6 +656,64 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test("Google-Link nur mit interner Kennung: ehrlicher Hinweis, Suche nach Name, Link geht mit", async ({ page, context }, info) => {
+    test.skip(!["iphone-15-webkit", "desktop-chromium", "iphone-se-webkit"].includes(info.project.name), "drei Profile reichen");
+    const FX = require("../unit/locate-fixtures.js");
+    const REAL = "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56?entry=s&sa=X&ved=2ahUKEwikkoHl08SXAxX5luEIHT1FOHoQ4kB6BAgaEAA&hl=de";
+    const api = (req) => req.url().endsWith("/v1/status") ? { json: { mode: "private", geocode: true } }
+      : req.url().endsWith("/v1/community") ? { json: { places: [], confirmations: [], hidden: [] } } : { status: 404, json: {} };
+    await context.route("https://challenges.cloudflare.com/**", (r) => r.fulfill({ contentType: "text/javascript",
+      body: 'window.turnstile={render(el,o){setTimeout(()=>o.callback("XXXX.DUMMY.TOKEN.XXXX"),20);return "w"},reset(){},remove(){}};' }));
+    const searches = [];
+    await context.route("https://nominatim.openstreetmap.org/**", (r) => { searches.push(new URL(r.request().url()).searchParams.get("q")); r.fulfill({ contentType: "application/json", body: JSON.stringify(FX.NOMINATIM) }); });
+    const googleCalls = [];
+    page.on("request", (r) => { if (/google\.com/.test(r.url())) googleCalls.push(r.url()); });
+    const errors = await H.open(page, context, { api, storage: { "kitsuen.tester": "TEST-CODE-0000-0000" } });
+    let sent = null;
+    await context.route("https://*.workers.dev/v1/submissions", (r) => { sent = r.request().postDataBuffer().toString("utf8"); r.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":1,"status":"pending"}', headers: { "access-control-allow-origin": "*" } }); });
+    const center = () => page.evaluate(() => { const c = window.__smokr.map.getCenter(); return [+c.lng.toFixed(4), +c.lat.toFixed(4)]; });
+    await page.click("#add-btn");
+    const before = await center();
+
+    // Echter Link: kein Ort, offener Hinweis, Karte bleibt, Feld bereit für Name oder Adresse
+    await page.fill("#loc-q", REAL);
+    await page.locator("#loc-q").press("Enter");
+    await expect(page.locator(".loc-info")).toContainText(/keine Position|no position/);
+    await expect(page.locator(".loc-error")).toHaveCount(0);
+    expect(await center()).toEqual(before);
+    await expect(page.locator("#loc-label")).toHaveText(/Kartenmitte|middle of the map/, { message: "nicht behaupten, den Ort gefunden zu haben" });
+    await expect(page.locator("#loc-q")).toHaveValue("");
+    await expect(page.locator("#loc-q")).toHaveAttribute("placeholder", /Name oder Adresse|Name or address/);
+    const href = await page.locator(".loc-info a").getAttribute("href");
+    expect(href).toBe("https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56");
+    await expect(page.locator(".loc-ref")).toBeVisible();
+    expect(searches).toEqual([], "mit der Kennung allein wird nichts gesucht");
+    expect(googleCalls).toEqual([], "die App fragt Google nicht an");
+
+    // Name ergänzen, ohne den Link neu einzugeben
+    await page.fill("#loc-q", "Ichiran Shibuya");
+    await page.click("[data-loc-search]");
+    await page.locator(".loc-result").first().click();
+    await expect(page.locator("#loc-label")).toHaveText("Ichiran");
+    await expect(page.locator(".loc-ref")).toBeVisible();
+    await page.click("#form-submit");
+    await expect(page.locator(".form-done")).toBeVisible();
+    expect(sent).toContain("https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56");
+    expect(sent).not.toContain("ved=");
+    expect(sent).toMatch(/name="pos_source"\r\n\r\nsearch/);
+
+    // Link mit Namen (q=…&ftid=…): sucht direkt mit dem Namen und bittet ums Prüfen
+    await page.click("[data-form-close]");
+    await page.click("#add-btn");
+    await page.fill("#loc-q", "https://maps.google.com/?q=Ichiran+Shibuya&ftid=0x60188ca8b7b3a1b1:0x22ae3f2c5d4f3e1a");
+    await page.click("[data-loc-search]");
+    await expect(page.locator(".loc-result")).toHaveCount(2);
+    expect(searches.at(-1)).toBe("Ichiran Shibuya");
+    await page.locator(".loc-result").first().click();
+    await expect(page.locator(".loc-card")).toContainText(/Namen aus dem Link|name from the link/);
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   test("Normale Besucher fragen die Community-API gar nicht an", async ({ page, context }) => {
     const calls = [];
     const errors = await H.open(page, context, { api: (req) => { calls.push(req.url()); return { json: { mode: "public" } }; } });

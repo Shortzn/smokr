@@ -313,6 +313,10 @@ body[data-view="form"] .fab-rail { opacity: 0; pointer-events: none; }
 .loc-chosen { font-size: var(--t-s); overflow-wrap: anywhere; }
 .loc-q-label { font-size: var(--t-s); font-weight: 600; }
 .loc-attr { margin: 0; }
+.loc-info { display: grid; gap: 6px; padding: var(--s-3); border-radius: var(--r-m); background: var(--c-fill); font-size: var(--t-s); }
+.loc-info p { margin: 0; }
+.loc-info a { color: var(--c-focus); font-weight: 600; overflow-wrap: anywhere; }
+.loc-ref { margin: 0; }
 .photo-preview { display: grid; gap: var(--s-2); justify-items: start; }
 .photo-preview img { max-width: 100%; max-height: 220px; border-radius: var(--r-m); object-fit: cover; }
 .ts-box { min-height: 0; }

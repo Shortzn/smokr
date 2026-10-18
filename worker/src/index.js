@@ -203,6 +203,7 @@ async function postSubmission(request, env) {
     posQuality: form.get("pos_quality") ? oneOf(form.get("pos_quality"), POS_QUALITY, "pos_quality") : null,
     posSource: form.get("pos_source") ? oneOf(form.get("pos_source"), POS_SOURCE, "pos_source") : null,
     address: clean(form.get("address"), 200),
+    refUrl: refUrl(form.get("ref_url")),
   };
   // Dasselbe Gerät hat in den letzten 24 Stunden schon einen Platz in 30 m Umkreis eingereicht
   const recent = await env.DB.prepare(
@@ -212,8 +213,8 @@ async function postSubmission(request, env) {
   if (!(await guardPhoto(env, request, g.ip, form))) return fail(request, env, 429, "rate_limited");
   const photoId = await storePhoto(env, form.get("photo"), "submission", form.get("consent") === "1");
   const res = await env.DB.prepare(
-    "INSERT INTO submissions (lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, ip_hash, tester_id, pos_quality, pos_source, address) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15) RETURNING id",
-  ).bind(lat, lon, row.category, row.tobacco, row.access, row.name, row.floor, row.note, row.lang, photoId, g.ip, g.testerId, row.posQuality, row.posSource, row.address).first();
+    "INSERT INTO submissions (lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, ip_hash, tester_id, pos_quality, pos_source, address, ref_url) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16) RETURNING id",
+  ).bind(lat, lon, row.category, row.tobacco, row.access, row.name, row.floor, row.note, row.lang, photoId, g.ip, g.testerId, row.posQuality, row.posSource, row.address, row.refUrl).first();
   if (photoId) await env.DB.prepare("UPDATE photos SET owner_id = ?1 WHERE id = ?2").bind(res.id, photoId).run();
   return json(request, env, { ok: true, id: res.id, status: "pending" }, 201);
 }
@@ -341,8 +342,23 @@ async function testerCheck(request, env) {
 // ---------- Google-Maps-Kurzlinks ----------
 // maps.app.goo.gl/… verrät die Position erst nach der Weiterleitung. Der Worker folgt nur den
 // Weiterleitungen (Location-Header) und gibt die Ziel-Adresse zurück. Er liest keine Seiteninhalte von Google.
-const SHORT_LINK = /^(maps\.app\.goo\.gl|goo\.gl|g\.co)$/i;
-const MAPS_TARGET = /^((www|maps)\.)?google\.[a-z.]+$/i;
+const SHORT_LINK = /^(maps\.app\.goo\.gl|goo\.gl|g\.co|maps\.apple)$/i;
+const MAPS_TARGET = /^((www|maps)\.)?google\.[a-z.]+$|^maps\.apple\.com$/i;
+const MAP_HOST = /^((www|maps)\.)?google\.[a-z.]+$|^maps\.apple\.com$|^(www\.)?openstreetmap\.org$|^(maps\.app\.goo\.gl|goo\.gl|g\.co|maps\.apple)$/i;
+const KEEP_PARAMS = ["q", "query", "query_place_id", "cid", "ftid", "ll", "daddr", "destination", "coordinate", "address", "name", "place-id", "auid", "mlat", "mlon", "api"];
+/** Eingefügter Karten-Link als Referenz für die Moderation: nur Karten-Adressen, ohne Klickverfolgung. */
+function refUrl(value) {
+  if (value == null || value === "") return null;
+  let url;
+  try { url = new URL(String(value)); } catch (e) { throw new InputError("ref_url invalid"); }
+  if (url.protocol !== "https:" || !MAP_HOST.test(url.hostname)) throw new InputError("ref_url host");
+  const keep = new URLSearchParams();
+  for (const k of KEEP_PARAMS) if (url.searchParams.has(k)) keep.set(k, url.searchParams.get(k));
+  const q = keep.toString();
+  const out = `https://${url.hostname.toLowerCase()}${url.pathname}${q ? `?${q}` : ""}${/openstreetmap\.org$/i.test(url.hostname) ? url.hash : ""}`;
+  if (out.length > 500) throw new InputError("ref_url too long");
+  return out;
+}
 async function resolveLink(request, env) {
   if (mode(env) === "off" || !env.IP_SALT) return fail(request, env, 503, "disabled");
   let body = {};
@@ -434,7 +450,7 @@ async function audit(env, action, target, note) {
 async function queue(env) {
   const all = (sql) => env.DB.prepare(sql).all().then((r) => r.results);
   return {
-    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, pos_quality, pos_source, address FROM submissions WHERE status = 'pending' ORDER BY id LIMIT 200"),
+    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, pos_quality, pos_source, address, ref_url FROM submissions WHERE status = 'pending' ORDER BY id LIMIT 200"),
     reports: await all("SELECT id, created_at, status, spot_id, kind, comment, lang, photo_id, sug_lat, sug_lon FROM reports WHERE status = 'pending' ORDER BY id LIMIT 200"),
     flagged: await all("SELECT p.id, p.status, p.flags, p.owner_type, p.owner_id, GROUP_CONCAT(f.reason) AS reasons FROM photos p JOIN photo_flags f ON f.photo_id = p.id AND f.handled = 0 GROUP BY p.id ORDER BY p.flags DESC LIMIT 100"),
     approved: await all("SELECT id, lat, lon, category, name, reviewed_at FROM submissions WHERE status = 'approved' ORDER BY id DESC LIMIT 300"),
@@ -565,7 +581,7 @@ async function exportAll(env) {
   const all = (sql) => env.DB.prepare(sql).all().then((r) => r.results);
   return {
     exported: new Date().toISOString(),
-    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, pos_quality, pos_source, address, reviewed_at, review_note, dup_of FROM submissions"),
+    submissions: await all("SELECT id, created_at, status, lat, lon, category, tobacco, access, name, floor, note, lang, photo_id, pos_quality, pos_source, address, ref_url, reviewed_at, review_note, dup_of FROM submissions"),
     reports: await all("SELECT id, created_at, status, spot_id, kind, comment, lang, photo_id, sug_lat, sug_lon, reviewed_at, review_note FROM reports"),
     testers: await all("SELECT id, created_at, label, revoked_at, last_used_at, uses FROM testers"),
     photos: await all("SELECT id, created_at, status, owner_type, owner_id, size, width, height, sha256, flags, reviewed_at FROM photos"),
@@ -610,7 +626,7 @@ async function purge(env) {
     env.DB.prepare(`UPDATE photos SET bytes = NULL, status = 'rejected' WHERE status = 'pending' AND created_at < ${AGO(90)}`),
     // Abgelehntes und Zurückgezogenes: Texte nach 30 Tagen löschen. Es bleibt nur, was für Dubletten und das
     // Moderationsprotokoll nötig ist (Position, Art, Entscheidung).
-    env.DB.prepare(`UPDATE submissions SET name = NULL, floor = NULL, note = NULL WHERE status IN ('rejected', 'withdrawn') AND reviewed_at < ${AGO(30)}`),
+    env.DB.prepare(`UPDATE submissions SET name = NULL, floor = NULL, note = NULL, address = NULL, ref_url = NULL WHERE status IN ('rejected', 'withdrawn') AND reviewed_at < ${AGO(30)}`),
     env.DB.prepare(`UPDATE reports SET comment = NULL, sug_lat = NULL, sug_lon = NULL WHERE status IN ('rejected', 'withdrawn') AND reviewed_at < ${AGO(30)}`),
   ]);
 }

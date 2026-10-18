@@ -845,11 +845,13 @@ function renderLocBox() {
   let body = "";
   if (L.mode === "search") {
     body = `<div class="loc-search">
-        <input id="loc-q" type="search" enterkeyhint="search" inputmode="search" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="300"
-          placeholder="${esc(t("loc.placeholder"))}" aria-label="${esc(t("loc.placeholder"))}" value="${esc(L.query)}">
+        <input id="loc-q" type="search" enterkeyhint="search" inputmode="search" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="600"
+          placeholder="${esc(t(L.idOnly ? "loc.placeholderName" : "loc.placeholder"))}" aria-label="${esc(t("loc.placeholder"))}" value="${esc(L.query)}">
         <button type="button" class="btn secondary" data-loc-search${L.busy ? " disabled" : ""}>${esc(t(L.busy ? "loc.searching" : "loc.search"))}</button>
       </div>
-      ${L.label && !L.results ? "" : `<p class="hint-text">${esc(t("loc.searchHint"))}</p>`}`;
+      ${L.idOnly ? `<div class="loc-info" role="status"><p>${esc(t("loc.idOnly"))}</p>${L.ref ? `<a href="${esc(L.ref)}" target="_blank" rel="noopener noreferrer">${esc(t("loc.openLink"))}</a>` : ""}</div>` : ""}
+      ${L.label && !L.results || L.idOnly ? "" : `<p class="hint-text">${esc(t("loc.searchHint"))}</p>`}
+      ${L.ref ? `<p class="fine loc-ref">${esc(t("loc.refKept"))} <button type="button" class="text-btn" data-loc-ref-remove>${esc(t("loc.refRemove"))}</button></p>` : ""}`;
     if (L.results && L.results.length) {
       body += `<ul class="loc-results">${L.results.map((r, i) => `<li><button type="button" class="loc-result" data-loc-pick="${i}">
         <span class="loc-name">${esc(r.name)}</span>${r.sub ? `<span class="loc-sub">${esc(r.sub)}</span>` : ""}</button></li>`).join("")}</ul>`;
@@ -860,6 +862,7 @@ function renderLocBox() {
     body = `<p class="hint-text">${esc(t("add.pinHint"))}</p>`;
   }
   if (L.error) body += `<p class="form-error loc-error" role="alert">${esc(L.error)}</p>`;
+  if (L.mode !== "search" && L.ref) body += `<p class="fine loc-ref">${esc(t("loc.refKept"))} <button type="button" class="text-btn" data-loc-ref-remove>${esc(t("loc.refRemove"))}</button></p>`;
   if (L.attr) body += `<p class="fine loc-attr">${esc(t(L.attr))}</p>`;
   const label = L.label || t("loc.mapLabel");
   const card = `<div class="loc-card" aria-live="polite">
@@ -908,7 +911,9 @@ function applyPlace(p) {
   // Eine Suche findet das Gebäude, nicht den Raucherraum darin: höchstens "Gebäude", sonst "ungefähr"
   const quality = p.level === "house" || p.level === "building" ? "building" : "approx";
   // Genau diese Position senden, auch wenn die Karte beim Absenden noch dorthin gleitet
-  Object.assign(L, { source: p.source, quality, label: p.label, address: p.address || "", note: p.note || "", results: null, target: { lat: p.lat, lon: p.lon } });
+  // Ort über den Namen aus einem Link gesucht: ausdrücklich zum Prüfen auffordern
+  const note = [p.note, L.fromLink ? t("loc.fromLink") : ""].filter(Boolean).join(" ");
+  Object.assign(L, { source: p.source, quality, label: p.label, address: p.address || "", note, results: null, target: { lat: p.lat, lon: p.lon } });
   const name = document.getElementById("f-name");
   if (name && !name.value.trim() && p.name) name.value = p.name.slice(0, 80);
   renderLocBox();
@@ -921,7 +926,7 @@ async function runLocSearch() {
   if (!f) return;
   const L = locOf(f);
   const q = (document.getElementById("loc-q")?.value || "").trim();
-  L.query = q; L.error = ""; L.results = null; L.attr = "";
+  L.query = q; L.error = ""; L.results = null; L.attr = ""; L.idOnly = false; L.fromLink = false;
   if (q.length < 2) { L.error = t("loc.tooShort"); renderLocBox(); return; }
   document.getElementById("loc-q")?.blur();
   L.busy = true;
@@ -929,6 +934,9 @@ async function runLocSearch() {
   const near = map ? [map.getCenter().lng, map.getCenter().lat] : null;
   try {
     let link = LOC.parseLink(q);
+    // Ein eingefügter Karten-Link bleibt als Hinweis für die Moderation dabei (ohne Klickverfolgung)
+    if (link && !link.error) L.ref = LOC.referenceUrl(q) || L.ref;
+    if (link && link.error === "nocoords") L.ref = LOC.referenceUrl(q) || L.ref;
     if (link && link.short) {
       const r = await COM.resolveLink(link.short);
       link = LOC.parseLink(r && r.url);
@@ -937,10 +945,16 @@ async function runLocSearch() {
     if (link && link.lat != null) {
       applyPlace({ lat: link.lat, lon: link.lon, level: link.precise ? "building" : "district", source: "link",
         label: link.name || `${link.lat.toFixed(5)}, ${link.lon.toFixed(5)}`, name: link.name, note: link.precise ? "" : t("loc.linkView") });
-    } else if (link && link.error && !(link.error === "nocoords" && link.name)) {
+    } else if (link && link.error === "nocoords" && !link.name && !link.address) {
+      // Nur eine interne Google- oder Apple-Kennung: Ort nicht bestimmbar. Nichts vortäuschen, zur Suche führen.
+      L.idOnly = true;
+      L.query = "";
+    } else if (link && link.error && link.error !== "nocoords") {
       L.error = t(link.error === "outside" ? "loc.outside" : "loc.badLink");
     } else {
-      const text = link && link.name ? link.name : q;
+      const fromLink = !!(link && link.error === "nocoords");
+      const text = fromLink ? (link.address && LOC.looksLikeAddress(link.address) ? link.address : link.name || link.address) : q;
+      if (fromLink) { L.query = text; L.fromLink = true; }
       let done = false;
       if (LOC.looksLikeAddress(text)) {
         const a = await LOC.geocodeAddress(text, fetch, near);
@@ -953,7 +967,7 @@ async function runLocSearch() {
       if (!done) {
         if (COM.runtime.geocode === false) throw new Error("geocode off");
         const list = await LOC.searchPlaces(text, { lang: t.lang, near }, fetch);
-        if (!list.length) L.error = t("loc.noResults");
+        if (!list.length) { L.error = t("loc.noResults"); if (fromLink) L.query = text; }
         else {
           L.results = list.map((r) => ({ ...r, sub: r.area }));
           L.attr = "loc.attrOsm";
@@ -965,6 +979,7 @@ async function runLocSearch() {
   } finally {
     L.busy = false;
     renderLocBox();
+    if (L.idOnly) document.getElementById("loc-q")?.focus();
   }
 }
 function pickLocResult(i) {
@@ -1036,6 +1051,7 @@ async function submitForm() {
     fields.pos_quality = L.quality;
     fields.pos_source = L.source;
     if (L.address) fields.address = L.address.slice(0, 200);
+    if (L.ref) fields.ref_url = L.ref;
   } else {
     fields = Object.assign(common, { spot_id: f.spotId, kind: f.kind || "found", comment: $("f-comment").value.trim() });
     if (fields.kind === "position" && map) {
@@ -1250,6 +1266,7 @@ function wire() {
     const mode = e.target.closest("[data-loc-mode]");
     if (mode) setLocMode(mode.dataset.locMode);
     if (e.target.closest("[data-loc-search]")) runLocSearch();
+    if (e.target.closest("[data-loc-ref-remove]") && state.form) { locOf(state.form).ref = ""; renderLocBox(); }
     const pick = e.target.closest("[data-loc-pick]");
     if (pick) pickLocResult(+pick.dataset.locPick);
   });

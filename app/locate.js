@@ -22,11 +22,19 @@
   const num = (x) => (x == null || x === "" ? NaN : Number(x));
 
   // ---------- Links und Koordinaten ----------
-  const SHORT_HOSTS = /^(maps\.app\.goo\.gl|goo\.gl|g\.co)$/i;
+  const SHORT_HOSTS = /^(maps\.app\.goo\.gl|goo\.gl|g\.co|maps\.apple)$/i;
+  const GOOGLE = /(^|\.)google\.[a-z.]+$/i;
   const MAP_HOSTS = /(^|\.)google\.[a-z.]+$|^maps\.apple\.com$|^(www\.)?openstreetmap\.org$/i;
+  // Parameter, die den Ort beschreiben. Alles andere (ved, sa, entry, ei, hl, ucbcb ...) ist Klick- oder
+  // Sitzungsverfolgung und wird nicht gespeichert.
+  const KEEP_PARAMS = ["q", "query", "query_place_id", "cid", "ftid", "ll", "daddr", "destination", "coordinate", "address", "name", "place-id", "auid", "mlat", "mlon", "api"];
 
   /** Liest Position und Namen aus einem Karten-Link oder aus "35.68, 139.76".
-      {lat, lon, name, precise} | {short: url} | {error: "link"|"outside"} | null (kein Link) */
+      {lat, lon, name, precise}
+      {short: url}                                   Kurzlink, muss der Worker auflösen
+      {error: "nocoords", name, address, idOnly}     kein Ort im Link; idOnly: nur eine interne Kennung
+      {error: "link"|"outside"}                      unbrauchbar
+      null                                           gar kein Link */
   function parseLink(text) {
     const s = String(text || "").trim();
     if (!s) return null;
@@ -39,33 +47,72 @@
     const host = url.hostname.toLowerCase();
     if (SHORT_HOSTS.test(host)) return { short: url.toString() };
     if (!MAP_HOSTS.test(host)) return /^https?:\/\//i.test(s) ? { error: "link" } : null;
-    const full = decodeURIComponent(url.pathname + url.search + url.hash);
-    let name = "";
-    const place = url.pathname.match(/\/maps\/place\/([^/@]+)/);
-    if (place) name = decodeURIComponent(place[1].replace(/\+/g, " ")).normalize("NFC").trim();
+    const param = (k) => (url.searchParams.get(k) || "").trim();
+    const full = safeDecode(url.pathname + url.search + url.hash);
+    let name = "", address = "";
+    const place = url.pathname.match(/\/maps\/place\/([^/@]*)/);
+    if (place) name = cleanName(place[1]);
+    // Routenlink: /maps/dir/<Start>/<Ziel>/@...; das Ziel ist der Ort
+    const dir = url.pathname.match(/\/maps\/dir\/(.*)$/);
+    if (dir) {
+      const parts = dir[1].split("/").filter((p) => p && !p.startsWith("@") && !p.startsWith("data="));
+      if (parts.length) name = cleanName(parts[parts.length - 1]);
+    }
+    // Google-Suche statt Google Maps: die Suchanfrage ist der beste Hinweis
+    if (GOOGLE.test(host) && url.pathname.startsWith("/search")) {
+      return param("q") ? { error: "nocoords", name: param("q"), address: "", idOnly: false } : { error: "link" };
+    }
+    // Apple Maps: Name und Adresse stehen in Parametern
+    if (host === "maps.apple.com") { name = name || param("name") || param("q"); address = param("address"); }
     // 1. Genaue Ortsmarke eines Eintrags (!3d Breite !4d Länge)
     let m = full.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
     if (m) return point(+m[1], +m[2], name, true);
-    // 2. Ausdrückliche Position in Parametern
+    // 2. Routenziel in den Daten (!1d Länge !2d Breite, das letzte Paar ist das Ziel)
+    if (dir) {
+      const pairs = [...full.matchAll(/!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/g)];
+      if (pairs.length) { const p = pairs[pairs.length - 1]; return point(+p[2], +p[1], name, true); }
+    }
+    // 3. Ausdrückliche Position in Parametern
     for (const key of ["q", "query", "ll", "destination", "daddr", "center", "coordinate", "mlat"]) {
-      const v = url.searchParams.get(key);
+      const v = param(key);
       if (!v) continue;
       if (key === "mlat") {
-        const lon = url.searchParams.get("mlon");
-        if (lon) return point(num(v), num(lon), name, true);
+        if (param("mlon")) return point(num(v), num(param("mlon")), name, true);
         continue;
       }
       m = v.match(/^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/);
       if (m) return point(+m[1], +m[2], name, true);
-      if (key === "q" || key === "query") name = name || v.trim();
+      if (key === "q" || key === "query" || key === "daddr" || key === "destination") name = name || v;
     }
-    // 3. Nur der Kartenausschnitt (@Breite,Länge,Zoom): ungefähr, nicht der Eintrag selbst
+    // 4. Nur der Kartenausschnitt (@Breite,Länge,Zoom): ungefähr, nicht der Eintrag selbst
     m = full.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
     if (m) return point(+m[1], +m[2], name, false);
     // OpenStreetMap: #map=Zoom/Breite/Länge
     m = (url.hash || "").match(/map=\d+(?:\.\d+)?\/(-?\d+\.\d+)\/(-?\d+\.\d+)/);
     if (m) return point(+m[1], +m[2], name, false);
-    return name ? { name, error: "nocoords" } : { error: "link" };
+    // Keine Position. Nur eine interne Kennung (Google 0x…:0x…, cid, Apple place-id)? Die lässt sich ohne
+    // Google- oder Apple-Dienst nicht in einen Ort umrechnen; das sagen wir offen.
+    const idOnly = /0x[0-9a-f]+:0x[0-9a-f]+/i.test(full) || !!param("cid") || !!param("place-id") || !!param("auid") || !!param("query_place_id");
+    if (name || address || idOnly) return { error: "nocoords", name, address, idOnly };
+    return { error: "link" };
+  }
+  function safeDecode(x) {
+    try { return decodeURIComponent(x); } catch (e) { return x; }
+  }
+  function cleanName(seg) {
+    return safeDecode(String(seg || "").replace(/\+/g, " ")).normalize("NFC").trim();
+  }
+  /** Link als Referenz für die Moderation: nur Karten-Adressen, ohne Klickverfolgung, höchstens 500 Zeichen. */
+  function referenceUrl(text) {
+    let url;
+    try { url = new URL(String(text || "").trim()); } catch (e) { return ""; }
+    const host = url.hostname.toLowerCase();
+    if (url.protocol !== "https:" || !(SHORT_HOSTS.test(host) || MAP_HOSTS.test(host))) return "";
+    const keep = new URLSearchParams();
+    for (const k of KEEP_PARAMS) if (url.searchParams.has(k)) keep.set(k, url.searchParams.get(k));
+    const q = keep.toString();
+    const out = `https://${host}${url.pathname}${q ? `?${q}` : ""}${host.endsWith("openstreetmap.org") ? url.hash : ""}`;
+    return out.length <= 500 ? out : "";
   }
   function point(lat, lon, name, precise) {
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) return { error: "link" };
@@ -244,5 +291,5 @@
     return { lat: +lat.toFixed(6), lon: +lon.toFixed(6), name, area, label: x.display_name || name, level, kind: x.type || "" };
   }
 
-  return { parseLink, normalizeAddress, looksLikeAddress, geocodeAddress, searchPlaces, kanjiNum, inJapan, _cache: cache };
+  return { parseLink, referenceUrl, normalizeAddress, looksLikeAddress, geocodeAddress, searchPlaces, kanjiNum, inJapan, _cache: cache };
 });

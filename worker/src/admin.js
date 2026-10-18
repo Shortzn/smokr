@@ -199,6 +199,7 @@ async function load() {
       el("div", { class: "meta" }, osmLink(s.lat, s.lon), document.createTextNode(" · " + s.created_at + " · " + (s.lang || "?"))),
       el("div", { class: s.pos_quality && s.pos_quality !== "exact" ? "warn" : "meta", text: "Position: " + (POSQ[s.pos_quality] || "keine Angabe (ältere App)") + (s.pos_source ? " · über " + (POSS[s.pos_source] || s.pos_source) : "") }),
       s.address ? el("div", { class: "meta", text: "Gefunden: " + s.address }) : null,
+      /^https:\/\//.test(s.ref_url || "") ? el("div", { class: "meta" }, el("a", { href: s.ref_url, target: "_blank", rel: "noopener noreferrer", text: "Karten-Link des Einsenders öffnen" })) : null,
       s.floor ? el("div", { class: "text", text: "Stockwerk/Ausgang: " + s.floor }) : null,
       s.note ? el("div", { class: "text", text: s.note }) : null,
       photo(s.photo_id),

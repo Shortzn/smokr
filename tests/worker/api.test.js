@@ -389,6 +389,26 @@ test("Genauigkeit, Herkunft und Adresse der Position werden gespeichert und gepr
   assert.equal(st.geocode, true, "Ortssuche eingeschaltet, abschaltbar per GEOCODE=off");
 });
 
+test("Karten-Link als Referenz: bereinigt gespeichert, nur für die Moderation", async () => {
+  ip = "203.0.113.62";
+  const real = "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56?entry=s&sa=X&ved=2ahUKEwikkoHl08SXAxX5luEIHT1FOHoQ4kB6BAgaEAA&hl=de";
+  let r = await post("/v1/submissions", form(place({ lat: "35.6611", lon: "139.7009", name: "[TEST] Referenz", pos_source: "search", pos_quality: "building", ref_url: real })));
+  assert.equal(r.status, 201);
+  const id = (await r.json()).id;
+  for (const bad of ["https://evil.example/maps", "http://maps.google.com/?q=1,2", "javascript:alert(1)", "https://maps.google.com/" + "a".repeat(600)]) {
+    r = await post("/v1/submissions", form(place({ lat: "35.72", lon: "139.81", ref_url: bad })));
+    assert.equal(r.status, 400, bad.slice(0, 40));
+  }
+  const sub = (await (await admin("/admin/api/queue")).json()).submissions.find((x) => x.id === id);
+  assert.equal(sub.ref_url, "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56", "ohne ved, sa, entry, hl");
+  await admin(`/admin/api/submissions/${id}`, { action: "approve" });
+  const c = await (await fetch(API + "/v1/community")).json();
+  const p = c.places.find((x) => x.id === id);
+  assert.ok(p, "freigegeben");
+  assert.ok(!("ref_url" in p), "Referenz bleibt intern");
+  assert.ok(!JSON.stringify(c).includes("0x392ee31a88ad9c56"));
+});
+
 test("Kurzlinks: nur Google-Maps-Kurzlinks, nur mit Testercode, begrenzt", async () => {
   ip = "203.0.113.61";
   const call = (body, h) => post("/v1/resolve-link", JSON.stringify(body), Object.assign({ "content-type": "application/json" }, h));
