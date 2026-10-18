@@ -3,10 +3,13 @@
 // Reihenfolge = Reiseroute
 const REGIONS = [
   { id: "tokyo", de: "Tokio", ja: "東京", center: [139.767, 35.681], zoom: 12.3 },
-  { id: "kamakura", de: "Kamakura", ja: "鎌倉", center: [139.5505, 35.3192], zoom: 13.6 },
-  { id: "kyoto", de: "Kyoto", ja: "京都", center: [135.7681, 35.0045], zoom: 12.8 },
+  { id: "kamakura", de: "Kamakura", ja: "鎌倉", center: [139.5505, 35.3192], zoom: 13.6,
+    note: "Am Bahnhof Kamakura gibt es nur den Raucherraum im 3. Stock des Aiza-Gebäudes an der Komachi-dori, offen 9 bis 17 Uhr. Rund um Enoshima gibt es keinen offiziellen Platz." },
+  { id: "kyoto", de: "Kyoto", ja: "京都", center: [135.7681, 35.0045], zoom: 12.8,
+    note: "In der Innenstadt, am Bahnhof und in Kiyomizu und Gion kostet Rauchen auf der Straße 1.000 Yen. In Arashiyama und Fushimi Inari gibt es keinen städtischen Raucherplatz." },
   { id: "okinawa", de: "Okinawa", ja: "沖縄", center: [127.6809, 26.2124], zoom: 12.4 },
-  { id: "osaka", de: "Osaka", ja: "大阪", center: [135.5023, 34.6937], zoom: 12.4 },
+  { id: "osaka", de: "Osaka", ja: "大阪", center: [135.5023, 34.6937], zoom: 12.4,
+    note: "Seit Januar 2025 ist Rauchen auf der Straße in ganz Osaka verboten. Nur an ausgewiesenen Plätzen." },
 ];
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const WALK_M_PER_MIN = 75;
@@ -174,6 +177,11 @@ function renderList() {
   } else {
     $("list-sub").textContent = geoWatch === null ? "Tippe auf das Standort-Symbol für Plätze bei dir" : "Standort wird gesucht …";
   }
+
+  const here = REGIONS.map((r) => [distM(from, r.center), r]).sort((a, b) => a[0] - b[0])[0];
+  const note = here && here[0] < 40000 ? here[1].note : "";
+  $("list-note").hidden = !note;
+  $("list-note").textContent = note || "";
 
   const list = $("list");
   if (!top.length || top[0][0] > 30000) {

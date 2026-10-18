@@ -1,0 +1,141 @@
+{
+ "generated": "2026-10-18",
+ "spots": [
+  {
+   "id": "kamakura-1",
+   "name_ja": "THE TOBACCO KAMAKURA（アイザ鎌倉3階喫煙所）",
+   "ward": "Kamakura",
+   "lat": 35.319695,
+   "lon": 139.551392,
+   "geo": "address",
+   "address_ja": "神奈川県鎌倉市小町一丁目6-15 アイザ鎌倉3F",
+   "hint_ja": "鎌倉駅東口から徒歩約2分。小町通りの鳥居をくぐり約15m、左手のアイザ鎌倉ビルに入り、ウッドデッキ広場手前の右手の階段で3階へ。屋内・分煙施設（市の補助金で設置、民間運営）",
+   "hours": "9:00~17:00",
+   "heated_only": false,
+   "status": "open",
+   "source_url": "https://www.city.kamakura.kanagawa.jp/kan-hozen/smoking_area.html",
+   "source_date": "2026-10-05",
+   "geo_match": "神奈川県鎌倉市小町一丁目６番１５号",
+   "geo_precision": "block",
+   "note": "Hours and address from the city PDF https://www.city.kamakura.kanagawa.jp/kan-hozen/documents/kamakura_direction-to-the-smoking-area.pdf"
+  },
+  {
+   "id": "kamakura-2",
+   "name_ja": "大船駅東口歩道橋下 喫煙所（屋内型）",
+   "ward": "Kamakura",
+   "lat": 35.352811,
+   "lon": 139.531917,
+   "geo": "osm",
+   "address_ja": "神奈川県鎌倉市大船一丁目",
+   "hint_ja": "大船駅東口の歩道橋下。湘南モノレール大船駅改札口からまっすぐ進み、ファミリーマート側の階段を降りたところ",
+   "hours": null,
+   "heated_only": false,
+   "status": "open",
+   "source_url": "https://www.city.kamakura.kanagawa.jp/kan-hozen/smoking_area.html",
+   "source_date": "2026-10-05",
+   "geo_precision": "block",
+   "note": "Position from OSM way 1378886987 (building 喫煙所) which matches the official description; source gives no address."
+  },
+  {
+   "id": "kamakura-3",
+   "name_ja": "大船駅東口2階ペデストリアンデッキ 喫煙所（屋外型）",
+   "ward": "Kamakura",
+   "lat": 35.352093,
+   "lon": 139.53183,
+   "geo": "address",
+   "address_ja": "神奈川県鎌倉市大船一丁目",
+   "hint_ja": "大船駅東口ペデストリアンデッキ2階。湘南モノレール大船駅改札口の裏の広場、一番奥",
+   "hours": null,
+   "heated_only": false,
+   "status": "open",
+   "source_url": "https://www.city.kamakura.kanagawa.jp/kan-hozen/smoking_area.html",
+   "source_date": "2026-10-05",
+   "geo_match": "神奈川県鎌倉市大船一丁目",
+   "geo_precision": "area",
+   "note": "Source gives no address; geocoded to the 大船一丁目 area only."
+  },
+  {
+   "id": "kamakura-4",
+   "name_ja": "大船駅西口 喫煙所",
+   "ward": "Kamakura",
+   "lat": null,
+   "lon": null,
+   "geo": null,
+   "address_ja": null,
+   "hint_ja": "大船駅西口",
+   "hours": null,
+   "heated_only": false,
+   "status": "closed",
+   "source_url": "https://www.city.kamakura.kanagawa.jp/kan-hozen/smoking_area.html",
+   "source_date": "2026-10-05",
+   "note": "令和4年度（FY2022）に解体撤去 per city page."
+  },
+  {
+   "id": "kamakura-5",
+   "name_ja": "鎌倉駅西口 時計台広場 喫煙所",
+   "ward": "Kamakura",
+   "lat": null,
+   "lon": null,
+   "geo": null,
+   "address_ja": null,
+   "hint_ja": "鎌倉駅西口広場の時計台奥",
+   "hours": null,
+   "heated_only": false,
+   "status": "closed",
+   "source_url": "https://www.city.kamakura.kanagawa.jp/soudan/joho/documents/29-161.pdf",
+   "source_date": "2017",
+   "note": "Removed September 2019 during redevelopment of the west-exit plaza (Town News Kamakura 2023-02-17); not listed on the current city page."
+  },
+  {
+   "id": "fujisawa-1",
+   "name_ja": "藤沢駅北口喫煙所",
+   "ward": "Fujisawa",
+   "lat": 35.3393,
+   "lon": 139.4881,
+   "geo": "map",
+   "address_ja": "神奈川県藤沢市藤沢",
+   "hint_ja": "藤沢駅北口、ビックカメラ付近（公式地図による）。紙巻きたばこエリアと加熱式たばこエリアに分かれている（加熱式エリアでは紙巻き不可）。2026年2月24日に再整備後供用開始",
+   "hours": null,
+   "heated_only": false,
+   "status": "open",
+   "source_url": "https://www.city.fujisawa.kanagawa.jp/kankyou-s/machizukuri/kankyo/bika/jore.html",
+   "source_date": "2026-09-07",
+   "geo_precision": "area",
+   "note": "Position read off the official map https://www.city.fujisawa.kanagawa.jp/documents/11379/fujisawakitsuenjo1.pdf; rough (~50 m)."
+  },
+  {
+   "id": "fujisawa-2",
+   "name_ja": "藤沢駅南口喫煙所",
+   "ward": "Fujisawa",
+   "lat": 35.3382,
+   "lon": 139.4878,
+   "geo": "map",
+   "address_ja": "神奈川県藤沢市南藤沢",
+   "hint_ja": "藤沢駅南口（公式地図による）",
+   "hours": null,
+   "heated_only": false,
+   "status": "open",
+   "source_url": "https://www.city.fujisawa.kanagawa.jp/documents/11379/fujisawakitsuenjo1.pdf",
+   "source_date": "2026-09-07",
+   "geo_precision": "area",
+   "note": "Position read off the official map; rough (~50 m)."
+  }
+ ],
+ "unparsed": [
+  {
+   "ward": "Kamakura",
+   "url": "https://www.city.kamakura.kanagawa.jp/kan-hozen/rojokinennotorikumi.html",
+   "note": "Ban zones (路上喫煙禁止区域) only around Kamakura and Ofuna stations; fine 2,000 yen after warning/order. Zone maps kamakura.pdf / oofuna.pdf are images; saved, not vectorised."
+  },
+  {
+   "ward": "Fujisawa",
+   "url": "https://www.city.fujisawa.kanagawa.jp/kankyou-s/machizukuri/kankyo/bika/jore.html",
+   "note": "All station surroundings in Fujisawa are ban zones (incl. 片瀬江ノ島, 江ノ島 (Enoden), 湘南江の島). The zone maps for those stations show no designated smoking place. Only Fujisawa station has two."
+  },
+  {
+   "ward": "Kamakura",
+   "url": "http://www.clubjt.jp/?state=/map",
+   "note": "City links JT \"喫煙所MAP\" (CLUB JT, incl. private places). Not used: commercial site, no open data licence."
+  }
+ ]
+}
