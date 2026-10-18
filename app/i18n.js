@@ -10,6 +10,17 @@
   const LANGS = ["en", "de", "ja"];
 
   const en = {
+    "err.tester": "This test code is not valid. Ask for a new one.",
+    "err.storage": "Photo storage is full right now. Please send it without a photo.",
+    "err.duplicate": "You already sent this. Thanks!",
+    "tester.title": "Private test",
+    "tester.text": "The community features are in a private test. Enter your test code to try them.",
+    "tester.code": "Test code",
+    "tester.submit": "Unlock",
+    "tester.ok": "Test mode on. You can now add spots.",
+    "tester.unavailable": "The private test isn't available yet.",
+    "tester.leave": "Leave test mode",
+    "report.positionHint": "Move the map so the pin marks the correct position.",
     "title.near": "{what} near {station}",
 
     "pk.station": "Station", "pk.airport": "Airport", "pk.mall": "Shopping mall", "pk.park": "Park", "pk.street": "Street or plaza",
@@ -293,6 +304,17 @@
   };
 
   const de = {
+    "err.tester": "Dieser Testcode gilt nicht. Bitte einen neuen anfordern.",
+    "err.storage": "Der Fotospeicher ist gerade voll. Bitte ohne Foto senden.",
+    "err.duplicate": "Das hast du schon gesendet. Danke!",
+    "tester.title": "Privater Test",
+    "tester.text": "Die Community-Funktionen sind im privaten Test. Gib deinen Testcode ein, um sie auszuprobieren.",
+    "tester.code": "Testcode",
+    "tester.submit": "Freischalten",
+    "tester.ok": "Testmodus an. Du kannst jetzt Plätze hinzufügen.",
+    "tester.unavailable": "Der private Test ist noch nicht verfügbar.",
+    "tester.leave": "Testmodus beenden",
+    "report.positionHint": "Verschiebe die Karte, bis die Nadel die richtige Position markiert.",
     "title.near": "{what} bei {station}",
 
     "pk.station": "Bahnhof", "pk.airport": "Flughafen", "pk.mall": "Einkaufszentrum", "pk.park": "Park", "pk.street": "Straße oder Platz",
@@ -576,6 +598,17 @@
   };
 
   const ja = {
+    "err.tester": "このテストコードは無効です。新しいコードを依頼してください。",
+    "err.storage": "写真の保存容量がいっぱいです。写真なしで送信してください。",
+    "err.duplicate": "すでに送信済みです。ありがとうございます。",
+    "tester.title": "限定テスト",
+    "tester.text": "コミュニティ機能は限定テスト中です。テストコードを入力してください。",
+    "tester.code": "テストコード",
+    "tester.submit": "有効にする",
+    "tester.ok": "テストモードがオンになりました。喫煙所を追加できます。",
+    "tester.unavailable": "限定テストはまだ利用できません。",
+    "tester.leave": "テストモードを終了",
+    "report.positionHint": "地図を動かして、ピンを正しい位置に合わせてください。",
     "title.near": "{station}付近の{what}",
 
     "pk.station": "駅", "pk.airport": "空港", "pk.mall": "商業施設", "pk.park": "公園", "pk.street": "路上・広場",

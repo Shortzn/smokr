@@ -5,10 +5,43 @@
   "use strict";
 
   const cfg = root.SMOKR_CONFIG || {};
-  const MAX_UPLOAD = 1400 * 1024;
+  // Server nimmt höchstens 1 MB; etwas Luft für den Formular-Overhead
+  const MAX_UPLOAD = 900 * 1024;
   const MAX_EDGE = 1600;
 
-  function enabled() { return !!(cfg.api && cfg.turnstileSiteKey); }
+  // Ob die Community sichtbar ist, entscheidet der Server (GET /v1/status), nicht ein Link:
+  //   public  = für alle; private = nur mit gültigem Testercode; off oder nicht erreichbar = aus
+  const runtime = { mode: null, tester: null };
+  try { runtime.tester = JSON.parse(localStorage.getItem("kitsuen.tester") || "null"); } catch (e) { runtime.tester = null; }
+  function configured() { return !!(cfg.api && cfg.turnstileSiteKey); }
+  function enabled() {
+    if (!configured()) return false;
+    if (runtime.mode === "public") return true;
+    return runtime.mode === "private" && !!runtime.tester;
+  }
+  async function fetchStatus() {
+    if (!configured()) return null;
+    try {
+      const res = await fetch(`${base()}/v1/status`, { cache: "no-cache", mode: "cors", credentials: "omit" });
+      if (!res.ok) { runtime.mode = null; return null; }
+      const j = await res.json();
+      runtime.mode = ["off", "private", "public"].includes(j.mode) ? j.mode : null;
+      return runtime.mode;
+    } catch (e) {
+      runtime.mode = null;
+      return null;
+    }
+  }
+  function setTester(code) {
+    runtime.tester = code || null;
+    try {
+      if (code) localStorage.setItem("kitsuen.tester", JSON.stringify(code));
+      else localStorage.removeItem("kitsuen.tester");
+    } catch (e) { /* privater Modus */ }
+  }
+  async function checkTester(code) {
+    return request("/v1/tester", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code }) });
+  }
   function base() { return String(cfg.api || "").replace(/\/+$/, ""); }
 
   class CommunityError extends Error {
@@ -115,6 +148,7 @@
 
   function form(fields, photo) {
     const fd = new FormData();
+    if (runtime.tester) fd.append("tester", runtime.tester);
     for (const [k, v] of Object.entries(fields)) if (v != null && v !== "") fd.append(k, String(v));
     if (photo) fd.append("photo", photo, "photo.jpg");
     return fd;
@@ -127,7 +161,7 @@
   }
   async function flagPhoto(id, reason) {
     return request(`/v1/photos/${encodeURIComponent(id)}/flag`, {
-      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ reason: reason || "other" }),
+      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ reason: reason || "other", tester: runtime.tester || undefined }),
     });
   }
 
@@ -140,11 +174,14 @@
     if (c === "captcha") return "err.captcha";
     if (c === "photo") return "err.photo";
     if (c === "disabled") return "err.disabled";
+    if (c === "tester") return "err.tester";
+    if (c === "storage") return "err.storage";
+    if (c === "duplicate") return "err.duplicate";
     if (c === "photo_type") return "photo.type";
     if (c === "photo_big") return "photo.tooBig";
     if (c === "photo_read") return "photo.read";
     return "err.server";
   }
 
-  root.SmokrCommunity = { enabled, fetchCommunity, photoUrl, mountTurnstile, preparePhoto, submitPlace, submitReport, flagPhoto, errorKey, CommunityError };
+  root.SmokrCommunity = { enabled, configured, runtime, fetchStatus, setTester, checkTester, fetchCommunity, photoUrl, mountTurnstile, preparePhoto, submitPlace, submitReport, flagPhoto, errorKey, CommunityError };
 })(window);

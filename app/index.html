@@ -173,6 +173,18 @@
   </form>
 </dialog>
 
+<dialog class="modal" id="tester" aria-labelledby="tester-title">
+  <form class="modal-inner" id="tester-form" novalidate>
+    <h2 id="tester-title" tabindex="-1" autofocus data-i18n="tester.title">Private test</h2>
+    <p data-i18n="tester.text"></p>
+    <label class="field-row"><span data-i18n="tester.code">Test code</span>
+      <input id="tester-input" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="40" inputmode="text"></label>
+    <p class="form-error" id="tester-error" role="alert" hidden></p>
+    <button class="btn primary wide" id="tester-submit" data-i18n="tester.submit">Unlock</button>
+    <button class="btn secondary wide" type="button" data-close-dialog data-i18n="close">Close</button>
+  </form>
+</dialog>
+
 <dialog class="modal" id="info" aria-labelledby="info-title">
   <form method="dialog" class="modal-inner">
     <h2 id="info-title" tabindex="-1" autofocus data-i18n="info.title">About Smokr</h2>
@@ -186,6 +198,7 @@
     <p class="fine" data-i18n="info.privacyText"></p>
     <h3 data-i18n="info.contact">Contact and feedback</h3>
     <p class="fine"><span data-i18n="info.contactText"></span> <a id="contact-link" target="_blank" rel="noopener"></a></p>
+    <p class="fine" id="tester-row" hidden><button type="button" class="text-btn" id="tester-leave" data-i18n="tester.leave">Leave test mode</button></p>
     <p class="fine" id="legal-row" hidden><a id="legal-link" target="_blank" rel="noopener" data-i18n="info.legal">Legal notice</a></p>
     <button class="btn primary wide" value="done" data-i18n="close">Close</button>
   </form>

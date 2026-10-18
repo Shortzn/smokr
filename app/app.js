@@ -316,7 +316,7 @@ function setView(name) {
     if (show && el.hidden) { el.hidden = false; el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter"); }
     else if (!show) el.hidden = true;
   }
-  $("add-pin").hidden = !(name === "form" && state.form && state.form.type === "place");
+  $("add-pin").hidden = !(name === "form" && state.form && (state.form.type === "place" || state.form.kind === "position"));
   document.body.dataset.view = name;
   if (name === "form") positionPin();
 }
@@ -685,7 +685,7 @@ async function loadData() {
   loadCommunity();
 }
 async function loadCommunity() {
-  if (!COM.enabled()) return;
+  if (!COM.enabled()) { state.community = null; rebuildSpots(); return; }
   try {
     state.community = await COM.fetchCommunity();
     saveStore("kitsuen.community", state.community);
@@ -780,7 +780,8 @@ function renderForm() {
     const s = state.byId.get(f.spotId);
     body = `<h2 class="form-title">${esc(t("report.title"))}</h2>
       <p class="form-sub">${esc(s ? C.title(s) : "")}</p>
-      <fieldset><legend>${esc(t("report.kind"))}</legend>${radios("kind", [["found", "report.found"], ["missing", "report.missing"], ["closed", "report.closed"], ["position", "report.position"], ["info", "report.info"], ["other", "report.other"]], f.kind || "found")}</fieldset>
+      <fieldset><legend>${esc(t("report.kind"))}</legend>${radios("kind", [["found", "report.found"], ["missing", "report.missing"], ["closed", "report.closed"], ["position", "report.position"], ["info", "report.info"], ["other", "report.other"]], f.kind || "found")}
+        <p class="hint-text" id="pos-hint"${f.kind === "position" ? "" : " hidden"}>${esc(t("report.positionHint"))}</p></fieldset>
       <label class="field-row"><span>${esc(t("report.comment"))}</span><textarea id="f-comment" maxlength="500" rows="3">${esc(vals.comment)}</textarea></label>
       ${photo}`;
   }
@@ -852,6 +853,11 @@ async function submitForm() {
     });
   } else {
     fields = Object.assign(common, { spot_id: f.spotId, kind: f.kind || "found", comment: $("f-comment").value.trim() });
+    if (fields.kind === "position" && map) {
+      const c = map.getCenter();
+      fields.sug_lat = c.lat.toFixed(6);
+      fields.sug_lon = c.lng.toFixed(6);
+    }
   }
   f.sending = true;
   $("form-submit").disabled = true;
@@ -867,10 +873,61 @@ async function submitForm() {
     f.sending = false;
     const key = COM.errorKey(e);
     f.error = t(key, { detail: e.detail || "" });
+    if (e.code === "tester") { COM.setTester(null); refreshCommunityUI(); }
     if (f.ts) f.ts.reset();
     $("form-submit").disabled = false;
     $("form-submit").textContent = t(f.type === "place" ? "add.submit" : "report.submit");
     renderFormError();
+  }
+}
+
+// ---------- Community-Freischaltung ----------
+/* Der Server sagt, was gilt (GET /v1/status). Der Link #community öffnet nur die Code-Eingabe;
+   die eigentliche Sperre ist der Testercode, den der Server bei jeder Einsendung prüft. */
+async function initCommunity() {
+  await COM.fetchStatus();
+  refreshCommunityUI();
+  communityLink();
+  if (COM.enabled()) loadCommunity();
+  // Link auch erkennen, wenn Smokr schon offen ist
+  window.addEventListener("hashchange", async () => {
+    if (!/community/.test(location.hash)) return;
+    if (!COM.runtime.mode) { await COM.fetchStatus(); refreshCommunityUI(); }
+    communityLink();
+  });
+}
+function communityLink() {
+  if (!/community/.test(location.hash)) return;
+  history.replaceState(null, "", location.pathname + location.search);
+  if (COM.runtime.mode === "private" && !COM.runtime.tester) openDialog("tester");
+  else if (COM.enabled()) toast(t("tester.ok"));
+  else toast(t("tester.unavailable"));
+}
+function refreshCommunityUI() {
+  $("add-btn").hidden = !COM.enabled();
+  $("tester-row").hidden = !COM.runtime.tester;
+  if (state.view === "detail" && state.selected) renderDetail(state.byId.get(state.selected));
+}
+async function submitTester(e) {
+  e.preventDefault();
+  const code = $("tester-input").value.trim().toUpperCase();
+  const err = $("tester-error");
+  err.hidden = true;
+  if (code.length < 8) { err.textContent = t("err.tester"); err.hidden = false; return; }
+  $("tester-submit").disabled = true;
+  try {
+    await COM.checkTester(code);
+    COM.setTester(code);
+    $("tester-input").value = "";
+    $("tester").close();
+    toast(t("tester.ok"));
+    refreshCommunityUI();
+    loadCommunity();
+  } catch (x) {
+    err.textContent = t(COM.errorKey(x), { detail: x.detail || "" });
+    err.hidden = false;
+  } finally {
+    $("tester-submit").disabled = false;
   }
 }
 
@@ -953,6 +1010,9 @@ function wire() {
   });
   $("locate").onclick = () => dispatchLoc({ type: "locate" });
   $("add-btn").onclick = () => openForm("place");
+  $("tester-form").addEventListener("submit", submitTester);
+  $("tester-leave").onclick = () => { COM.setTester(null); refreshCommunityUI(); loadCommunity(); $("info").close(); };
+  for (const b of document.querySelectorAll("[data-close-dialog]")) b.onclick = () => b.closest("dialog").close();
   $("back").onclick = closeDetail;
   $("form-back").onclick = closeForm;
   $("list").onclick = (e) => {
@@ -977,7 +1037,18 @@ function wire() {
   };
   $("form-scroll").addEventListener("change", (e) => {
     if (e.target.id === "f-photo" && e.target.files && e.target.files[0]) onPhoto(e.target.files[0]);
-    if (e.target.type === "radio") captureChoices();
+    if (e.target.type === "radio") {
+      captureChoices();
+      if (e.target.name === "kind" && state.form) {
+        const pos = state.form.kind === "position";
+        $("add-pin").hidden = !pos;
+        $("pos-hint").hidden = !pos;
+        if (pos) {
+          if (sheet && !sheet.isPanel()) sheet.snap("half");
+          positionPin();
+        }
+      }
+    }
   });
   $("form-scroll").addEventListener("click", (e) => {
     if (e.target.closest("[data-photo-remove]") && state.form) { URL.revokeObjectURL(state.form.photo.url); state.form.photo = null; renderPhotoBox(); }
@@ -1048,7 +1119,8 @@ applyStatic();
 renderLegend();
 syncFilters();
 wire();
-$("add-btn").hidden = !COM.enabled();
+$("add-btn").hidden = true;
+initCommunity();
 initSheet();
 initMap();
 updateCityPill();

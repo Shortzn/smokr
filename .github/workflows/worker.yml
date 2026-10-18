@@ -1,0 +1,173 @@
+# Community-API (Cloudflare Worker) bereitstellen. Läuft nur von Hand (Actions, "Worker", "Run workflow").
+#
+# Braucht das Repository-Secret CLOUDFLARE_API_TOKEN (Settings, Secrets and variables, Actions).
+# Rechte des Tokens, nur für dieses eine Konto:
+#   Account: Workers Scripts Edit, D1 Edit, Account Settings Read
+# Der Token geht nie durch den Chat oder auf einen Rechner, nur Cloudflare und GitHub kennen ihn.
+#
+# target = staging:    eigener Wegwerf-Worker mit eigener, leerer Datenbank und Test-Turnstile.
+#                      Alle API-Tests laufen dagegen, danach wird alles wieder gelöscht.
+# target = production: spielt neue Datenbank-Migrationen ein und veröffentlicht den Worker.
+#                      Vorhandene Secrets (Admin-Passwort, Turnstile, Schlüssel) bleiben unverändert.
+name: Worker
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "staging (Test, wird danach gelöscht) oder production"
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+permissions:
+  contents: read
+concurrency:
+  group: worker-${{ inputs.target }}
+  cancel-in-progress: false
+env:
+  WRANGLER_SEND_METRICS: "false"
+jobs:
+  staging:
+    if: inputs.target == 'staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Token vorhanden?
+        id: token
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$T" ]; then
+            echo "::warning::Kein Secret CLOUDFLARE_API_TOKEN. Nichts zu tun."
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.token.outputs.ok == '1'
+        run: npm ci
+      - name: Konto ermitteln
+        if: steps.token.outputs.ok == '1'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ID=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts?per_page=5" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);if(!j.success||j.result.length!==1){console.error('Token muss genau ein Konto sehen');process.exit(1)}process.stdout.write(j.result[0].id)})")
+          echo "::add-mask::$ID"
+          echo "CLOUDFLARE_ACCOUNT_ID=$ID" >> "$GITHUB_ENV"
+      - name: Staging anlegen
+        if: steps.token.outputs.ok == '1'
+        id: up
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -eu
+          umask 077
+          # Reste eines abgebrochenen Laufs entfernen
+          # Löschen immer aus einem Ordner ohne wrangler.toml, damit nie der Produktions-Worker gemeint sein kann
+          W="$GITHUB_WORKSPACE/node_modules/.bin/wrangler"
+          (cd "$RUNNER_TEMP" && "$W" delete smokr-api-staging --force >/dev/null 2>&1) || true
+          (cd "$RUNNER_TEMP" && "$W" d1 delete smokr-community-staging -y >/dev/null 2>&1) || true
+          npx wrangler d1 create smokr-community-staging > "$RUNNER_TEMP/d1.txt" 2>&1 || { cat "$RUNNER_TEMP/d1.txt"; exit 1; }
+          DB=$(grep -Eo '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "$RUNNER_TEMP/d1.txt" | head -1)
+          # Eigene Konfiguration: anderer Name, andere Datenbank, kein Cron, kleine Grenzen für die Tests
+          sed -e 's/^name = "smokr-api"/name = "smokr-api-staging"/' \
+              -e 's/database_name = "smokr-community"/database_name = "smokr-community-staging"/' \
+              -e "s/^database_id = .*/database_id = \"$DB\"/" \
+              -e 's#^ALLOWED_ORIGINS = .*#ALLOWED_ORIGINS = "http://127.0.0.1:4181"#' \
+              -e 's/^TURNSTILE_HOSTNAMES = .*/TURNSTILE_HOSTNAMES = ""/' \
+              -e '/^\[triggers\]/,/^crons/d' wrangler.toml > wrangler.staging.toml
+          npx wrangler d1 migrations apply smokr-community-staging --remote -c wrangler.staging.toml
+          # Zufälliges Admin-Passwort nur für diesen Lauf; Turnstile-Testschlüssel lässt Test-Tokens durch
+          PW=$(node -e "process.stdout.write(require('crypto').randomBytes(24).toString('base64url'))")
+          echo "::add-mask::$PW"
+          echo "SMOKR_ADMIN_PASSWORD=$PW" >> "$GITHUB_ENV"
+          HASH=$(printf '%s' "$PW" | node tools/hash-password.mjs --stdin)
+          node -e "
+            const c=require('crypto');
+            require('fs').writeFileSync(process.env.RUNNER_TEMP+'/s.json', JSON.stringify({
+              TURNSTILE_SECRET: '1x0000000000000000000000000000000AA',
+              IP_SALT: c.randomBytes(24).toString('hex'),
+              SESSION_KEY: c.randomBytes(32).toString('hex'),
+              ADMIN_PASSWORD_HASH: process.argv[1],
+            }), { mode: 0o600 });" "$HASH"
+          npx wrangler deploy -c wrangler.staging.toml --secrets-file "$RUNNER_TEMP/s.json" \
+            --var PHOTO_BUDGET_BYTES:20000 --var LIMIT_SUBMISSION:100 --var LIMIT_REPORT:100 --var LIMIT_PHOTO:50 \
+            > "$RUNNER_TEMP/deploy.txt" 2>&1 || { sed 's/[0-9a-f]\{32,\}/<id>/g' "$RUNNER_TEMP/deploy.txt"; exit 1; }
+          rm -f "$RUNNER_TEMP/s.json"
+          URL=$(grep -Eo 'https://smokr-api-staging\.[a-z0-9-]+\.workers\.dev' "$RUNNER_TEMP/deploy.txt" | head -1)
+          [ -n "$URL" ] || { echo "Keine Adresse gefunden"; exit 1; }
+          echo "SMOKR_API=$URL" >> "$GITHUB_ENV"
+          for i in $(seq 1 30); do curl -sf "$URL/health" >/dev/null && break; sleep 2; done
+      - name: API-Tests gegen Staging
+        if: steps.token.outputs.ok == '1'
+        env:
+          SMOKR_REMOTE: "1"
+        run: node --test --test-concurrency=1 tests/worker/api.test.js
+      - name: Staging löschen
+        if: always() && steps.token.outputs.ok == '1'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          W="$GITHUB_WORKSPACE/node_modules/.bin/wrangler"
+          rm -f worker/wrangler.staging.toml
+          cd "$RUNNER_TEMP"
+          "$W" delete smokr-api-staging --force || true
+          "$W" d1 delete smokr-community-staging -y || true
+
+  production:
+    if: inputs.target == 'production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Nur von main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Produktion wird nur von main veröffentlicht."
+          exit 1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Token vorhanden?
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          [ -n "$T" ] || { echo "::error::Kein Secret CLOUDFLARE_API_TOKEN."; exit 1; }
+      - run: npm ci
+      - name: Lokale Tests zuerst
+        run: npm run test:unit
+      - name: Konto ermitteln
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ID=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts?per_page=5" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);if(!j.success||j.result.length!==1){console.error('Token muss genau ein Konto sehen');process.exit(1)}process.stdout.write(j.result[0].id)})")
+          echo "::add-mask::$ID"
+          echo "CLOUDFLARE_ACCOUNT_ID=$ID" >> "$GITHUB_ENV"
+      - name: Datenbank-Migrationen
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler d1 migrations apply smokr-community --remote
+      - name: Worker veröffentlichen
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy
+      - name: Prüfen
+        run: |
+          sleep 5
+          URL=https://smokr-api.stefan-boschmeier.workers.dev
+          curl -sf "$URL/health"
+          echo
+          curl -sf "$URL/v1/status" -H "origin: https://shortzn.github.io"
+          echo
+          # Ohne Testercode muss eine Einsendung abgewiesen werden
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/v1/submissions" -H "origin: https://shortzn.github.io" -F lat=35.68 -F lon=139.76 -F category=public -F tobacco=all -F access=public)
+          echo "Einsendung ohne Code: $CODE"
+          [ "$CODE" = "403" ] || [ "$CODE" = "503" ] || { echo "::error::Erwartet 403 oder 503, bekommen $CODE"; exit 1; }

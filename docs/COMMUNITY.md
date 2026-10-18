@@ -1,6 +1,6 @@
 # Smokr Community: Architektur, Einrichtung und Betrieb
 
-Stand: 18. Oktober 2026
+Stand: 18. Oktober 2026, privater Testmodus
 
 ## Entscheidung
 
@@ -15,9 +15,9 @@ Das Frontend bleibt auf GitHub Pages unter https://shortzn.github.io/smokr/. Fü
 |---|---|---|
 | Einfachheit | Datenbank, Speicher, Auth und Rechte (RLS) in einem Dashboard. Für anonyme Einsendungen mit Moderation braucht es trotzdem eigene Edge Functions und sorgfältige RLS-Regeln. | Ein einziger Worker mit eigenem, kleinem Code. Eine Datenbank, keine Rechte-Regeln: Der Worker ist das einzige Tor. |
 | Sicherheit | Der öffentliche anon key liegt im Browser. Jede Lücke in den RLS-Regeln macht Tabellen direkt angreifbar. | Die Datenbank ist von außen nicht erreichbar. Jede Eingabe läuft durch Prüfcode im Worker. Turnstile ist eingebaut. |
-| Kosten | 0 €. Kostenlose Projekte werden nach etwa einer Woche ohne Nutzung pausiert und müssen dann von Hand geweckt werden. | 0 €. Kein Pausieren. Laut Cloudflare-Preisliste nach meinem Wissensstand: Workers 100.000 Anfragen pro Tag, D1 5 GB und 100.000 geschriebene Zeilen pro Tag, Turnstile kostenlos. Bitte vor der Einrichtung im Dashboard gegenprüfen. |
+| Kosten | 0 €. Kostenlose Projekte werden nach etwa einer Woche ohne Nutzung pausiert und müssen dann von Hand geweckt werden. | 0 €. Kein Pausieren. Workers Free: 100.000 Anfragen pro Tag. D1 Free: 500 MB pro Datenbank, 5 GB pro Konto, 5 Mio. gelesene und 100.000 geschriebene Zeilen pro Tag. Turnstile kostenlos. |
 | Wartung | Eine Plattform mehr. Updates von Postgres und Supabase laufen automatisch, Pausieren muss man beobachten. | Kein Server. Abhängigkeiten nur zur Entwicklungszeit (wrangler). |
-| Fotos | Storage mit privatem Bucket und signierten URLs ist gut gelöst. | Vorerst in D1 (max. 1,5 MB pro Bild, 5 GB gesamt). Später R2, kostenlos bis 10 GB. R2 lässt sich nach meinem Wissensstand aber nur mit hinterlegter Zahlungsmethode aktivieren, deshalb jetzt nicht. |
+| Fotos | Storage mit privatem Bucket und signierten URLs ist gut gelöst. | Vorerst in D1: höchstens 1 MB pro Bild, Fotobudget 300 MB (die Datenbank selbst darf 500 MB groß werden). Später R2, kostenlos bis 10 GB. R2 lässt sich nur mit hinterlegter Zahlungsmethode aktivieren, deshalb jetzt nicht. |
 | Skalierung | Gut, kostet ab dem Pro-Plan (25 $/Monat). | Workers Paid ab 5 $/Monat hebt alle Grenzen stark an. R2 kann jederzeit dazukommen, ohne die App zu ändern. |
 
 **Ergebnis:** Cloudflare Workers + D1 + Turnstile.
@@ -26,19 +26,20 @@ Das Frontend bleibt auf GitHub Pages unter https://shortzn.github.io/smokr/. Fü
 - **Kosten:** 0 € ohne Pausieren.
 - **Wartung:** am geringsten.
 
-R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und die Fotos mehr als einige GB brauchen.
+R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und das Fotobudget von 300 MB nicht mehr reicht (siehe „Später: Fotos nach R2“).
 
 ## Was gebaut ist
 
 | Teil | Datei | Zweck |
 |---|---|---|
-| Datenbank | `worker/migrations/0001_init.sql` | Einreichungen, Meldungen, Fotos, gemeldete Fotos, ausgeblendete Plätze, Zähler, Moderationsprotokoll |
+| Datenbank | `worker/migrations/0001_init.sql`, `0002_private_mode.sql` | Einreichungen, Meldungen, Fotos, gemeldete Fotos, ausgeblendete Plätze, Zähler, Moderationsprotokoll, Testercodes, Positionsvorschläge |
 | API | `worker/src/index.js` | Öffentliche Endpunkte, Moderation, täglicher Aufräum-Cron |
 | Foto-Prüfung | `worker/src/jpeg.js` | Prüft JPEG Segment für Segment, entfernt EXIF, GPS, XMP, Kommentare und angehängte Daten |
 | Sicherheit | `worker/src/security.js` | Turnstile, Zähler, gesalzener IP-Hash, PBKDF2-Passwort, HMAC-Sitzung |
-| Moderation | `worker/src/admin.js` | Oberfläche unter `/admin` |
+| Moderation | `worker/src/admin.js` | Oberfläche unter `/admin`: Warteschlange, Korrigieren, Speicheranzeige, Testercodes |
 | App | `app/community.js`, `app/app.js` | Formulare, Fotoaufbereitung im Browser, Anzeige freigegebener Daten |
-| Einstellung | `app/config.js` | Bleibt `api` leer, ist die Community in der App unsichtbar |
+| Einstellung | `app/config.js` | API-Adresse und Turnstile Site Key (beide öffentlich). Ob die Community sichtbar ist, entscheidet der Server. |
+| Bereitstellung | `.github/workflows/worker.yml` | Staging-Test und Veröffentlichung über GitHub Actions |
 
 ### Abläufe
 
@@ -63,19 +64,46 @@ R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und die Fotos mehr al
   - Ausgeblendete Plätze verschwinden.
   - Offline nutzt die App den zuletzt geladenen Stand.
 
+### Modus: aus, privat, öffentlich
+
+Der Schalter heißt `COMMUNITY_MODE` und steht in `worker/wrangler.toml`. Er wirkt auf dem Server, nicht nur in der App.
+
+| Modus | Wirkung |
+|---|---|
+| `off` | Der Server nimmt nichts an (503). Die App zeigt keine Community. |
+| `private` | Nur mit gültigem **Testercode**. Ohne Code: 403, die App zeigt keine Knöpfe und fragt keine Community-Daten ab. |
+| `public` | Für alle, mit Turnstile und den Zählern unten. Erst nach ausdrücklicher Freigabe. |
+
+Die App fragt beim Start `GET /v1/status`. Antwortet der Server nicht oder mit einem Fehler, bleibt die Community aus.
+
+**Testercodes:**
+- Erzeugt werden sie nur in der Moderation unter „Testzugänge“. Format `XXXX-XXXX-XXXX-XXXX`, 16 Zeichen aus 32 Zeichen (80 Bit Zufall).
+- Der Code wird genau einmal angezeigt. Gespeichert ist nur sein SHA-256-Hash.
+- Eingabe in der App über den Link `https://shortzn.github.io/smokr/#community`. Groß und klein, Leerzeichen und Bindestriche sind egal.
+- Der Code liegt danach im Browser (`kitsuen.tester`) und geht bei jeder Einsendung mit. Der Server prüft ihn jedes Mal.
+- „Widerrufen“ in der Moderation sperrt einen Code sofort. In der Info der App beendet „Testmodus beenden“ ihn auf dem Gerät.
+- Raten: Nach 20 falschen Codes pro Tag ist für dieses Gerät Schluss, auch mit richtigem Code.
+- Der Link selbst ist **keine** Zugangskontrolle. Er öffnet nur die Eingabe.
+
 ### Sicherheit
 
-- **Schreiben** geht nur mit gültigem Turnstile-Token (serverseitig geprüft, Hostname geprüft) und nur von der eigenen Seite (Origin-Prüfung, CORS nur für `https://shortzn.github.io`).
+- **Schreiben** geht nur mit gültigem Turnstile-Token (serverseitig geprüft, Hostname geprüft) und nur von der eigenen Seite (Origin-Prüfung, CORS nur für `https://shortzn.github.io`). Im privaten Modus zusätzlich nur mit Testercode.
 - **Prüfungen:** Jede Eingabe wird auf dem Server geprüft:
-  - Koordinaten innerhalb Japans.
+  - Koordinaten innerhalb Japans, auch beim Positionsvorschlag.
   - Feste Auswahllisten für Art, Tabak und Zugang.
   - Längengrenzen für Texte.
   - Steuerzeichen werden entfernt.
   - Links werden abgelehnt.
-  - Anfragen über 2 MB werden abgewiesen.
+  - Anfragen über 2 MB werden abgewiesen, Fotos über 1 MB auch.
+- **Dubletten:**
+  - Ein Gerät kann in 24 Stunden keinen zweiten Platz im Umkreis von 30 m einreichen.
+  - Dieselbe Meldung (Gerät, Platz, Art) zählt in 24 Stunden nur einmal.
+  - Dasselbe Foto wird kein zweites Mal gespeichert.
 - **Zähler pro Tag und Gerät** (IP nur als täglich wechselnder, gesalzener Hash):
-  - 10 neue Plätze, 30 Meldungen, 10 Fotos, 20 Foto-Meldungen.
-  - Global 1.500 Schreibvorgänge und 300 Fotos pro Tag, damit das kostenlose Kontingent nie überläuft.
+  - 10 neue Plätze, 30 Meldungen, 10 Fotos, 20 Foto-Meldungen, 20 falsche Testercodes.
+  - Global 500 Schreibvorgänge und 60 Fotos pro Tag. Das schont das Kontingent von 100.000 geschriebenen Zeilen.
+  - Alle Werte lassen sich ohne Codeänderung über Variablen `LIMIT_<NAME>` anpassen, zum Beispiel `LIMIT_SUBMISSION`.
+- **Fotobudget:** Insgesamt höchstens 300 MB Bilddaten (`PHOTO_BUDGET_BYTES`). Ist es voll, antwortet der Server mit 507 und die App sagt „Fotospeicher ist voll“. Einsendungen ohne Foto gehen weiter. Die Moderation zeigt den Füllstand als Balken.
 - **Admin:**
   - Passwort nur als PBKDF2-Hash im Secret.
   - Sitzung als signiertes, `HttpOnly`-, `Secure`-, `SameSite=Strict`-Cookie, nur für `/admin`, 12 Stunden gültig.
@@ -83,12 +111,36 @@ R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und die Fotos mehr al
   - Höchstens 8 Anmeldeversuche pro Tag und Gerät.
   - Strenge Content-Security-Policy, kein Einbetten in Frames.
   - Alle Nutzertexte werden als Text gesetzt, nie als HTML.
+  - „Korrigieren“ ändert Name, Stockwerk, Hinweis, Art, Tabak, Zugang und Position, mit denselben Prüfungen wie öffentliche Eingaben. Jede Änderung steht im Moderationsprotokoll.
 - **Keine Secrets im Repository.** Lokal liegen Testwerte in `worker/.dev.vars`, das ist in `.gitignore`.
 - **Täglicher Cron:**
   - Löscht Zähler nach 2 Tagen.
   - Entfernt IP-Hashes nach 30 Tagen.
   - Löscht abgelehnte Fotos.
   - Verwirft nie geprüfte Fotos nach 90 Tagen.
+
+### Grenzen von D1 Free
+
+| Grenze | Wert | Bei Smokr |
+|---|---|---|
+| Größe pro Datenbank | 500 MB | Fotobudget 300 MB, Rest für Einträge |
+| Größe pro Konto | 5 GB | eine Datenbank |
+| Größe pro Zeile | 2 MB | Fotos höchstens 1 MB |
+| Abfragen pro Aufruf | 50 | eine Einsendung mit Foto braucht etwa 13 |
+| Gelesene Zeilen pro Tag | 5 Mio. | `/v1/community` liest alle freigegebenen Einträge; bei mehr Last hilft ein Cache (auf workers.dev nur eingeschränkt) |
+| Geschriebene Zeilen pro Tag | 100.000 | globaler Deckel 500 Schreibvorgänge |
+
+Eine frühere Fassung dieses Dokuments nannte 5 GB als Grenze. Das gilt pro Konto, nicht pro Datenbank.
+
+### Später: Fotos nach R2
+
+Vorbereitet, nicht aktiviert. R2 braucht eine Zahlungsmethode im Cloudflare-Konto und damit deine Freigabe.
+
+1. Bucket `smokr-photos` anlegen, Bindung `PHOTOS` in `wrangler.toml`.
+2. In `storePhoto` die Bytes nach R2 schreiben und in D1 nur Größe, Hash und Status halten (`bytes` bleibt leer, neue Spalte `r2_key`).
+3. `getPhoto` liest zuerst aus R2, sonst aus D1. So laufen alte und neue Fotos gleichzeitig.
+4. Einmaliges Skript kopiert vorhandene Fotos nach R2 und leert danach `bytes`.
+5. Fotobudget auf R2 umstellen (10 GB kostenlos).
 
 ### Datenschutz und Recht
 
@@ -97,11 +149,7 @@ R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und die Fotos mehr al
   - Turnstile lädt erst, wenn jemand ein Formular öffnet.
   - Gespeichert werden der Inhalt der Einsendung und ein kurzlebiger IP-Hash.
 - **Lizenz:** Für Fotos und Texte stimmen Einsender einer Veröffentlichung unter CC BY 4.0 nach Prüfung zu.
-- **Vor dem Einschalten fehlt noch:**
-  - Ein **Impressum**. Als Betreiber einer öffentlichen Website aus Österreich sind Name und Anschrift Pflicht (ECG § 5, MedienG § 25).
-  - Eine **Datenschutzerklärung** mit Verantwortlichem und Kontakt.
-  - Vorlagen liegen in `docs/legal/`. Ich habe keine persönlichen Daten eingesetzt.
-  - Ist beides online, wird die Adresse in `app/config.js` unter `legalUrl` eingetragen.
+- **Impressum und Datenschutz:** online unter `app/legal.html` (Englisch und Deutsch), verlinkt in der Info der App und im Formular.
 - **Meldewege (Melde- und Abhilfeverfahren nach DSA):**
   - „Foto melden“ in der App.
   - GitHub Issues als Kontakt.
@@ -112,67 +160,37 @@ R2 kommt erst dazu, wenn du eine Zahlungsmethode freigibst und die Fotos mehr al
 - **Automatisch:** D1 Time Travel stellt die Datenbank auf einen Zeitpunkt der letzten Tage zurück (`wrangler d1 time-travel restore`).
 - **Manuell:** In der Moderation „Sicherung herunterladen“ (JSON aller Einträge ohne Bilddaten) oder `npx wrangler d1 export smokr-community --remote --output backup.sql` (inklusive Bilddaten).
 
-## Einrichtung (deine manuellen Schritte)
+## Einrichtung und Bereitstellung
 
-Du brauchst nur zwei Dinge: ein Cloudflare-API-Token und ein Admin-Passwort.
+**Eingerichtet am 18. Oktober 2026:** Worker `smokr-api` unter `https://smokr-api.stefan-boschmeier.workers.dev`, D1-Datenbank `smokr-community`, Turnstile-Widget „Smokr“, Admin-Passwort in deiner Passwörter-App. Der Token von damals ist widerrufen. `worker/tools/setup.sh` wird nicht mehr gebraucht und soll nicht erneut laufen: Es würde das Turnstile-Secret neu erzeugen.
 
-### 1. API-Token anlegen (geht auch am iPhone)
+### Neue Worker-Versionen veröffentlichen
 
-1. Kostenloses Cloudflare-Konto anlegen oder anmelden, unter dash.cloudflare.com. Eine Zahlungsmethode ist nicht nötig.
-2. Rechts oben das Profil öffnen, dann **API Tokens**, **Create Token**, ganz unten **Create Custom Token**.
-3. **Name:** `smokr-setup`
-4. **Rechte (Permissions):**
+Über GitHub Actions. Der Token liegt nur als Secret bei GitHub, nie im Chat, nie auf dem Mac.
+
+**Einmalig: Token anlegen** (geht am iPhone)
+1. dash.cloudflare.com, Profil, **API Tokens**, **Create Token**, **Create Custom Token**.
+2. Name `smokr-deploy`. Rechte:
    - Account · Workers Scripts · Edit
    - Account · D1 · Edit
-   - Account · Turnstile · Edit
    - Account · Account Settings · Read
-   - User · Memberships · Read
-   - User · User Details · Read
-5. **Account Resources:** dein Konto. **Zone Resources:** keine.
-6. **Gültigkeit (TTL):** ein paar Tage reichen. Nach der Einrichtung kannst du das Token löschen.
-7. **Create Token**, dann das Token kopieren. Es wird nur einmal angezeigt.
+3. Account Resources: nur dein Konto. Zone Resources: keine. Turnstile wird nicht gebraucht.
+4. Token kopieren.
+5. github.com/Shortzn/smokr, **Settings**, **Secrets and variables**, **Actions**, **New repository secret**. Name `CLOUDFLARE_API_TOKEN`, Wert einfügen, speichern.
 
-**Schicke das Token nie in den Chat.** Es gehört nur ins Terminal.
+**Jedes Mal:**
+1. github.com/Shortzn/smokr, **Actions**, **Worker**, **Run workflow**.
+2. Zuerst `staging`: legt einen Wegwerf-Worker mit leerer Datenbank an, führt alle API-Tests aus und löscht danach alles wieder. Es entstehen keine Daten in der echten Datenbank.
+3. Ist das grün: noch einmal mit `production` und Branch `main`. Das spielt neue Migrationen ein und veröffentlicht den Worker. Admin-Passwort, Turnstile-Secret und Schlüssel bleiben, wie sie sind. Am Ende prüft der Lauf, dass eine Einsendung ohne Testercode abgewiesen wird.
 
-### 2. Einrichtung starten (am Mac)
-
-Im Terminal:
-
-```sh
-cd ~/Projects/smokr
-sh worker/tools/setup.sh
-```
-
-**Abfragen, alle verdeckt:**
-- das API-Token
-- ein Admin-Passwort, mindestens 16 Zeichen, zweimal
-- nur falls dein Konto noch keine hat: ein Wunschname für die `workers.dev`-Adresse
-
-**Was das Skript selbst erledigt:**
-- Datenbank anlegen und Schema einspielen
-- Turnstile-Widget für `shortzn.github.io` anlegen
-- Zufällige Schlüssel erzeugen
-- Worker veröffentlichen
-- Gesundheit prüfen
-
-**Geheimnisse:** Sie liegen nur kurz in einer privaten Temp-Datei, die danach gelöscht wird.
-
-**Ergebnis:** Die öffentlichen Werte (API-Adresse und Site Key) schreibt das Skript nach `worker/deployed.json`.
-
-**Die App bleibt dabei ohne Community.** Eingeschaltet wird sie erst nach deiner ausdrücklichen Freigabe und wenn das Impressum online ist.
-
-### 3. Danach
-
-- Mir Bescheid geben. Ich prüfe die echte API mit Tests, die keine Daten veröffentlichen, und bereite das Einschalten vor.
-- Impressum und Datenschutzerklärung mit deinen Angaben fertigstellen (Vorlagen in `docs/legal/`).
-- Das API-Token im Cloudflare-Dashboard löschen. Für den Betrieb wird es nicht gebraucht.
+Den Token kannst du nach Abschluss der Testphase im Cloudflare-Dashboard löschen und bei Bedarf neu anlegen.
 
 **Kosten:** keine. Kostenpflichtige Dienste (Workers Paid, R2, Images, Logpush) werden nicht aktiviert.
 
 ## Tests
 
 ```sh
-sh tests/tools/worker-test.sh       # API gegen lokalen Worker (9 Tests)
+sh tests/tools/worker-test.sh       # API gegen lokalen Worker (15 Tests)
 sh tests/tools/community-e2e.sh     # Abläufe im Browser gegen lokalen Worker
 ```
 

@@ -10,11 +10,18 @@ const STUB_STYLE = {
   sources: {},
   layers: [{ id: "bg", type: "background", paint: { "background-color": "#eceee8" } }],
 };
-async function stubTiles(context) {
+async function stubTiles(context, api) {
   await context.route("https://tiles.openfreemap.org/**", (route) => {
     const url = route.request().url();
     if (url.includes("/styles/")) return route.fulfill({ contentType: "application/json", body: JSON.stringify(STUB_STYLE) });
     return route.fulfill({ status: 200, contentType: "application/x-protobuf", body: "" });
+  });
+  // Die echte Community-API wird in Tests nie angefragt. Standard: Community aus (wie ohne Server).
+  // opts.api ersetzt die Antworten, z. B. für den privaten Testmodus.
+  await context.route("https://*.workers.dev/**", (route) => {
+    const r = api && api(route.request());
+    const body = r ? r : { status: 503, json: { error: "disabled" } };
+    return route.fulfill({ status: body.status || 200, contentType: "application/json", body: JSON.stringify(body.json), headers: { "access-control-allow-origin": "*" } });
   });
 }
 
@@ -46,7 +53,7 @@ async function ready(page) {
 }
 
 async function open(page, context, opts = {}) {
-  await stubTiles(context);
+  await stubTiles(context, opts.api);
   if (opts.storage) {
     await context.addInitScript((data) => {
       if (sessionStorage.getItem("__seeded")) return;

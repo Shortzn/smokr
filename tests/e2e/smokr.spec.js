@@ -477,6 +477,30 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test("Privater Testmodus: ohne Code keine Knöpfe, Testlink fragt nach dem Code", async ({ page, context }) => {
+    const calls = [];
+    const api = (req) => {
+      calls.push(new URL(req.url()).pathname);
+      return req.url().endsWith("/v1/status") ? { json: { mode: "private", photos: true } } : { status: 403, json: { error: "tester" } };
+    };
+    const errors = await H.open(page, context, { path: "/#community", api });
+    await expect(page.locator("#tester")).toBeVisible();
+    await expect(page.locator("#add-btn")).toBeHidden();
+    await page.locator("#tester [data-close-dialog]").click();
+    await expect(page.locator("#tester")).toBeHidden();
+    await page.locator("#list .row").first().click();
+    await expect(page.locator("[data-community-report]")).toHaveCount(0);
+    expect(calls, "ohne Code wird nur der Status abgefragt").toEqual(["/v1/status"]);
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
+  test("Testlink ohne laufende Community sagt Bescheid", async ({ page, context }) => {
+    const errors = await H.open(page, context, { path: "/#community" });
+    await expect(page.locator("#toast")).toContainText(/available|verfügbar|利用/);
+    await expect(page.locator("#tester")).toBeHidden();
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   test("Ohne Backend gibt es keine Community-Knöpfe", async ({ page, context }) => {
     const errors = await H.open(page, context);
     await expect(page.locator("#add-btn")).toBeHidden();

@@ -8,6 +8,8 @@ preview_urls = false
 
 [vars]
 ALLOWED_ORIGINS = "https://shortzn.github.io"
+# Community-Schalter: off | private (nur mit Testercode) | public
+COMMUNITY_MODE = "private"
 TURNSTILE_HOSTNAMES = "shortzn.github.io"
 
 [[d1_databases]]
