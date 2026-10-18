@@ -8,7 +8,7 @@
 })(typeof self !== "undefined" ? self : this, function (I18N) {
   "use strict";
 
-  const DATA_SCHEMA = 3;
+  const DATA_SCHEMA = 4;
   let t = I18N.make("en");
   function setLang(lang) { t = I18N.make(I18N.LANGS.includes(lang) ? lang : "en"); return t; }
   function tr() { return t; }
@@ -80,23 +80,91 @@
     return t(`access.explain.${c}.${s.off ? "official" : "osm"}`);
   }
 
+  // Lokalisierte Namen kommen aus dem Build (scripts/localize.py): le = Englisch, ld = Deutsch
   function title(s) {
-    if (s.ne && t.lang !== "ja") return s.ne;
-    if (s.nj && !GENERIC_NAMES.test(s.nj.trim())) return s.nj;
+    if (t.lang === "ja") {
+      if (s.nj && !GENERIC_NAMES.test(s.nj.trim())) return s.nj;
+      return s.ne || s.le || fallbackTitle(s);
+    }
+    const local = t.lang === "de" ? s.ld || s.le : s.le;
+    if (local) return local;
     if (s.ne) return s.ne;
-    if (s.k === "v") return s.vt ? t(`vt.${s.vt}`) : t("place.fallback.venue");
-    return t("place.fallback.public");
+    return fallbackTitle(s);
+  }
+  /** Ohne verlässliche Übersetzung: beschreiben statt raten. */
+  function fallbackTitle(s) {
+    let what;
+    if (s.k === "v" || category(s) !== "public") {
+      if (s.pk && s.pk !== "unknown") what = t(`pk.${s.pk}`);
+      else what = s.vt ? t(`vt.${s.vt}`) : t("place.fallback.venue");
+    } else {
+      what = t(`ak.${["room", "booth", "outdoor"].includes(s.ak) ? s.ak : "area"}`);
+    }
+    // Beschreiben statt übersetzen: Art des Ortes und der nächste Bahnhof aus unseren eigenen Daten
+    if (s.st && s.st.m <= 800) {
+      const station = t.lang === "ja" ? s.st.ja : s.st.en || s.st.ja;
+      return t("title.near", { what, station });
+    }
+    return what;
   }
   function jaLine(s) {
     return s.nj && s.nj !== title(s) ? s.nj : "";
   }
+  /** Wurde der Titel aus dem Japanischen übertragen (nicht aus einer englischen Quelle)? */
+  function translatedName(s) {
+    return t.lang !== "ja" && !!s.nj && ["composed", "romaji", "brand"].includes(s.lq);
+  }
   function placeType(s) {
-    if (s.k === "v") return [s.vt && t(`vt.${s.vt}`), s.sd && t(`sd.${s.sd}`)].filter(Boolean).join(", ");
-    const bits = [];
-    if (s.ind) bits.push(t("place.indoor"));
-    else if (s.cov) bits.push(t("place.covered"));
-    if (s.sd) bits.push(t(`sd.${s.sd}`));
-    return bits.join(", ");
+    if (s.pk && s.pk !== "unknown") return t(`pk.${s.pk}`);
+    if (s.k === "v") return s.vt ? t(`vt.${s.vt}`) : "";
+    return "";
+  }
+  /** Art des Rauchbereichs, für öffentliche Plätze mit "öffentlich" im Namen. */
+  function areaLabel(s) {
+    const ak = s.ak || (s.k === "v" ? "unknown" : "area");
+    if (category(s) === "public" && !s.unv && ["room", "booth", "outdoor", "area"].includes(ak)) return t(`akpub.${ak}`);
+    return t(`ak.${ak}`);
+  }
+  /** Kurzer Zugang: kostenlos, öffentlich, Kunden, Ticket, unklar. Nur Belegtes. */
+  function accessShort(s) {
+    if (s.unv) return t("acc2.unverified");
+    if (s.tk) return t("acc2.ticket");
+    const c = category(s);
+    if (c === "customers") return t("acc2.customers");
+    if (c === "business") return t("acc2.unknown");
+    return s.free || (s.off && s.acc === "public") ? t("acc2.free") : t("acc2.public");
+  }
+  /** Zeile unter dem Namen: was für ein Ort, Zugang, Stockwerk. */
+  function summary(s) {
+    const parts = [];
+    if (category(s) === "public" && !s.unv) {
+      parts.push(areaLabel(s));
+      if (s.pk && !["unknown", "street"].includes(s.pk)) parts.push(t(`pk.${s.pk}`));
+    } else {
+      const type = placeType(s);
+      if (type) parts.push(type);
+      parts.push(areaLabel(s));
+    }
+    const acc = accessShort(s);
+    // "Öffentlicher Raucherplatz · Öffentlich" wäre doppelt
+    if (!(category(s) === "public" && !s.unv && acc === t("acc2.public"))) parts.push(acc);
+    if (s.fl) parts.push(s.fl);
+    return parts;
+  }
+  function floorText(fl) {
+    if (!fl) return "";
+    if (fl === "1F") return t("floor.ground", { fl });
+    if (/^B/.test(fl)) return t("floor.basement", { fl });
+    return t("floor.upper", { fl });
+  }
+  function tobaccoText(s) {
+    if (s.heated) return t("tob.heated");
+    if (s.tob === "both") return t("tob.both");
+    return t("tob.none");
+  }
+  function exitText(s) {
+    if (!s.ex) return "";
+    return t.lang === "de" ? s.ex[1] : t.lang === "ja" ? "" : s.ex[0];
   }
 
   /** Probleme und Unsicherheiten, die vor Ort wichtig sind. */
@@ -192,7 +260,8 @@
   }
   function searchText(s) {
     if (!s._q) {
-      s._q = norm([s.ne, s.nj, s.st && s.st.en, s.st && s.st.ja, s.off && s.off.ward, s.off && WARD_JA[s.off.ward], s.hint, s.addr].filter(Boolean).join("|"));
+      const kinds = s.pk ? I18N.LANGS.map((l) => I18N.DICTS[l][`pk.${s.pk}`]) : [];
+      s._q = norm([s.ne, s.nj, s.le, s.ld, s.lr, s.st && s.st.en, s.st && s.st.ja, s.off && s.off.ward, s.off && WARD_JA[s.off.ward], s.hint, s.addr, ...kinds].filter(Boolean).join("|"));
     }
     return s._q;
   }
@@ -204,7 +273,7 @@
     const st = s.st ? [norm(s.st.en), norm(s.st.ja)] : [];
     if (st.includes(q)) return 0;
     if (st.some((x) => x && x.startsWith(q))) return 1;
-    if (norm(s.ne).includes(q) || norm(s.nj).includes(q)) return 1;
+    if ([s.ne, s.nj, s.le, s.ld, s.lr].some((x) => norm(x).includes(q))) return 1;
     return 2;
   }
   function search(spots, query, anchor, prefs, reports, limit) {
@@ -393,6 +462,7 @@
     setLang, tr, regionName, regionNote, inJapan,
     distM, fmtDist, regionFor,
     category, accessLabel, accessExplain, title, jaLine, placeType, warnings, trust, sourceName,
+    translatedName, areaLabel, accessShort, summary, floorText, tobaccoText, exitText,
     migratePrefs, visible, rank, norm, search, searchRegions,
     initialLocation, locationReduce, anchorOf,
     hours, fmtMonth, fmtDay, routeUrls, defaultRouteApp, validateRegionData, mergeCommunity,

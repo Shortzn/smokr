@@ -27,7 +27,7 @@ test("Zugang: nur Belegtes wird als Tatsache ausgegeben", () => {
   assert.equal(C.accessLabel(konbini), "Zugang unklar");
   assert.ok(!/kaufen/.test(C.accessExplain(konbini)), "kein Kaufzwang ohne Beleg");
   const osakaShop = spot({ k: "v", acc: "customers", vt: "shop", off: { ward: "Osaka Kita" } });
-  assert.equal(C.placeType(konbini), "Konbini, Aschenbecher vor dem Laden");
+  assert.equal(C.placeType(konbini), "Konbini");
   assert.equal(C.category(osakaShop), "customers");
   assert.match(C.accessExplain(osakaShop), /etwas kaufen/);
   assert.equal(C.accessLabel(spot({})), "Öffentlich");
@@ -167,10 +167,10 @@ test("Routen: Fußweg in beiden Apps", () => {
 
 test("Datenprüfung erkennt kaputte und alte Dateien", () => {
   assert.throws(() => C.validateRegionData({ region: "tokyo", spots: [] }, "tokyo"), /format 1/);
-  assert.throws(() => C.validateRegionData({ schema: 2, region: "tokyo", spots: [] }, "tokyo"), /format 2/);
-  assert.throws(() => C.validateRegionData({ schema: 3, region: "kyoto", spots: [] }, "tokyo"), /wrong city/);
-  assert.throws(() => C.validateRegionData({ schema: 3, region: "tokyo", spots: [{ id: 1 }] }, "tokyo"), /broken/);
-  assert.ok(C.validateRegionData({ schema: 3, region: "tokyo", spots: [] }, "tokyo"));
+  assert.throws(() => C.validateRegionData({ schema: 3, region: "tokyo", spots: [] }, "tokyo"), /format 3/);
+  assert.throws(() => C.validateRegionData({ schema: 4, region: "kyoto", spots: [] }, "tokyo"), /wrong city/);
+  assert.throws(() => C.validateRegionData({ schema: 4, region: "tokyo", spots: [{ id: 1 }] }, "tokyo"), /broken/);
+  assert.ok(C.validateRegionData({ schema: 4, region: "tokyo", spots: [] }, "tokyo"));
 });
 
 test("Unbestätigte Konbinis sind standardmäßig aus und klar gekennzeichnet", () => {
@@ -254,5 +254,37 @@ test("Community: ausgeblendete Plätze fallen weg, geprüfte Hinweise warnen", (
   const com = out[1];
   assert.equal(com.com.n, 2, "Bestätigungen auch für Community-Plätze");
   assert.deepEqual(com.com.photos, ["a", "b"]);
+  C.setLang("de");
+});
+
+test("Namen und Ortstyp: lokalisiert, beschreibend, nie geraten", () => {
+  const akiba = spot({ id: "off-chiyoda-5", nj: "秋葉原昭和通り口喫煙所（区営）", le: "Akihabara Smoking Area – Showa-dori Exit", ld: "Raucherplatz Akihabara – Showa-dori-Ausgang", lq: "composed", off: { ward: "Chiyoda" }, ak: "area", pk: "street", free: true });
+  C.setLang("en");
+  assert.equal(C.title(akiba), "Akihabara Smoking Area – Showa-dori Exit");
+  assert.equal(C.jaLine(akiba), "秋葉原昭和通り口喫煙所（区営）", "Original bleibt sichtbar");
+  assert.equal(C.translatedName(akiba), true);
+  assert.deepEqual(C.summary(akiba), ["Public smoking area", "Free"]);
+  C.setLang("de");
+  assert.equal(C.title(akiba), "Raucherplatz Akihabara – Showa-dori-Ausgang");
+  C.setLang("ja");
+  assert.equal(C.title(akiba), "秋葉原昭和通り口喫煙所（区営）");
+  assert.equal(C.translatedName(akiba), false);
+  // Ohne Übersetzung: Art des Ortes und Bahnhof, kein erfundener Name
+  C.setLang("en");
+  const plain = spot({ nj: "新橋駅烏森口指定喫煙場所", lq: "partial", ak: "area", st: { en: "Shimbashi", ja: "新橋", m: 120 } });
+  assert.equal(C.title(plain), "Smoking area near Shimbashi");
+  const cafe = spot({ k: "v", acc: "unknown", nj: "珈琲艇 CABIN", lq: "partial", pk: "cafe", ak: "section" });
+  assert.equal(C.title(cafe), "Café");
+  assert.deepEqual(C.summary(cafe), ["Café", "Smoking room inside", "Access unclear"]);
+  const mall = spot({ off: { ward: "Osaka Abeno" }, pk: "mall", ak: "room", fl: "4F", free: true, le: "Abeno Q's MALL Smoking Area" });
+  assert.deepEqual(C.summary(mall), ["Public smoking room", "Shopping mall", "Free", "4F"]);
+  const airport = spot({ off: { ward: "Naha Airport" }, pk: "airport", ak: "room", tk: true });
+  assert.equal(C.accessShort(airport), "Boarding pass needed");
+  assert.equal(C.floorText("1F"), "1F (ground floor)");
+  assert.equal(C.tobaccoText(spot({})), "Not stated");
+  // Suche über alle Namensformen
+  assert.equal(C.search([akiba], "showa-dori", [139.77, 35.69], C.DEFAULT_PREFS, {}).length, 1);
+  assert.equal(C.search([akiba], "昭和通り", [139.77, 35.69], C.DEFAULT_PREFS, {}).length, 1);
+  assert.equal(C.search([mall], "einkaufszentrum", [135.5, 34.6], C.DEFAULT_PREFS, {}).length, 1, "Ortstyp auf Deutsch");
   C.setLang("de");
 });

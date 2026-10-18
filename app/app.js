@@ -156,10 +156,10 @@ function renderHeader(top) {
 function rowHtml(d, s) {
   const kind = kindOf(s);
   const ja = C.jaLine(s);
-  const meta = [accessHtml(s)];
-  if (s.heated) meta.push(`<span class="acc acc-heated">${esc(t("heatedOnly"))}</span>`);
-  const type = C.placeType(s);
-  if (type) meta.push(esc(type));
+  // Zeile 2: was für ein Ort, Zugang, Stockwerk. Zeile 3: Bahnhof und Herkunft der Angaben.
+  const parts = C.summary(s).map(esc);
+  parts[0] = `<span class="acc mk-${kind}">${parts[0]}</span>`;
+  if (s.heated) parts.push(`<span class="acc acc-heated">${esc(t("heatedOnly"))}</span>`);
   const tr = C.trust(s, state.reports[s.id]);
   const src = [];
   const st = stationLine(s);
@@ -170,9 +170,9 @@ function rowHtml(d, s) {
   else if (tr.position === "address") src.push(t("src.posAddress"));
   if (tr.mine) src.push(t(tr.mine.status === "ok" ? "src.mineOk" : "src.mineGone"));
   return `<li><button class="row${kind === "gone" ? " gone" : ""}" data-id="${esc(s.id)}">
-    ${M.svg(kind, weak(s), 28)}
+    ${M.svg(kind, null, 30)}
     <span class="row-title">${esc(C.title(s))}${ja ? `<span class="ja" lang="ja">${esc(ja)}</span>` : ""}</span>
-    <span class="row-meta">${meta.join(" · ")}</span>
+    <span class="row-meta">${parts.join(" · ")}</span>
     <span class="row-src">${src.map(esc).join(" · ")}</span>
     ${d == null ? "" : `<span class="row-dist"><b>${C.fmtDist(d)}</b><span>${esc(t("list.straight"))}</span></span>`}
   </button></li>`;
@@ -220,8 +220,9 @@ function renderDetail(s) {
   const rep = state.reports[s.id];
   const tr = C.trust(s, rep);
   const cat = C.category(s);
-  const tags = [`<span class="tag ${s.unv ? "unverified" : cat}">${M.svg(cat === "public" ? "public" : "business", weak(s), 16)}${esc(C.accessLabel(s))}</span>`];
-  if (s.heated) tags.push(`<span class="tag heated">${M.svg("heated", false, 16)}${esc(t("heatedOnly.tag"))}</span>`);
+  const tags = [`<span class="tag mk-${kindOf(s)}">${M.svg(kindOf(s), null, 18)}${esc(C.areaLabel(s))}</span>`,
+    `<span class="tag">${esc(C.accessShort(s))}</span>`];
+  if (s.heated) tags.push(`<span class="tag heated">${esc(t("heatedOnly.tag"))}</span>`);
   if (state.loc.pos) {
     const d = C.distM(state.loc.pos, [s.lon, s.lat]);
     if (d < 50000) tags.push(`<span class="tag dist">${C.fmtDist(d)} ${esc(t("list.straight"))}</span>`);
@@ -235,16 +236,21 @@ function renderDetail(s) {
   const find = [];
   if (s.hint) find.push(`<p class="hint"${/[぀-ヿ一-鿿]/.test(s.hint) ? ' lang="ja"' : ""}>${esc(s.hint)}</p>`);
   const where = [];
-  if (s.floor) where.push([t("add.floor").replace(/\s*\(.*\)$/, "").replace(/（.*）$/, ""), esc(s.floor)]);
+  const ex = C.exitText(s);
+  if (ex) where.push([t("detail.exit"), esc(ex)]);
+  if (s.fl) where.push([t("detail.floor"), esc(C.floorText(s.fl))]);
+  if (s.floor) where.push([t("detail.floor"), esc(s.floor)]);
   if (s.st) {
     const name = t.lang === "ja" ? s.st.ja : s.st.en || s.st.ja;
     where.push([t("detail.station"), `${esc(name)}${s.st.en && t.lang !== "ja" ? ` <span class="ja" lang="ja">${esc(s.st.ja)}</span>` : ""}, ${C.fmtDist(s.st.m)} ${esc(t("list.straight"))}`]);
   }
   if (s.addr) where.push([t("detail.address"), `<span class="ja" lang="ja">${esc(s.addr)}</span>`]);
 
-  const info = [[t("detail.access"), esc(C.accessExplain(s))]];
-  const type = C.placeType(s);
-  if (type) info.push([t("detail.type"), esc(type)]);
+  const info = [];
+  info.push([t("detail.place"), esc(C.placeType(s) || t("tob.none"))]);
+  info.push([t("detail.area"), esc(C.areaLabel(s) + (s.io ? `, ${t(`io.${s.io}`)}` : ""))]);
+  info.push([t("detail.access"), esc(C.accessExplain(s) + (s.tk ? ` ${t("detail.ticketHint")}` : ""))]);
+  info.push([t("detail.tobacco"), esc(C.tobaccoText(s))]);
   const h = C.hours(s.hours);
   info.push([t("detail.hours"), h ? `${esc(h.text)}${h.original ? `<span class="orig ja" lang="ja">${esc(h.original)}</span>` : ""}` : esc(t("detail.hoursNone"))]);
 
@@ -277,6 +283,7 @@ function renderDetail(s) {
     <div class="d-head">
       <h2 class="d-title${C.title(s).length > 16 ? " long" : ""}" id="d-title">${esc(C.title(s))}</h2>
       ${C.jaLine(s) ? `<p class="d-ja" lang="ja">${esc(C.jaLine(s))}</p>` : ""}
+      ${C.translatedName(s) ? `<p class="d-note">${esc(t("detail.nameNote"))}${s.lr ? ` ${esc(t("detail.reading"))}: ${esc(s.lr)}.` : ""}</p>` : ""}
       <div class="tags">${tags.join("")}</div>
     </div>
     <div class="route">
@@ -437,10 +444,10 @@ function featureCollection() {
       geometry: { type: "Point", coordinates: [s.lon, s.lat] },
       properties: {
         id: s.id,
-        icon: `m-${kindOf(s)}${weak(s) ? "-weak" : ""}`,
+        icon: `m-${kindOf(s)}`,
         pub: C.category(s) === "public" && !s.unv ? 1 : 0,
-        // öffentlich und verlässlich oben
-        rank: (C.category(s) === "public" ? 0 : 2) + (weak(s) ? 1 : 0),
+        // öffentliche Plätze liegen oben
+        rank: C.category(s) === "public" ? 0 : 1,
       },
     })),
   };
@@ -513,7 +520,7 @@ function initMap() {
       type: "geojson",
       data: featureCollection(),
       cluster: true,
-      clusterRadius: 56,
+      clusterRadius: 60,
       clusterMaxZoom: 14,
       clusterProperties: { pub: ["+", ["get", "pub"]] },
     });
@@ -522,20 +529,20 @@ function initMap() {
       id: "clusters", type: "circle", source: "spots", filter: ["has", "point_count"],
       paint: {
         "circle-color": ["case", [">", ["get", "pub"], 0], "#000000", "#6b6b6b"],
-        "circle-radius": ["step", ["get", "point_count"], 12, 10, 14, 50, 17],
-        "circle-stroke-width": 2, "circle-stroke-color": "#ffffff",
+        "circle-radius": ["step", ["get", "point_count"], 15, 10, 18, 50, 22],
+        "circle-stroke-width": 3, "circle-stroke-color": "#ffffff",
       },
     });
     map.addLayer({
       id: "cluster-count", type: "symbol", source: "spots", filter: ["has", "point_count"],
-      layout: { "text-field": ["get", "point_count_abbreviated"], "text-font": ["Noto Sans Bold"], "text-size": 12, "text-allow-overlap": true },
+      layout: { "text-field": ["get", "point_count_abbreviated"], "text-font": ["Noto Sans Bold"], "text-size": 13, "text-allow-overlap": true },
       paint: { "text-color": "#ffffff" },
     });
     map.addLayer({
       id: "spots", type: "symbol", source: "spots", filter: ["!", ["has", "point_count"]],
       layout: {
         "icon-image": ["get", "icon"],
-        "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.75, 15, 1, 18, 1.25],
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.72, 15, 0.92, 18, 1.08],
         "icon-allow-overlap": true,
         "icon-padding": 0,
         "symbol-sort-key": ["-", 10, ["get", "rank"]],
@@ -545,11 +552,10 @@ function initMap() {
       id: "selected", type: "symbol", source: "sel",
       layout: { "icon-image": ["get", "icon"], "icon-anchor": "bottom", "icon-allow-overlap": true, "icon-ignore-placement": true },
     });
-    map.on("click", "spots", (e) => {
-      if (state.view === "form") return;
-      const f = e.features && e.features[0];
-      if (f) select(f.properties.id, { fly: false });
-    });
+    // Grundkarte ruhiger: Geschäfts- und Freizeit-Symbole der Karte ausblenden, Bahnhöfe bleiben
+    for (const layer of map.getStyle().layers) {
+      if (/^poi_r\d+/.test(layer.id)) map.setLayoutProperty(layer.id, "visibility", "none");
+    }
     map.on("click", "clusters", async (e) => {
       const f = e.features && e.features[0];
       if (!f) return;
@@ -565,10 +571,17 @@ function initMap() {
     // Quellenangabe zuerst eingeklappt, sie steht vollständig unter "Info"
     document.querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
     map.on("click", (e) => {
+      if (state.view === "form") return;
+      // Großzügige Trefferfläche für Finger: nächster Marker in 22 px Umkreis
+      const p = e.point, pad = 22;
+      const hits = map.queryRenderedFeatures([[p.x - pad, p.y - pad], [p.x + pad, p.y + pad]], { layers: ["spots", "clusters", "selected"] });
+      const spot = hits.filter((f) => f.layer.id === "spots")
+        .map((f) => { const q = map.project(f.geometry.coordinates); return [Math.hypot(q.x - p.x, q.y - p.y), f]; })
+        .sort((a, b) => a[0] - b[0])[0];
+      if (spot && spot[0] <= pad) { select(spot[1].properties.id, { fly: false }); return; }
+      if (hits.some((f) => f.layer.id === "clusters" || f.layer.id === "selected")) return;
       // Tipp auf freie Karte schließt die Detailansicht
-      if (state.view !== "detail") return;
-      const hit = map.queryRenderedFeatures(e.point, { layers: ["spots", "clusters", "selected"] });
-      if (!hit.length) closeDetail();
+      if (state.view === "detail") closeDetail();
     });
     mapReady = true;
     updateMapData();
@@ -887,14 +900,14 @@ function setPref(change) {
 }
 function renderLegend() {
   const items = [
-    ["public", false, "legend.public", "legend.publicSub"],
-    ["business", false, "legend.business", "legend.businessSub"],
-    ["heated", false, "legend.heated", "legend.heatedSub"],
-    ["public", true, "legend.weak", "legend.weakSub"],
-    ["gone", false, "legend.gone", "legend.goneSub"],
+    ["public", "legend.public", "legend.publicSub"],
+    ["food", "legend.food", "legend.foodSub"],
+    ["shop", "legend.shop", "legend.shopSub"],
+    ["heated", "legend.heated", "legend.heatedSub"],
   ];
-  $("legend-list").innerHTML = items.map(([k, hollow, a, b]) => `<li>${M.svg(k, hollow, 32)}<span><b>${esc(t(a))}</b>${esc(t(b))}</span></li>`).join("")
-    + `<li><svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="#000" stroke="#fff" stroke-width="2"/><text x="16" y="20.5" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif">12</text></svg><span><b>${esc(t("legend.cluster"))}</b>${esc(t("legend.clusterSub"))}</span></li>`;
+  $("legend-list").innerHTML = items.map(([k, a, b]) => `<li>${M.svg(k, null, 34)}<span><b>${esc(t(a))}</b>${esc(t(b))}</span></li>`).join("")
+    + `<li><svg viewBox="0 0 34 34" width="34" height="34" aria-hidden="true"><circle cx="17" cy="17" r="14" fill="#000" stroke="#fff" stroke-width="2.5"/><text x="17" y="21.5" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" font-family="-apple-system,sans-serif">12</text></svg><span><b>${esc(t("legend.cluster"))}</b>${esc(t("legend.clusterSub"))}</span></li>`
+    + `<li class="legend-note">${esc(t("legend.reliability"))}</li>`;
 }
 
 // ---------- Verdrahtung ----------
@@ -1030,7 +1043,7 @@ function initSheet() {
 }
 
 // ---------- Start ----------
-for (const el of document.querySelectorAll("[data-mk]")) el.innerHTML = M.svg(el.dataset.mk, false, 18);
+for (const el of document.querySelectorAll("[data-mk]")) el.innerHTML = M.svg(el.dataset.mk === "business" ? "shop" : el.dataset.mk, null, 20);
 applyStatic();
 renderLegend();
 syncFilters();

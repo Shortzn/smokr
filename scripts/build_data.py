@@ -4,11 +4,17 @@
 Aufruf: python3 -I scripts/build_data.py   (aus ~/Projects/smokr)
 Ergebnis: app/data/<region>.json
 """
+import collections
+import csv
 import json
 import math
 import os
 import sys
 from datetime import date
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import classify  # noqa: E402
+import localize  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = os.path.join(ROOT, "data", "raw")
@@ -30,6 +36,7 @@ VENUE_TYPES = {
     "nightclub": "club",
     "karaoke_box": "karaoke",
     "hotel": "hotel",
+    "tobacco": "tobacco",
 }
 
 SMOKING_DETAIL = {
@@ -111,7 +118,7 @@ def heated_from_text(*texts):
 #   pos   "exact" | "address" | "area"         (wie genau die Koordinate ist)
 #   off   {"ward", "url", "date"}              offizielle Liste und deren Stand
 #   osm   {"url", "chk"}                       OSM-Eintrag und dessen check_date
-SCHEMA = 3
+SCHEMA = 4
 
 
 def osm_spots(region):
@@ -130,6 +137,7 @@ def osm_spots(region):
             "ne": t.get("name:en") or "",
             "pos": "exact",
             "osm": osm,
+            "_tags": t,
         }
         if t.get("opening_hours"):
             base["hours"] = t["opening_hours"]
@@ -293,6 +301,31 @@ def merge(official, osm):
     return list(official) + [o for i, o in enumerate(osm) if i not in used_osm]
 
 
+NAME_STATS = collections.Counter()
+REVIEW = []
+
+
+def enrich(s):
+    """Lokalisierter Name, Ortstyp, Rauchbereich und Zugang (siehe localize.py, classify.py)."""
+    tags = s.pop("_tags", None) or {}
+    loc, extra = localize.localize(s, tags)
+    for key in ("le", "ld", "lq", "lr"):
+        if loc.get(key):
+            s[key] = loc[key]
+    if extra.get("heated"):
+        s["heated"] = True
+    if extra.get("ex"):
+        s["ex"] = extra["ex"]
+    s.update(classify.classify(s, tags, extra))
+    nj = s.get("nj") or ""
+    NAME_STATS["total"] += 1
+    if nj and localize.JA.search(nj) and not s.get("ne"):
+        NAME_STATS["ja_only"] += 1
+    NAME_STATS[f"q_{s.get('lq', 'none')}"] += 1
+    if s.get("lq") not in localize.RELIABLE:
+        REVIEW.append(s)
+
+
 def build(region):
     for key in KONBINI_STATS:
         KONBINI_STATS[key] = 0
@@ -302,6 +335,7 @@ def build(region):
         st = nearest_station(stations, s["lat"], s["lon"])
         if st:
             s["st"] = st
+        enrich(s)
     spots.sort(key=lambda s: (s["k"], s["lat"], s["id"]))
     payload = {"schema": SCHEMA, "region": region, "built": date.today().isoformat(), "konbini": dict(KONBINI_STATS), "spots": spots}
     os.makedirs(OUT, exist_ok=True)
@@ -312,6 +346,30 @@ def build(region):
     print(f"{region}: {len(spots)} Orte ({pub} öffentlich, {off} offiziell gelistet, {len(spots) - pub} mit Kundenpflicht oder unklarem Zugang); Konbini {KONBINI_STATS}")
 
 
+def write_report():
+    """Bericht zur Namensqualität und Liste zum Prüfen von Hand (data/i18n/)."""
+    out = os.path.join(ROOT, "data", "i18n")
+    with open(os.path.join(out, "report.json"), "w", encoding="utf-8") as f:
+        json.dump(dict(NAME_STATS), f, ensure_ascii=False, indent=2, sort_keys=True)
+    with open(os.path.join(out, "review.csv"), "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["id", "quality", "name_ja", "name_en_osm", "en", "de", "place_kind", "area_kind"])
+        for s in sorted(REVIEW, key=lambda x: x["id"]):
+            w.writerow([s["id"], s.get("lq", "none"), s.get("nj", ""), s.get("ne", ""), s.get("le", ""), s.get("ld", ""), s.get("pk"), s.get("ak")])
+    with open(os.path.join(out, "localized.csv"), "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["id", "quality", "name_ja", "en", "de"])
+        for region in REGIONS:
+            path = os.path.join(OUT, f"{region}.json")
+            if not os.path.exists(path):
+                continue
+            for s in load_json(path)["spots"]:
+                if s.get("lq") in ("composed", "romaji", "brand"):
+                    w.writerow([s["id"], s["lq"], s.get("nj", ""), s.get("le", ""), s.get("ld", "")])
+    print("Namen:", dict(NAME_STATS))
+
+
 if __name__ == "__main__":
     for r in sys.argv[1:] or REGIONS:
         build(r)
+    write_report()

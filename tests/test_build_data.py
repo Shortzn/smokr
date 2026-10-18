@@ -115,6 +115,11 @@ class BuiltDataTest(unittest.TestCase):
                     self.assertIn(s["pos"], ("exact", "address", "area"))
                     self.assertTrue("off" in s or "osm" in s, s["id"])
                     self.assertNotIn("chk", s, "altes Feld")
+                    self.assertIn(s["pk"], {"station", "airport", "mall", "park", "street", "cafe", "restaurant", "fast_food", "bar", "karaoke", "hotel", "konbini", "tobacco", "shop", "pachinko", "building", "leisure", "unknown"})
+                    self.assertIn(s["ak"], {"room", "booth", "outdoor", "section", "whole", "ashtray", "area", "unknown"})
+                    self.assertNotIn("_tags", s)
+                    if s.get("le"):
+                        self.assertNotRegex(s["le"], r"[\u3040-\u30ff\u4e00-\u9fff]", f"Japanisch im englischen Namen: {s['id']}")
                     if s["k"] == "p":
                         self.assertNotEqual(s["acc"], "unknown", s["id"])
                     if "off" not in s and s["k"] == "v":

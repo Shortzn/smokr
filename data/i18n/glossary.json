@@ -1,0 +1,478 @@
+{
+  "_doc": "Geprüftes Glossar für Namensteile. Nur allgemeine Begriffe, keine Eigennamen. Eigennamen kommen aus OpenStreetMap (name + name:en) oder Markenangaben (brand + brand:en). Quelle der Übersetzungen: eigene Prüfung gegen allgemeinen Sprachgebrauch und Beschilderung in Japan.",
+  "facility": {
+    "公衆喫煙所": [
+      "Public Smoking Area",
+      "Öffentlicher Raucherplatz"
+    ],
+    "公設喫煙場所": [
+      "Public Smoking Area",
+      "Öffentlicher Raucherplatz"
+    ],
+    "公設喫煙所": [
+      "Public Smoking Area",
+      "Öffentlicher Raucherplatz"
+    ],
+    "指定喫煙場所": [
+      "Designated Smoking Area",
+      "Ausgewiesener Raucherplatz"
+    ],
+    "指定喫煙所": [
+      "Designated Smoking Area",
+      "Ausgewiesener Raucherplatz"
+    ],
+    "臨時喫煙所": [
+      "Temporary Smoking Area",
+      "Vorübergehender Raucherplatz"
+    ],
+    "喫煙所": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "喫煙場所": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "喫煙スペース": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "喫煙エリア": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "喫煙コーナー": [
+      "Smoking Corner",
+      "Raucherecke"
+    ],
+    "喫煙室": [
+      "Smoking Room",
+      "Raucherraum"
+    ],
+    "喫煙ルーム": [
+      "Smoking Room",
+      "Raucherraum"
+    ],
+    "喫煙ブース": [
+      "Smoking Booth",
+      "Raucherkabine"
+    ],
+    "紙巻たばこエリア": [
+      "Cigarette Area",
+      "Bereich für Zigaretten"
+    ],
+    "紙巻きたばこエリア": [
+      "Cigarette Area",
+      "Bereich für Zigaretten"
+    ],
+    "加熱式たばこエリア": [
+      "Heated Tobacco Area",
+      "Bereich für Tabakerhitzer"
+    ],
+    "公共喫煙所": [
+      "Public Smoking Area",
+      "Öffentlicher Raucherplatz"
+    ],
+    "スモーキングエリア": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "スモーキングスペース": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "スモーキングプレイス": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "スモーカーズスペース": [
+      "Smoking Area",
+      "Raucherplatz"
+    ],
+    "スモーキングルーム": [
+      "Smoking Room",
+      "Raucherraum"
+    ]
+  },
+  "exit": {
+    "東口": [
+      "East Exit",
+      "Ostausgang"
+    ],
+    "西口": [
+      "West Exit",
+      "Westausgang"
+    ],
+    "南口": [
+      "South Exit",
+      "Südausgang"
+    ],
+    "北口": [
+      "North Exit",
+      "Nordausgang"
+    ],
+    "中央口": [
+      "Central Exit",
+      "Mittelausgang"
+    ],
+    "東改札": [
+      "East Gate",
+      "Ostsperre"
+    ],
+    "西改札": [
+      "West Gate",
+      "Westsperre"
+    ],
+    "南改札": [
+      "South Gate",
+      "Südsperre"
+    ],
+    "北改札": [
+      "North Gate",
+      "Nordsperre"
+    ],
+    "中央改札": [
+      "Central Gate",
+      "Mittelsperre"
+    ],
+    "東出口": [
+      "East Exit",
+      "Ostausgang"
+    ],
+    "西出口": [
+      "West Exit",
+      "Westausgang"
+    ],
+    "南出口": [
+      "South Exit",
+      "Südausgang"
+    ],
+    "北出口": [
+      "North Exit",
+      "Nordausgang"
+    ]
+  },
+  "place_suffix": {
+    "駅前広場": [
+      "Station Square",
+      "Bahnhofsvorplatz"
+    ],
+    "駅前": [
+      "Station Front",
+      "Bahnhofsvorplatz"
+    ],
+    "広場": [
+      "Plaza",
+      "Platz"
+    ],
+    "公園": [
+      "Park",
+      "Park"
+    ],
+    "高架下": [
+      "under the tracks",
+      "unter der Bahntrasse"
+    ],
+    "ロータリー": [
+      "Rotary",
+      "Bahnhofsvorplatz"
+    ],
+    "バスターミナル": [
+      "Bus Terminal",
+      "Busbahnhof"
+    ],
+    "タクシー乗り場": [
+      "Taxi Stand",
+      "Taxistand"
+    ],
+    "デッキ": [
+      "Deck",
+      "Deck"
+    ],
+    "ペデストリアンデッキ": [
+      "Pedestrian Deck",
+      "Fußgängerdeck"
+    ],
+    "体育館": [
+      "Gymnasium",
+      "Sporthalle"
+    ],
+    "市役所": [
+      "City Hall",
+      "Rathaus"
+    ],
+    "区役所": [
+      "Ward Office",
+      "Bezirksamt"
+    ],
+    "図書館": [
+      "Library",
+      "Bibliothek"
+    ],
+    "地下街": [
+      "Underground Mall",
+      "Einkaufspassage"
+    ],
+    "商店街": [
+      "Shopping Street",
+      "Einkaufsstraße"
+    ],
+    "駐車場": [
+      "Parking",
+      "Parkplatz"
+    ],
+    "駐輪場": [
+      "Bicycle Parking",
+      "Fahrradparkplatz"
+    ],
+    "交番": [
+      "Police Box",
+      "Polizeiposten"
+    ],
+    "入口": [
+      "Entrance",
+      "Eingang"
+    ],
+    "出入口": [
+      "Entrance",
+      "Eingang"
+    ],
+    "改札前": [
+      "at the ticket gates",
+      "an den Sperren"
+    ],
+    "付近": [
+      "nearby",
+      "in der Nähe"
+    ],
+    "横": [
+      "beside",
+      "daneben"
+    ],
+    "内": [
+      "",
+      ""
+    ],
+    "敷地内": [
+      "on the premises",
+      "auf dem Gelände"
+    ],
+    "店内": [
+      "",
+      ""
+    ],
+    "館内": [
+      "",
+      ""
+    ],
+    "園内": [
+      "",
+      ""
+    ],
+    "構内": [
+      "",
+      ""
+    ]
+  },
+  "katakana": {
+    "オアシス": "Oasis",
+    "ビル": "Building",
+    "タワー": "Tower",
+    "センター": "Center",
+    "プラザ": "Plaza",
+    "パーク": "Park",
+    "ガーデン": "Garden",
+    "テラス": "Terrace",
+    "スクエア": "Square",
+    "ステーション": "Station",
+    "ホテル": "Hotel",
+    "モール": "Mall",
+    "ゲート": "Gate",
+    "シティ": "City",
+    "ヒルズ": "Hills",
+    "ストリート": "Street",
+    "ハウス": "House",
+    "カフェ": "Café",
+    "バー": "Bar",
+    "ルーム": "Room",
+    "スペース": "Space",
+    "コーナー": "Corner",
+    "エリア": "Area",
+    "ファースト": "First",
+    "ノース": "North",
+    "サウス": "South",
+    "イースト": "East",
+    "ウエスト": "West",
+    "ウェスト": "West",
+    "セントラル": "Central",
+    "スポーツ": "Sports",
+    "リバーサイド": "Riverside",
+    "ターミナル": "Terminal",
+    "プロムナード": "Promenade",
+    "シンボル": "Symbol",
+    "ステージ": "Stage",
+    "キッチン": "Kitchen",
+    "コーヒー": "Coffee",
+    "ショップ": "Shop",
+    "フロア": "Floor",
+    "ロビー": "Lobby",
+    "ラウンジ": "Lounge",
+    "サンクンガーデン": "Sunken Garden",
+    "トレーラー": "Trailer",
+    "コンテナ": "Container",
+    "ラーメン": "Ramen",
+    "ウォーク": "Walk",
+    "スポット": "Spot",
+    "テキサス": "Texas",
+    "ライフ": "Life",
+    "ブレーク": "Break",
+    "シアター": "Theater",
+    "ビルディング": "Building",
+    "スモーカーズ": "Smokers",
+    "トイレ": "Toilet",
+    "ワイン": "Wine",
+    "チャンピオン": "Champion",
+    "ライブ": "Live",
+    "ビジョン": "Vision",
+    "パチンコ": "Pachinko",
+    "スロット": "Slot",
+    "グランド": "Grand",
+    "ポート": "Port",
+    "タウン": "Town",
+    "ショッピング": "Shopping",
+    "レインボー": "Rainbow",
+    "リンク": "Link",
+    "フォート": "Fort",
+    "オールド": "Old",
+    "ルーキー": "Rookie",
+    "クリスタル": "Crystal",
+    "スクランブル": "Scramble",
+    "ヒルサイド": "Hillside",
+    "シネマズ": "Cinemas",
+    "インターナショナル": "International",
+    "グランデ": "Grande",
+    "キャピタル": "Capital",
+    "ワールド": "World",
+    "ブース": "Booth",
+    "リラックス": "Relax",
+    "ピュア": "Pure",
+    "ウッド": "Wood",
+    "ペデストリアン": "Pedestrian",
+    "グリーン": "Green",
+    "パンケーキ": "Pancake",
+    "ファクトリー": "Factory",
+    "ハワイアン": "Hawaiian",
+    "パーキング": "Parking",
+    "ホーム": "Home",
+    "ハイツ": "Heights",
+    "ベース": "Base",
+    "ファーム": "Farm",
+    "ニュー": "New",
+    "ミッド": "Mid",
+    "コート": "Court",
+    "ブルー": "Blue",
+    "フロント": "Front",
+    "エクセレント": "Excellent",
+    "クラフト": "Craft",
+    "ビレッジ": "Village",
+    "オリエンタル": "Oriental",
+    "ウォーターズ": "Waters",
+    "メモリー": "Memory",
+    "マンモス": "Mammoth",
+    "ライオン": "Lion",
+    "スモーキング": "Smoking",
+    "プレイス": "Place",
+    "スーパー": "Super",
+    "カー": "Car",
+    "モーター": "Motor",
+    "プール": "Pool",
+    "ストア": "Store",
+    "マート": "Mart",
+    "アネックス": "Annex",
+    "トラットリア": "Trattoria",
+    "ピザ": "Pizza",
+    "バーガー": "Burger",
+    "ダイニング": "Dining",
+    "レストラン": "Restaurant"
+  },
+  "qualifier": {
+    "区営": "ward_run",
+    "市営": "city_run",
+    "加熱式たばこ専用": "heated_only",
+    "加熱式専用": "heated_only",
+    "コンテナ型": "booth",
+    "屋外": "outdoor",
+    "屋内": "indoor",
+    "店舗全面喫煙可能": "whole_venue",
+    "敷地内": "on_premises"
+  },
+  "direction": {
+    "北東": [
+      "northeast",
+      "Nordost"
+    ],
+    "北西": [
+      "northwest",
+      "Nordwest"
+    ],
+    "南東": [
+      "southeast",
+      "Südost"
+    ],
+    "南西": [
+      "southwest",
+      "Südwest"
+    ],
+    "東": [
+      "east",
+      "Ost"
+    ],
+    "西": [
+      "west",
+      "West"
+    ],
+    "南": [
+      "south",
+      "Süd"
+    ],
+    "北": [
+      "north",
+      "Nord"
+    ]
+  },
+  "brands": {
+    "ローソン": "Lawson",
+    "ファミリーマート": "FamilyMart",
+    "セブン-イレブン": "7-Eleven",
+    "セブンイレブン": "7-Eleven",
+    "ミニストップ": "Ministop",
+    "デイリーヤマザキ": "Daily Yamazaki",
+    "ドトールコーヒーショップ": "Doutor Coffee Shop",
+    "ドトール": "Doutor",
+    "スターバックス": "Starbucks",
+    "マクドナルド": "McDonald's",
+    "ファーストキッチン": "First Kitchen",
+    "ウェンディーズ": "Wendy's",
+    "ルノアール": "Renoir",
+    "コメダ珈琲店": "Komeda's Coffee",
+    "サンマルクカフェ": "Saint Marc Café",
+    "タリーズコーヒー": "Tully's Coffee",
+    "ベローチェ": "Veloce",
+    "カフェ・ベローチェ": "Caffè Veloce",
+    "プロント": "Pronto",
+    "エクセルシオール カフェ": "Excelsior Caffé",
+    "星乃珈琲店": "Hoshino Coffee",
+    "パチンコマルハン": "Maruhan Pachinko",
+    "ホワイティうめだ": "Whity Umeda",
+    "ホリーズカフェ": "Holly's Café",
+    "トヨタ": "Toyota",
+    "キコーナ": "Kicona",
+    "マルハン": "Maruhan",
+    "スロットマルハン": "Slot Maruhan",
+    "フジテレビ": "Fuji TV",
+    "パルコ": "PARCO",
+    "ギンザシックス": "GINZA SIX",
+    "セブンーイレブン": "7-Eleven"
+  },
+  "exit_pattern_doc": "Muster im Code: <Buchstabe/Zahl>出口 -> Exit <...>, <Zahl>番出口 -> Exit <Zahl>"
+}

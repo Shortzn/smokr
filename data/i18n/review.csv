@@ -1,0 +1,1042 @@
+id,quality,name_ja,name_en_osm,en,de,place_kind,area_kind
+off-bunkyo-2,partial,長寿庵,,,,unknown,area
+off-chiyoda-11,partial,IPPUKU秋葉原店 2号店,,,,unknown,area
+off-chiyoda-14,romaji,スモーキングプレイス・マツイ,,Matsui Smoking Area,Raucherplatz Matsui,unknown,area
+off-chiyoda-18,partial,大賀商店 喫煙所,,,,unknown,area
+off-chiyoda-2,partial,Smoking Place 木倉食品,,,,unknown,area
+off-chiyoda-23,partial,paspa小伝馬町,,,,unknown,area
+off-chiyoda-28,partial,喫煙喫茶オールドルーキーカフェ神田東口店公衆喫煙所,,,,cafe,area
+off-chiyoda-29,partial,朝陽ビル無料公衆喫煙所,,,,building,area
+off-chiyoda-3,romaji,ミマツたばこ,,Mimatsu,Mimatsu,tobacco,area
+off-chiyoda-32,partial,ヒライ商会,,,,unknown,area
+off-chiyoda-43,partial,喫煙所 ジョリー1階・2階,,,,unknown,area
+off-chiyoda-45,partial,スモーカーズ六番町,,,,unknown,area
+off-chiyoda-46,partial,安田ビル地下1階無料喫煙所,,,,building,area
+off-chiyoda-48,partial,一服（Ippuku）平河町店,,,,unknown,area
+off-chiyoda-52,partial,三久ビル喫煙所,,,,building,area
+off-chiyoda-53,partial,はとバス東京営業所 喫煙所,,,,unknown,area
+off-chiyoda-54,romaji,銀座インズ1、2喫煙ブース,,Ginza Inzu 1 2 Smoking Booth,Raucherkabine Ginza Inzu 1 2,unknown,booth
+off-chiyoda-58,romaji,スモーカーズカフェ・ブリケ内喫煙所,,Smokers Café Burike Smoking Area,Raucherplatz Smokers Café Burike,cafe,area
+off-chiyoda-6,romaji,スモーキングスペース サンディベル,,Sumōkingusupēsu Sandiberu,Sumōkingusupēsu Sandiberu,unknown,area
+off-chiyoda-61,partial,華商ビル スモーキングスペース,,,,building,area
+off-chiyoda-62,partial,ワテラスモール喫煙室,,,,mall,room
+off-chiyoda-63,partial,喫煙トレーラー,,,,unknown,room
+off-chiyoda-64,romaji,リラックスエリア バウンスバック,,Rirakkusueria Baunsubakku,Rirakkusueria Baunsubakku,unknown,area
+off-chiyoda-65,partial,喜助お茶の水ビル喫煙所,,,,building,area
+off-chiyoda-69,partial,一服（Ippuku）,,,,unknown,area
+off-chiyoda-73,partial,和み,,,,unknown,area
+off-chiyoda-74,partial,和み 2階,,,,unknown,area
+off-chuo-1,partial,（区営）楓川久安橋公園,,,,park,area
+off-chuo-10,partial,（区営）築地川千代橋公園（東側）,,,,park,area
+off-chuo-11,partial,（区営）築地川千代橋公園（西側）,,,,park,area
+off-chuo-12,partial,（区営）楓川弾正橋公園,,,,park,area
+off-chuo-14,partial,（区営）地蔵橋公園,,,,park,area
+off-chuo-18,partial,（区営）佃公園,,,,park,area
+off-chuo-2,partial,（区営）城辺橋際緑地帯,,,,unknown,area
+off-chuo-21,partial,（区営）新月島公園,,,,park,area
+off-chuo-30,partial,GSパーク銀座5丁目駐車場内 昭和通り側喫煙所(旧：GSパーク銀座1丁目駐車場内喫煙所),,,,street,area
+off-chuo-33,partial,GINZA Smoking Room~Pocket of Time~,,,,unknown,area
+off-chuo-34,partial,GINZA KABUKIZA 地下2階 「木挽町広場」喫煙室,,,,street,room
+off-chuo-36,partial,GSパーク銀座5丁目駐車場内 三原橋側喫煙所,,,,unknown,area
+off-chuo-37,partial,ギンザコマツ西館,,,,unknown,area
+off-chuo-4,partial,（区営）楓川新富橋公園,,,,park,area
+off-chuo-40,partial,ドルチェ銀座東弐番館,,,,unknown,area
+off-chuo-41,romaji,グランメゾンフヂノ,,Guranmezonfujino,Guranmezonfujino,unknown,area
+off-chuo-42,partial,ホテル京阪築地銀座グランデ,,,,hotel,area
+off-chuo-44,partial,築六喫煙所,,,,unknown,area
+off-chuo-48,partial,paspa日本橋トレーラー,,,,unknown,area
+off-chuo-50,partial,日本橋室町三井タワー,,,,building,area
+off-chuo-52,partial,paspa小舟町,,,,unknown,area
+off-chuo-58,partial,オールドルーキーカフェ日本橋馬喰横山店,,,,cafe,area
+off-chuo-60,partial,日本橋髙島屋三井ビルディング,,,,building,area
+off-chuo-64,partial,赤札屋 田村商店,,,,unknown,area
+off-chuo-69,partial,月島荘,,,,unknown,area
+off-chuo-72,partial,三井ショッピングパーク ららテラス HARUMI FLAG,,,,mall,area
+off-chuo-73,partial,HARUMI FLAG PORT VILLAGE A棟,,,,unknown,area
+off-chuo-75,partial,HARUMI FLAG PARK VILLAGE C棟 FLAG CORE,,,,unknown,area
+off-chuo-79,partial,晴海客船ターミナル,,,,unknown,area
+off-kamakura-2,partial,大船駅東口歩道橋下 喫煙所（屋内型）,,,,station,room
+off-koto-4,partial,区立油堀川公園内指定喫煙所,,,,park,area
+off-koto-5,partial,区立南砂三丁目公園内指定喫煙所,,,,park,area
+off-koto-6,partial,区立亀戸駅前公園内指定喫煙所,,,,station,area
+off-kyoto-1,partial,四条西木屋町喫煙場所,,,,unknown,area
+off-kyoto-11,partial,清水坂観光駐車場（休憩所内）喫煙場所,,,,unknown,area
+off-kyoto-12,partial,清水坂観光駐車場（北側緑地帯内）喫煙場所,,,,unknown,area
+off-kyoto-15,partial,ＪＲ山科駅前北広場喫煙場所,,,,station,area
+off-kyoto-16,partial,JR西大路駅北側喫煙場所,,,,station,area
+off-kyoto-17,partial,ＪＲ西大路駅南側喫煙場所,,,,station,area
+off-kyoto-19,partial,京阪中書島駅前喫煙場所,,,,station,area
+off-kyoto-2,partial,新京極公園内喫煙場所,,,,park,area
+off-kyoto-4,partial,東塩小路公園内喫煙場所,,,,park,area
+off-kyoto-5,partial,京都駅八条東口喫煙場所,,,,station,area
+off-kyoto-6,partial,京都駅八条西洞院喫煙場所,,,,station,area
+off-kyoto-7,partial,京都駅みやこ夢てらす喫煙場所,,,,station,area
+off-kyoto-8,partial,京都駅八条西口喫煙場所,,,,station,area
+off-meguro-15,partial,ヒノマルパチンコ都立大店,,,,pachinko,area
+off-meguro-16,romaji,プレゴ自由が丘店,,Purego Jiyugaoka Smoking Area,Raucherplatz Purego Jiyugaoka,unknown,area
+off-meguro-17,romaji,オリエンタルパサージュ,,Orientarupasāju,Orientarupasāju,unknown,area
+off-meguro-2,partial,山﨑商会,,,,unknown,area
+off-meguro-3,partial,ヒノマルパチンコ中目黒店,,,,pachinko,area
+off-meguro-4,romaji,マツヤ本店,,Matsuya Smoking Area,Raucherplatz Matsuya,unknown,area
+off-meguro-5,partial,中目黒駅東側公衆喫煙所,,,,station,room
+off-meguro-6,partial,目黒権之助坂公衆喫煙所,,,,unknown,area
+off-meguro-9,partial,並木商店,,,,unknown,area
+off-minato-100,partial,浜松町エクセレントビル２階指定喫煙場所,,,,building,area
+off-minato-101,partial,ヒューリック虎ノ門ビル１階喫煙室（＊）,,,,building,room
+off-minato-102,partial,鈴与竹芝ビル１階指定喫煙場所（ファミリーマート南山堂竹芝駅前店内）,,,,konbini,area
+off-minato-103,partial,ウォーターズ竹芝 シアター棟１Ｆ指定喫煙場所,,,,unknown,area
+off-minato-104,partial,ウォーターズ竹芝 シアター棟２Ｆ指定喫煙場所,,,,unknown,area
+off-minato-11,partial,浜松町駅北口指定喫煙場所,,,,station,area
+off-minato-115,partial,ブルーフロント芝浦Ｓ棟１階GREEN DINING HALL内指定喫煙場所,,,,unknown,area
+off-minato-120,partial,ＦＯＲＥＣＡＳＴ品川＠ＬＡＢＯ１階指定喫煙場所,,,,unknown,area
+off-minato-13,partial,都立芝公園内指定喫煙場所（コンテナ型）,,,,park,booth
+off-minato-16,partial,六本木ヒルズ ヒルサイド2F TOHOシネマズ入口右側指定喫煙場所,,,,mall,area
+off-minato-18,partial,一の橋公園内指定喫煙場所（コンテナ型）,,,,park,booth
+off-minato-22,partial,表参道交差点指定喫煙場所①,,,,street,area
+off-minato-23,partial,表参道交差点指定喫煙場所②,,,,street,area
+off-minato-25,partial,高輪二丁目東海大学前指定喫煙場所,,,,building,area
+off-minato-27,partial,芝浦１丁目リバーサイド指定喫煙場所,,,,unknown,area
+off-minato-28,partial,田町駅東口デッキ下指定喫煙場所（コンテナ型）,,,,station,booth
+off-minato-29,partial,芝浦中央公園Ａ面指定喫煙場所,,,,park,area
+off-minato-31,romaji,品川駅港南口港南ふれあい広場指定喫煙場所（コンテナ型）,,Shinagawa Station Kōnan Fureai Plaza Designated Smoking Area – Kōnan Exit,"Ausgewiesener Raucherplatz Bahnhof Shinagawa Kōnan Fureai, Platz – Kōnan-Ausgang",station,booth
+off-minato-32,partial,シンボルプロムナード公園内デッキ上指定喫煙場所①,,,,park,area
+off-minato-34,partial,シンボルプロムナード公園内デッキ上指定喫煙場所②,,,,park,area
+off-minato-35,partial,お台場海浜公園内指定喫煙場所①,,,,park,area
+off-minato-36,partial,お台場海浜公園内指定喫煙場所②,,,,park,area
+off-minato-37,partial,お台場海浜公園内指定喫煙場所③,,,,park,area
+off-minato-38,partial,お台場海浜公園内指定喫煙場所④,,,,park,area
+off-minato-39,partial,お台場海浜公園内指定喫煙場所⑤,,,,park,area
+off-minato-40,partial,芝１丁目ビル１階指定喫煙場所（セブンイレブン港区芝１丁目店内）,,,,konbini,area
+off-minato-43,partial,東洋カーマックス芝３丁目第１１駐車場内指定喫煙場所（トレーラー型）,,,,unknown,area
+off-minato-46,romaji,ニイハオ田町店内指定喫煙場所,,Niihao Tamachi Designated Smoking Area,Ausgewiesener Raucherplatz Niihao Tamachi,unknown,area
+off-minato-53,partial,エコロパーク新橋第７駐車場内指定喫煙場所（トレーラー型）,,,,unknown,area
+off-minato-55,partial,エスプラザ弥生ビルⅡ２階指定喫煙場所（ファミリーマート新橋駅西店内）,,,,konbini,area
+off-minato-64,romaji,タマガワヤ２階指定喫煙場所,,Tamagawaya Designated Smoking Area,Ausgewiesener Raucherplatz Tamagawaya,unknown,area
+off-minato-66,partial,No.R浜松町１階指定喫煙場所（セブンイレブン浜松町1丁目北店内）,,,,konbini,area
+off-minato-67,partial,ｐａｓｐａ浜松町指定喫煙場所,,,,unknown,area
+off-minato-7,partial,新橋駅烏森口指定喫煙場所（加熱式たばこ専用）,,,,tobacco,area
+off-minato-71,romaji,ラピロス六本木地下１階指定喫煙場所(ファミリーマート地下鉄六本木駅店内),,Rapirosu Roppongi Designated Smoking Area,Ausgewiesener Raucherplatz Rapirosu Roppongi,konbini,area
+off-minato-75,partial,ｐａｓｐａ溜池指定喫煙場所,,,,unknown,area
+off-minato-76,partial,喫煙喫茶オールドルーキーカフェ溜池山王店内指定喫煙場所,,,,cafe,area
+off-minato-77,partial,フォーシーズ溜池山王ビル２階指定喫煙場所（ファミリーマート溜池山王駅南店内）,,,,konbini,area
+off-minato-78,partial,ミカワヤビル１階指定喫煙場所,,,,building,area
+off-minato-80,partial,四方ビル２階指定喫煙場所,,,,building,area
+off-minato-87,partial,芝浦ＳＥＣビル１階指定喫煙場所（ファミリーマート田町東口店内）,,,,konbini,area
+off-minato-89,romaji,イケダヤ品川ビル１階指定喫煙場所（セブンイレブン港区港南２丁目店内）,,Ikedaya Shinagawa Building Designated Smoking Area,Ausgewiesener Raucherplatz Ikedaya Shinagawa Building,konbini,area
+off-minato-94,partial,新虎通りＣＯＲＥ２階喫煙室（＊）,,,,street,room
+off-minato-98,partial,新虎安田ビル１階指定喫煙場所,,,,building,area
+off-minato-99,partial,浜松町二丁目地区施設建築物２階指定喫煙場所,,,,unknown,area
+off-okinawa-air-10,partial,那覇空港 喫煙室（国内線 手荷物受取所（B側））,,,,airport,room
+off-okinawa-air-11,partial,那覇空港 喫煙所（1F 到着ロビー前 屋外（南側））,,,,airport,outdoor
+off-okinawa-air-12,partial,那覇空港 喫煙所（1F 到着ロビー前 屋外（北側））,,,,airport,outdoor
+off-okinawa-air-16,partial,那覇空港 喫煙室（3F 国内線 見学者デッキ（南）出入口付近）,,,,airport,room
+off-okinawa-air-18,partial,那覇空港 喫煙室（3F 国内線 見学者デッキ（北）出入口付近）,,,,airport,room
+off-okinawa-air-9,partial,那覇空港 喫煙室（国内線 手荷物受取所（A側））,,,,airport,room
+off-osaka-1,romaji,ぷらら天満喫煙所,,Purara Temma Smoking Area,Raucherplatz Purara Temma,unknown,outdoor
+off-osaka-10,romaji,うめきた公園喫煙所,,Umekita Park Smoking Area,"Raucherplatz Umekita, Park",park,outdoor
+off-osaka-100,partial,テキサス此花喫煙所（1F）,,,,unknown,room
+off-osaka-101,partial,大阪城公園南喫煙所,,,,park,outdoor
+off-osaka-102,partial,大阪城野球場横喫煙所,,,,unknown,outdoor
+off-osaka-103,partial,大阪城バス駐車場喫煙所,,,,unknown,outdoor
+off-osaka-105,romaji,道頓堀クリスタルエグゼ喫煙所,,Dōtonbori Crystal Eguze Smoking Area,Raucherplatz Dōtonbori Crystal Eguze,unknown,outdoor
+off-osaka-106,partial,クレープロリアン喫煙所,,,,unknown,room
+off-osaka-107,partial,天神橋南詰喫煙所,,,,unknown,outdoor
+off-osaka-109,partial,心斎橋東クリスタルホテル喫煙所,,,,hotel,outdoor
+off-osaka-11,partial,JT大阪支社1F喫煙所,,,,unknown,room
+off-osaka-110,partial,城見緑道南喫煙所,,,,unknown,outdoor
+off-osaka-111,partial,城見緑道北喫煙所,,,,unknown,outdoor
+off-osaka-12,partial,四海樓HEPFIVE店喫煙所,,,,unknown,room
+off-osaka-120,partial,スロットシアター四海樓（1F）喫煙所,,,,pachinko,room
+off-osaka-121,partial,キョーイチなんば店地下1階喫煙所,,,,unknown,room
+off-osaka-122,partial,キョーイチなんば店地下2階喫煙所,,,,unknown,room
+off-osaka-130,partial,四海樓air店（2F）喫煙所,,,,unknown,room
+off-osaka-131,romaji,せんびる公共喫煙所（2号館B2）,,Senbiru Public Smoking Area,Öffentlicher Raucherplatz Senbiru,unknown,room
+off-osaka-132,romaji,せんびる公共喫煙所（10号館B1）,,Senbiru Public Smoking Area,Öffentlicher Raucherplatz Senbiru,unknown,room
+off-osaka-137,partial,四海樓 本店（1F）喫煙所,,,,unknown,room
+off-osaka-139,romaji,ホテルニッセイ大阪市指定喫煙所,,Hotel Nissei Osaka Designated Smoking Area,Ausgewiesener Raucherplatz Hotel Nissei Osaka,hotel,outdoor
+off-osaka-141,partial,キョーイチミナミ店喫煙所（1階北）,,,,unknown,room
+off-osaka-142,partial,キョーイチミナミ店喫煙所（1階南）,,,,unknown,room
+off-osaka-143,partial,キョーイチミナミ店喫煙所（2階北）,,,,unknown,room
+off-osaka-144,partial,キョーイチミナミ店喫煙所（2階南）,,,,unknown,room
+off-osaka-145,partial,楽園なんば店喫煙所（地下1階）,,,,unknown,room
+off-osaka-146,partial,楽園なんば店喫煙所（1階）,,,,unknown,room
+off-osaka-147,partial,楽園なんば店喫煙所（2階）,,,,unknown,room
+off-osaka-148,partial,はりまや 日本橋一丁目店喫煙所（北側）,,,,unknown,room
+off-osaka-149,partial,はりまや 日本橋一丁目店喫煙所（南側）,,,,unknown,room
+off-osaka-151,partial,東心斎橋喫煙所,,,,unknown,room
+off-osaka-154,romaji,シナプス心斎橋喫煙所,,Shinapusu Shinsaibashi Smoking Area,Raucherplatz Shinapusu Shinsaibashi,unknown,outdoor
+off-osaka-155,partial,クリスタ長堀 占い広場喫煙所,,,,street,room
+off-osaka-156,partial,三休橋喫煙所,,,,unknown,outdoor
+off-osaka-157,romaji,クリスタ長堀 サテスタ広場喫煙所,,Crysta Nagahori Satesuta Plaza Smoking Area,"Raucherplatz Crysta Nagahori Satesuta, Platz",street,room
+off-osaka-159,romaji,ファミリーマートカツラギ南本町店喫煙所,,FamilyMart Katsuragi Minamihoncho Smoking Area,Raucherplatz FamilyMart Katsuragi Minamihoncho,konbini,room
+off-osaka-160,romaji,カキサコたばこ店喫煙所,,Kakisako Smoking Area,Raucherplatz Kakisako,tobacco,room
+off-osaka-161,partial,大阪トヨタNorth株式会社 松屋町店,,,,shop,section
+off-osaka-163,partial,焼肉牛魔 谷町四丁目店,,,,restaurant,section
+off-osaka-169,partial,魚串BAR（店舗全面喫煙可能）,,,,restaurant,whole
+off-osaka-170,partial,遊食家（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-171,partial,貝と海老そして蟹（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-172,partial,なんばウォーク1番街喫煙室,,,,unknown,room
+off-osaka-173,partial,なんばウォーク3番街喫煙室,,,,unknown,room
+off-osaka-174,partial,鹿肉料理専門店Buttocks（店舗全面喫煙可能）,,,,restaurant,whole
+off-osaka-175,romaji,Livingまき（店舗全面喫煙可能）,,Living Maki,Living Maki,shop,whole
+off-osaka-176,partial,坂町ハイカラ（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-177,partial,清月（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-178,partial,千日前やすだや（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-179,romaji,まいどはるみ（店舗全面喫煙可能）,,Maidoharumi,Maidoharumi,shop,whole
+off-osaka-18,partial,四海樓梅田店（B1F）喫煙所,,,,unknown,room
+off-osaka-180,partial,居酒屋 千五十屋,,,,bar,section
+off-osaka-182,partial,ラウンジ 白い虹（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-183,partial,ガース ミュージック＆ライブ（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-184,partial,道頓堀丸一屋（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-185,partial,ロックカフェUSAGI（店舗全面喫煙可能）,,,,cafe,whole
+off-osaka-186,partial,炭火やきとり愛之助（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-188,partial,笑庵（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-189,partial,達八（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-190,partial,フィフティーフィフティー（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-191,partial,焼酎酒屋たけ（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-192,romaji,アルモンデ（店舗全面喫煙可能）,,Arumonde,Arumonde,shop,whole
+off-osaka-193,partial,山家珈琲（店舗全面喫煙可能）,,,,cafe,whole
+off-osaka-194,romaji,NAMBAなんなん喫煙室,,NAMBA Nannan Smoking Room,Raucherraum NAMBA Nannan,unknown,room
+off-osaka-195,partial,立呑みQ（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-196,romaji,PreClo プレクロ（店舗全面喫煙可能）,,PreClo Purekuro,PreClo Purekuro,shop,whole
+off-osaka-198,partial,喫茶＆軽食 ナイアガラ（店舗全面喫煙可能）,,,,cafe,whole
+off-osaka-20,partial,夫婦橋喫煙所,,,,unknown,outdoor
+off-osaka-200,partial,立ち呑み毘（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-202,partial,咲月（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-203,partial,イエローテール（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-205,partial,BarWhiskey東心斎橋（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-206,partial,旬菜ここ味（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-207,partial,和食とお酒雅（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-209,partial,炭火焼肉ホルモンじゃん（店舗全面喫煙可能）,,,,restaurant,whole
+off-osaka-211,partial,小皿キッチン ココロ（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-212,partial,はまぐり酒場 笑師（店舗全面喫煙可能）,,,,bar,whole
+off-osaka-214,romaji,バーオリジンズ（店舗全面喫煙可能）,,Bar Orijinzu,Bar Orijinzu,shop,whole
+off-osaka-215,partial,イタリアンバルNIINA（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-216,partial,立ち呑みクック オッソオッセョ！（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-217,partial,居酒屋Pandora（店舗全面喫煙可能）,,,,bar,whole
+off-osaka-218,partial,沖縄居酒屋てぃんがーら（店舗全面喫煙可能）,,,,bar,whole
+off-osaka-219,partial,南風酒膳 庵（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-220,partial,ぞうすいの店 ひよこ家東心斎橋店（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-222,partial,Bigマーメイド（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-223,romaji,くろぶた（店舗全面喫煙可能）,,Kurobuta,Kurobuta,shop,whole
+off-osaka-224,partial,鉄板串焼酒場 赤羽家（店舗全面喫煙可能）,,,,bar,whole
+off-osaka-225,partial,千手（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-226,partial,食事小屋はむ86（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-227,partial,完全貸切セルフBar専門店BarTK心斎橋（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-228,romaji,バーアザブ（店舗全面喫煙可能）,,Bar Azabu,Bar Azabu,shop,whole
+off-osaka-234,partial,ラーメン横綱 クリスタ長堀店（サテスタ広場内）,,,,restaurant,section
+off-osaka-235,partial,新阿波座公園喫煙所,,,,park,outdoor
+off-osaka-240,partial,西横堀公園喫煙所,,,,park,outdoor
+off-osaka-242,partial,四海樓九条店（1F）喫煙所,,,,unknown,room
+off-osaka-243,partial,Osaka Metro本社前喫煙所,,,,unknown,outdoor
+off-osaka-244,partial,四ツ橋筋交差点喫煙所,,,,street,outdoor
+off-osaka-249,partial,大阪トヨタNorth株式会社 西店,,,,shop,section
+off-osaka-25,partial,123＋N大阪本店ビル屋内喫煙所（地下1階東）,,,,pachinko,room
+off-osaka-250,partial,焼肉牛魔 四ツ橋店,,,,restaurant,section
+off-osaka-251,partial,居酒屋 かずやん,,,,bar,section
+off-osaka-257,partial,大阪ベイタワー公共喫煙所,,,,building,room
+off-osaka-259,partial,大正橋公園喫煙所,,,,park,outdoor
+off-osaka-26,partial,123＋N大阪本店ビル屋内喫煙所（地下1階南）,,,,pachinko,room
+off-osaka-260,partial,千島ガーデンモール駐車場喫煙所,,,,mall,outdoor
+off-osaka-264,partial,マリンテニスパーク・北村,,,,unknown,outdoor
+off-osaka-265,romaji,カーショップキャスバル,,Car Shop Kyasubaru Smoking Area,Raucherplatz Car Shop Kyasubaru,unknown,room
+off-osaka-266,partial,ホルモン たろちゃん 大正橋店（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-267,partial,上汐北公園喫煙所,,,,park,outdoor
+off-osaka-268,partial,うえほんまちハイハイタウン屋内喫煙所,,,,unknown,room
+off-osaka-27,partial,123＋N大阪本店ビル屋内喫煙所（1階北）,,,,pachinko,room
+off-osaka-270,partial,マジックバード2喫煙所（1階北西）,,,,pachinko,room
+off-osaka-271,partial,マジックバード2喫煙所（1階南西）,,,,pachinko,room
+off-osaka-272,partial,マジックバード2喫煙所（1階中央）,,,,pachinko,room
+off-osaka-273,partial,マジックバード2喫煙所（2階中央）,,,,pachinko,room
+off-osaka-275,partial,天王寺公園エントランスエリア喫煙所,,,,park,room
+off-osaka-276,partial,天王寺駅公園口喫煙所,,,,station,outdoor
+off-osaka-277,partial,大阪トヨタSouth株式会社 天王寺店,,,,shop,section
+off-osaka-278,romaji,あべちか喫煙室,,Abechika Smoking Room,Raucherraum Abechika,unknown,room
+off-osaka-279,romaji,プロムナードカフェ あべちか店,,Promenade Café Abechika,Promenade Café Abechika,cafe,section
+off-osaka-28,partial,123＋N大阪本店ビル屋内喫煙所（1階西）,,,,pachinko,room
+off-osaka-280,partial,POWER RUSH 不夜城喫煙所,,,,unknown,room
+off-osaka-281,romaji,たばこハウス ひろたや喫煙所,,Hirotaya Smoking Area,Raucherplatz Hirotaya,tobacco,room
+off-osaka-282,partial,新世界環境公共喫煙所,,,,unknown,outdoor
+off-osaka-283,partial,ARROW浪速店 休憩コーナー喫煙所,,,,unknown,room
+off-osaka-284,partial,大阪木津地方卸売市場喫煙所（北側）,,,,unknown,outdoor
+off-osaka-285,partial,大阪木津地方卸売市場喫煙所（西側）,,,,unknown,outdoor
+off-osaka-286,partial,大阪木津地方卸売市場喫煙所（東側）,,,,unknown,outdoor
+off-osaka-287,partial,パーラーメトロJR今宮駅店喫煙所,,,,station,room
+off-osaka-288,partial,エムイーロッソJR今宮駅前店喫煙所,,,,station,room
+off-osaka-289,partial,なんば駅31号出入口喫煙所,,,,station,outdoor
+off-osaka-29,partial,123＋N大阪本店ビル屋内喫煙所（2階）,,,,pachinko,room
+off-osaka-291,partial,ナニワ環境公共喫煙所,,,,unknown,room
+off-osaka-292,partial,柏里公園喫煙所,,,,park,outdoor
+off-osaka-295,partial,久遠泰心堂喫煙所,,,,unknown,room
+off-osaka-296,partial,大阪トヨタNorth株式会社 野里店,,,,shop,section
+off-osaka-3,partial,ルクソール喫煙所,,,,unknown,room
+off-osaka-30,partial,堂島ニ丁目喫煙所,,,,unknown,room
+off-osaka-300,partial,メトログラッチェ十三店喫煙所（1階）,,,,unknown,room
+off-osaka-301,partial,メトログラッチェ十三店喫煙所（2階）,,,,unknown,room
+off-osaka-306,partial,新大阪駅西喫煙所,,,,station,outdoor
+off-osaka-307,partial,新大阪駅南喫煙所,,,,station,outdoor
+off-osaka-308,partial,ダイ二ホン不動産新大阪穴太ビル喫煙所,,,,building,room
+off-osaka-309,partial,SORA新大阪21屋外喫煙所,,,,unknown,outdoor
+off-osaka-31,partial,堂島公園喫煙所,,,,park,outdoor
+off-osaka-311,partial,マジックバード東三国喫煙所（北）,,,,pachinko,room
+off-osaka-312,partial,マジックバード東三国喫煙所（南）,,,,pachinko,room
+off-osaka-315,partial,マジックバード3喫煙所,,,,pachinko,room
+off-osaka-317,partial,新大阪駅北喫煙所,,,,station,outdoor
+off-osaka-319,partial,大阪トヨタNorth株式会社 サンテラス十三店,,,,shop,section
+off-osaka-322,partial,パーラーレクサス淡路店喫煙所,,,,unknown,room
+off-osaka-323,partial,日の出産業上新庄喫煙所,,,,unknown,room
+off-osaka-327,partial,新大阪駅東喫煙所,,,,station,outdoor
+off-osaka-33,partial,三共梅田ビル喫煙所,,,,building,outdoor
+off-osaka-330,partial,新大阪丸ビル別館喫煙所,,,,building,outdoor
+off-osaka-331,partial,大阪トヨタNorth株式会社 吹田店,,,,shop,section
+off-osaka-333,partial,123鶴橋店屋内喫煙所（西）,,,,pachinko,room
+off-osaka-334,partial,123鶴橋店屋内喫煙所（南西）,,,,pachinko,room
+off-osaka-335,partial,123鶴橋店屋内喫煙所（南東）,,,,pachinko,room
+off-osaka-34,partial,堂山東喫煙所,,,,unknown,room
+off-osaka-341,partial,東小橋商店街公共喫煙所,,,,unknown,room
+off-osaka-343,partial,神路公園喫煙所,,,,park,outdoor
+off-osaka-345,partial,TENICHI生野店喫煙所,,,,unknown,room
+off-osaka-347,partial,巽北換気塔喫煙所,,,,unknown,outdoor
+off-osaka-349,partial,巽東緑地喫煙所,,,,unknown,outdoor
+off-osaka-350,partial,井出商店喫煙所,,,,unknown,room
+off-osaka-351,partial,堀口商会喫煙所,,,,street,room
+off-osaka-353,partial,コリアンタウン喫煙所,,,,unknown,outdoor
+off-osaka-355,partial,大阪トヨタSouth株式会社 生野店,,,,shop,section
+off-osaka-358,partial,旭郵便局前喫煙所,,,,unknown,outdoor
+off-osaka-362,partial,123千林店屋内喫煙所（西）,,,,pachinko,room
+off-osaka-363,partial,123千林店屋内喫煙所（東）,,,,pachinko,room
+off-osaka-364,partial,アミューズ高殿店喫煙所（西）,,,,pachinko,room
+off-osaka-365,partial,アミューズ高殿店喫煙所（東）,,,,pachinko,room
+off-osaka-366,partial,喫茶和光,,,,cafe,section
+off-osaka-367,partial,大阪トヨタNorth株式会社 GR Garage ASAHI,,,,shop,section
+off-osaka-368,partial,鯰江公園喫煙所,,,,park,outdoor
+off-osaka-371,partial,竹村たばこ店喫煙所,,,,tobacco,room
+off-osaka-372,partial,アミューズ関目店喫煙所,,,,pachinko,room
+off-osaka-373,partial,アミューズ城東店喫煙所,,,,pachinko,room
+off-osaka-376,partial,左専道公園喫煙所,,,,park,outdoor
+off-osaka-377,partial,東中浜喫煙所,,,,unknown,room
+off-osaka-379,partial,大阪トヨタNorth株式会社 城東店,,,,shop,section
+off-osaka-380,partial,鶴見緑地北喫煙所,,,,unknown,outdoor
+off-osaka-381,partial,鶴見緑地南喫煙所,,,,unknown,outdoor
+off-osaka-382,partial,阿倍野歩道橋下西側喫煙所,,,,street,outdoor
+off-osaka-383,romaji,ハルカス前喫煙所,,Smoking Area in front of Harukasu,Raucherplatz vor Harukasu,unknown,outdoor
+off-osaka-384,romaji,プラチナム5喫煙所,,Purachinamu 5 Smoking Area,Raucherplatz Purachinamu 5,unknown,room
+off-osaka-39,partial,古林ビル喫煙所,,,,building,room
+off-osaka-392,partial,けむスポット昭和町喫煙所,,,,unknown,room
+off-osaka-396,partial,長池公園喫煙所,,,,park,outdoor
+off-osaka-399,partial,とり元,,,,shop,section
+off-osaka-40,partial,サウスホレストビル1階駐車場車路喫煙所,,,,building,room
+off-osaka-400,romaji,ホリーズカフェ あべのAITビル店,,Holly's Café Abeno AIT Building,Holly's Café Abeno AIT Building,cafe,section
+off-osaka-404,partial,＆will Smoking Space 粉浜,,,,unknown,room
+off-osaka-406,partial,トミー壱番館喫煙所,,,,unknown,outdoor
+off-osaka-407,partial,丸勝モータープール屋外喫煙所,,,,unknown,outdoor
+off-osaka-41,partial,楠木フサエおもや,,,,shop,section
+off-osaka-410,partial,ATCビルITM棟2F東 屋外喫煙スペース,,,,building,outdoor
+off-osaka-413,partial,＆will Smoking Space 浜口,,,,street,room
+off-osaka-414,partial,P－ROOTs住之江店喫煙所（北東）,,,,unknown,room
+off-osaka-415,partial,P－ROOTs住之江店喫煙所（南西）,,,,unknown,room
+off-osaka-416,partial,緑木検車場喫煙所,,,,unknown,outdoor
+off-osaka-417,partial,リッチウエル本店喫煙所,,,,unknown,room
+off-osaka-418,partial,大阪トヨタSouth株式会社 住之江店,,,,shop,section
+off-osaka-421,partial,P-ROOTs MANDORE屋内喫煙所（北西）,,,,unknown,room
+off-osaka-422,partial,P-ROOTs MANDORE屋内喫煙所（南西）,,,,unknown,room
+off-osaka-423,partial,P-ROOTs MANDORE屋内喫煙所（中央）,,,,unknown,room
+off-osaka-424,partial,P-ROOTs MANDORE屋内喫煙所（東）,,,,unknown,room
+off-osaka-425,romaji,ローソンあびこ駅前店喫煙所,,Lawson Abiko Station Front Smoking Area,"Raucherplatz Lawson Abiko, Bahnhofsvorplatz",konbini,room
+off-osaka-426,partial,四海樓アタリヤ店（2F）喫煙所,,,,unknown,room
+off-osaka-428,partial,トキワパーキング屋外喫煙所,,,,unknown,outdoor
+off-osaka-429,romaji,はりまや あびこ本店喫煙所,,Harimaya Abiko Smoking Area,Raucherplatz Harimaya Abiko,unknown,room
+off-osaka-430,partial,はりまや あびこ分店喫煙所,,,,unknown,room
+off-osaka-431,partial,シグマ本店屋内喫煙所（北東）,,,,unknown,room
+off-osaka-432,partial,シグマ本店屋内喫煙所（南西）,,,,unknown,room
+off-osaka-437,partial,ちん電東粉浜喫煙所,,,,unknown,outdoor
+off-osaka-438,partial,アミューズ南住吉店喫煙所,,,,pachinko,room
+off-osaka-439,romaji,あいおい公共喫煙所,,Aioi Public Smoking Area,Öffentlicher Raucherplatz Aioi,unknown,outdoor
+off-osaka-44,partial,味善,,,,shop,section
+off-osaka-440,partial,杭全町バス転回地喫煙所,,,,unknown,outdoor
+off-osaka-441,partial,123駒川店喫煙所,,,,pachinko,outdoor
+off-osaka-442,partial,123駒川店屋内喫煙所,,,,pachinko,room
+off-osaka-444,partial,鷹合喫煙所,,,,unknown,room
+off-osaka-445,romaji,シグマ矢田店喫煙所（西）,,Shiguma Yata Smoking Area,Raucherplatz Shiguma Yata,unknown,room
+off-osaka-446,romaji,シグマ矢田店喫煙所（中央）,,Shiguma Yata Smoking Area,Raucherplatz Shiguma Yata,unknown,room
+off-osaka-447,romaji,シグマ矢田店喫煙所（2F）,,Shiguma Yata Smoking Area,Raucherplatz Shiguma Yata,unknown,room
+off-osaka-45,partial,肴屋あしか,,,,shop,section
+off-osaka-451,partial,湯里公衆喫煙所,,,,unknown,outdoor
+off-osaka-452,partial,大阪トヨタSouth株式会社 東住吉店,,,,shop,section
+off-osaka-456,partial,瓜破霊園喫煙所,,,,unknown,outdoor
+off-osaka-457,partial,大一平野店屋外喫煙所,,,,unknown,outdoor
+off-osaka-458,partial,野堂ハイツ喫煙所,,,,unknown,room
+off-osaka-459,partial,123長吉店喫煙所（北西）,,,,pachinko,room
+off-osaka-46,partial,萬願亭,,,,shop,section
+off-osaka-460,partial,123長吉店喫煙所（北東）,,,,pachinko,room
+off-osaka-461,partial,123長吉店喫煙所（南西）,,,,pachinko,room
+off-osaka-462,partial,123長吉店喫煙所（南東）,,,,pachinko,room
+off-osaka-464,partial,コタニホーム喫煙所,,,,unknown,outdoor
+off-osaka-465,partial,街にポイステやめて！喫煙所,,,,unknown,room
+off-osaka-466,romaji,さんぽみち喫煙所,,Sanpomichi Smoking Area,Raucherplatz Sanpomichi,unknown,room
+off-osaka-469,partial,大阪トヨタSouth株式会社 中環平野店,,,,shop,section
+off-osaka-47,partial,串揚げ たぬき,,,,restaurant,section
+off-osaka-470,partial,飛田喫煙所,,,,unknown,outdoor
+off-osaka-471,partial,大一本店喫煙所,,,,unknown,room
+off-osaka-473,partial,玉出南公園喫煙所,,,,park,outdoor
+off-osaka-475,partial,123玉出店屋内喫煙所（1階）,,,,pachinko,room
+off-osaka-476,partial,123玉出店屋内喫煙所（2階）,,,,pachinko,room
+off-osaka-477,partial,123玉出店屋内喫煙所（3階）,,,,pachinko,room
+off-osaka-479,partial,天下茶屋駅前南喫煙所,,,,station,outdoor
+off-osaka-48,romaji,バー・サンボア,,Bar Sanboa,Bar Sanboa,shop,section
+off-osaka-480,partial,天下茶屋駅前北喫煙所,,,,station,outdoor
+off-osaka-481,partial,TENICHI西成店喫煙所（1階）,,,,unknown,room
+off-osaka-482,partial,TENICHI西成店喫煙所（2階）,,,,unknown,room
+off-osaka-483,partial,アパートポンペイ1階喫煙所,,,,unknown,room
+off-osaka-484,partial,萩之茶屋会館喫煙所,,,,building,room
+off-osaka-486,partial,P・ROOTs西成店屋内喫煙所,,,,unknown,room
+off-osaka-49,partial,珈琲の辞書第二章,,,,cafe,section
+off-osaka-5,partial,セビルロード喫煙所,,,,building,room
+off-osaka-51,romaji,ホリーズカフェ 梅田ダイビル店,,Holly's Café Umeda Daibiru,Holly's Café Umeda Daibiru,cafe,section
+off-osaka-55,romaji,アプレシオ梅田店,,Apureshio Umeda,Apureshio Umeda,shop,section
+off-osaka-56,partial,プロムナードカフェ 阪急三番街店,,,,cafe,section
+off-osaka-57,partial,カフェブレーク ホワイティ梅田店,,,,cafe,section
+off-osaka-59,partial,すし たま田,,,,shop,section
+off-osaka-6,partial,ドリンクステーション大阪駅前第4ビル1F店喫煙所,,,,station,room
+off-osaka-63,romaji,バーブルーバード,,Bar Blue Bar Do,Bar Blue Bar Do,shop,section
+off-osaka-64,partial,天平 北新地本店,,,,shop,section
+off-osaka-65,partial,芳乃,,,,shop,section
+off-osaka-67,partial,ドーチカ喫煙室,,,,unknown,room
+off-osaka-70,partial,珈琲店 ボア,,,,cafe,section
+off-osaka-73,partial,脇田屋,,,,shop,section
+off-osaka-74,partial,喫茶BC,,,,cafe,section
+off-osaka-79,partial,コムズガーデン喫煙所,,,,unknown,room
+off-osaka-80,none,,,,,unknown,room
+off-osaka-82,partial,アミューズイチゴ店喫煙所（北西）,,,,pachinko,room
+off-osaka-83,partial,アミューズイチゴ店喫煙所（北東）,,,,pachinko,room
+off-osaka-85,partial,お好み焼き 満月（店舗全面喫煙可能）,,,,shop,whole
+off-osaka-88,partial,パルパーク海老江駅2号出口屋外喫煙所,,,,station,outdoor
+off-osaka-9,partial,扇町公園東喫煙所,,,,park,outdoor
+off-osaka-90,partial,中央卸売市場喫煙所,,,,unknown,outdoor
+off-osaka-95,partial,大阪トヨタNorth株式会社 福島店,,,,shop,section
+off-osaka-98,partial,ユニバーサルシティ駅前喫煙所,,,,station,outdoor
+off-osaka-99,partial,テキサス此花喫煙所（B1F）,,,,unknown,room
+off-shibuya-1,partial,（区設置）渋谷駅モヤイ像喫煙所,,,,station,area
+off-shibuya-11,romaji,（区設置）代々木二丁目あおい公園喫煙所,,Yoyogi 2 Aoi Park Smoking Area,"Raucherplatz Yoyogi 2 Aoi, Park",park,area
+off-shibuya-12,partial,神南1丁目香取屋ビル西側喫煙所,,,,building,area
+off-shibuya-14,partial,クランクストリート加熱式たばこ喫煙所,,,,tobacco,area
+off-shibuya-2,partial,（区設置）渋谷駅前スクランブル交差点喫煙所,,,,station,area
+off-shibuya-20,romaji,もこのたばこ（旧瀧島たばこ店）喫煙所,,Mokonotabako Smoking Area,Raucherplatz Mokonotabako,tobacco,area
+off-shibuya-21,partial,日の丸パチンコ広尾店喫煙所,,,,pachinko,area
+off-shibuya-26,partial,ラ・トゥール渋谷宇田川Abema Towers,,,,building,area
+off-shibuya-3,partial,（区設置）宮益坂下交差点喫煙所,,,,street,area
+off-shibuya-33,partial,関電不動産渋谷ビル,,,,building,area
+off-shibuya-37,partial,東急プラザ原宿「ハラカド」,,,,unknown,area
+off-shibuya-4,partial,（区設置）渋谷駅新南口喫煙所,,,,station,area
+off-shibuya-41,partial,住友不動産新宿南口ビル,,,,building,area
+off-shibuya-42,partial,ヒューリック将棋会館千駄ヶ谷ビル,,,,building,area
+off-shibuya-7,partial,（区設置）原宿竹下口喫煙所,,,,street,area
+off-shinjuku-4,partial,新宿駅東南口高架下公衆喫煙所,,,,station,area
+off-shinjuku-6,partial,おおくぼそよかぜ橋公衆喫煙所,,,,unknown,area
+off-shinjuku-8,partial,マルタイタバコ店,,,,tobacco,area
+off-taito-1,partial,上野公園前交番裏,,,,park,area
+off-taito-10,partial,本庁舎駐車場出口横,,,,building,area
+off-taito-12,partial,清川清掃車庫内,,,,unknown,area
+off-taito-14,partial,上野公園正岡子規記念球場横,,,,park,area
+off-taito-2,partial,JR上野駅（広小路口）ぺデストリアンデッキ上,,,,station,area
+off-taito-22,partial,smokers peace in ミマツ書房,,,,unknown,area
+off-taito-29,partial,中小企業振興センター駐車場内,,,,building,area
+off-taito-3,partial,JR上野駅（浅草口）ペデストリアンデッキ上,,,,station,area
+off-taito-30,partial,佐竹公衆喫煙所,,,,unknown,area
+off-taito-31,partial,上野恩賜公園野外ステージ近辺喫煙所,,,,park,area
+off-taito-32,partial,e-booth御徒町　※加熱式たばこ専用,,,,tobacco,area
+off-taito-4,partial,浅草寺境内 ①「二尊仏前」東,,,,unknown,area
+off-taito-5,partial,浅草寺境内 ②「観音前警備派出所」北,,,,unknown,area
+off-taito-6,partial,浅草寺境内 ③「北側トイレ」南,,,,unknown,area
+off-taito-7,partial,浅草寺境内 ④「はとバス駐車場」西,,,,unknown,area
+off-taito-8,partial,広徳公園内,,,,park,area
+off-taito-9,partial,池之端二丁目公衆トイレ横,,,,unknown,area
+osm-n10048633497,none,,,,,unknown,area
+osm-n10200944579,none,,,,,unknown,area
+osm-n10245808469,none,,,,,unknown,area
+osm-n10269320042,none,,,,,unknown,area
+osm-n10270579643,none,,,,,unknown,area
+osm-n10312782902,none,,,,,unknown,area
+osm-n10564108371,none,,,,,unknown,area
+osm-n10588174604,none,,,,,unknown,area
+osm-n10672651091,romaji,サカグラ,,Sakagura,Sakagura,bar,whole
+osm-n10794178518,none,,,,,unknown,area
+osm-n10794414670,none,,,,,unknown,area
+osm-n10819752786,none,,,,,unknown,area
+osm-n10861569149,none,,,,,unknown,area
+osm-n10908392880,none,,,,,unknown,outdoor
+osm-n10931023223,none,,,,,unknown,area
+osm-n10995220826,romaji,ドリカフェ,,Dorikafe,Dorikafe,restaurant,section
+osm-n11007966105,partial,六星,,,,bar,outdoor
+osm-n11141142474,none,,,,,unknown,area
+osm-n11160680449,partial,鳥メロ,,,,bar,section
+osm-n1116417294,romaji,タパス・タパス,,Tapasu Tapasu,Tapasu Tapasu,restaurant,section
+osm-n11251429549,none,,,,,unknown,area
+osm-n11251429550,none,,,,,unknown,area
+osm-n11251429551,none,,,,,unknown,area
+osm-n11251429592,none,,,,,unknown,area
+osm-n11251429593,none,,,,,unknown,area
+osm-n11251429594,none,,,,,unknown,area
+osm-n11251429635,none,,,,,unknown,area
+osm-n11251429636,none,,,,,unknown,area
+osm-n11251429637,none,,,,,unknown,area
+osm-n11328409539,none,,,,,unknown,area
+osm-n11342776827,romaji,いぶり,,Iburi,Iburi,restaurant,whole
+osm-n11346342454,partial,漫キチ,,,,cafe,section
+osm-n11361264361,partial,町田駅西側デッキ指定喫煙所,,,,station,area
+osm-n11386426792,none,,,,,unknown,area
+osm-n11395414293,none,,,,,unknown,area
+osm-n11416066924,none,,,,,unknown,area
+osm-n11432055020,partial,上海厨房,,,,restaurant,whole
+osm-n11432055023,partial,聚香園,,,,restaurant,whole
+osm-n11461492668,none,,,,,unknown,area
+osm-n11465145235,none,,,,,unknown,area
+osm-n11465145236,none,,,,,unknown,area
+osm-n11465145237,none,,,,,unknown,area
+osm-n11501412362,none,,,,,unknown,area
+osm-n11591420345,partial,遙華,,,,restaurant,whole
+osm-n11598429568,partial,小田急町田駅西側指定喫煙所,,,,station,area
+osm-n11640935006,partial,裕華樓,,,,restaurant,whole
+osm-n11690768661,partial,淀,,,,restaurant,section
+osm-n11778118718,partial,華風　一軒目,,,,restaurant,whole
+osm-n11799182729,romaji,Shisha Bar まどい,,Shisha Bar Madoi,Shisha Bar Madoi,bar,whole
+osm-n11821835212,partial,川本コーヒー,,,,cafe,whole
+osm-n11823676910,romaji,あにぽり,,Anipori Smoking Area,Raucherplatz Anipori,unknown,area
+osm-n11998546850,none,,,,,unknown,area
+osm-n12020072041,none,,,,,unknown,area
+osm-n12030538611,none,,,,,unknown,area
+osm-n12047395385,partial,韓国料理 海雲台,,,,restaurant,whole
+osm-n12071018481,none,,,,,unknown,outdoor
+osm-n12076708673,partial,新宿っ子居酒屋とととりとん,,,,bar,whole
+osm-n12123667644,none,,,,,unknown,area
+osm-n12230767657,none,,,,,unknown,area
+osm-n12249430332,partial,外国船,,,,cafe,whole
+osm-n12276984054,none,,,,,unknown,outdoor
+osm-n12317296801,none,,,,,unknown,area
+osm-n12338097381,none,,,,,unknown,area
+osm-n12422012591,none,,,,,unknown,area
+osm-n12428178452,none,,,,,unknown,area
+osm-n12478161973,romaji,グリーンピース,,Gurīnpīsu,Gurīnpīsu,cafe,whole
+osm-n12485092299,none,,,,,unknown,outdoor
+osm-n12485097701,none,,,,,unknown,area
+osm-n12485097702,none,,,,,unknown,outdoor
+osm-n12485097703,none,,,,,unknown,area
+osm-n12485097704,none,,,,,unknown,area
+osm-n12487692756,partial,魚人,,,,bar,whole
+osm-n12488136384,partial,かど升,,,,bar,whole
+osm-n12500796706,romaji,おくまん,,Okuman,Okuman,bar,whole
+osm-n12531762604,none,,,,,unknown,area
+osm-n12557874672,romaji,じゅんじゅん,,Junjun,Junjun,restaurant,whole
+osm-n12564112928,none,,,,,unknown,area
+osm-n12564154548,none,,,,,unknown,area
+osm-n12573446552,generic,紙巻たばこエリア,,,,tobacco,area
+osm-n1257415751,partial,珈琲艇 CABIN,,,,cafe,whole
+osm-n12600682016,partial,厨 Shuhari,,,,bar,whole
+osm-n12619525309,romaji,まぐろセンター,,Maguro Center,Maguro Center,bar,whole
+osm-n12766992588,partial,十三屋大光,,,,bar,whole
+osm-n12824880269,none,,,,,unknown,area
+osm-n12879509526,partial,河辺駅南口喫煙スポット,,,,station,area
+osm-n12906435517,none,,,,,unknown,outdoor
+osm-n12914833693,none,,,,,unknown,area
+osm-n12925505295,none,,,,,unknown,outdoor
+osm-n12925548242,none,,,,,unknown,outdoor
+osm-n12944660283,none,,,,,unknown,area
+osm-n12946316160,partial,立呑ひろし,,,,bar,whole
+osm-n12960404100,none,,,,,unknown,area
+osm-n13036989573,partial,酒味の家 すいか,,,,bar,whole
+osm-n13042719767,none,,,,,unknown,area
+osm-n13075429985,partial,牡蠣 むかん,,,,restaurant,section
+osm-n13153375402,none,,,,,unknown,outdoor
+osm-n13236011314,none,,,,,unknown,area
+osm-n13269470108,none,,,,,unknown,outdoor
+osm-n13279397530,none,,,,,unknown,area
+osm-n13316892230,none,,,,,unknown,area
+osm-n13316892239,none,,,,,unknown,area
+osm-n13316892241,none,,,,,unknown,area
+osm-n13316892242,none,,,,,unknown,area
+osm-n13323732771,none,,,,,unknown,area
+osm-n13324476167,none,,,,,unknown,area
+osm-n13324530033,none,,,,,unknown,area
+osm-n13324530038,none,,,,,unknown,area
+osm-n13404154781,none,,,,,unknown,area
+osm-n13415299859,partial,餃子のかっちゃん,,,,bar,whole
+osm-n13428362922,partial,焼肉むんさん,,,,restaurant,section
+osm-n13449377248,none,,,,,unknown,area
+osm-n13468734564,none,,,,,unknown,outdoor
+osm-n13473258757,none,,,,,unknown,outdoor
+osm-n13537344811,none,,,,,unknown,area
+osm-n13539334825,none,,,,,unknown,area
+osm-n13569120287,none,,,,,unknown,area
+osm-n13615396317,none,,,,,unknown,area
+osm-n13658265351,none,,,,,unknown,outdoor
+osm-n13677151118,none,,,,,unknown,area
+osm-n13827769322,partial,焼肉 力,,,,restaurant,whole
+osm-n13854464904,none,,,,,unknown,area
+osm-n13875149066,none,,,,,unknown,area
+osm-n13897787862,romaji,さむしんぐ,,Samushingu,Samushingu,cafe,whole
+osm-n13900643598,none,,,,,unknown,area
+osm-n13900801618,partial,より路処 鴇,,,,bar,outdoor
+osm-n13954953005,none,,,,,unknown,area
+osm-n13999720945,none,,,,,unknown,area
+osm-n14028416066,romaji,しんちゃん,,Shinchan,Shinchan,bar,section
+osm-n14098264624,none,,,,,unknown,area
+osm-n14111487603,none,,,,,unknown,area
+osm-n14125553284,none,,,,,unknown,area
+osm-n14154373514,partial,焼鳥きなり,,,,bar,section
+osm-n14213198131,partial,世界の山ちゃん　北千住店,,,,fast_food,section
+osm-n14216531979,partial,北海道,,,,restaurant,section
+osm-n14229863848,none,,,,,unknown,area
+osm-n14252047722,none,,,,,unknown,area
+osm-n14276387842,none,,,,,unknown,outdoor
+osm-n14276387843,none,,,,,unknown,outdoor
+osm-n14278393643,partial,激太鳥,,,,bar,whole
+osm-n14288614937,none,,,,,unknown,area
+osm-n1670125233,partial,大鵬,,,,bar,whole
+osm-n1681588707,partial,集,,,,cafe,whole
+osm-n1693090837,partial,多古菊,,,,bar,whole
+osm-n1715903106,partial,宮越屋珈琲,,,,cafe,section
+osm-n1951887420,none,,,,,bar,whole
+osm-n1957928406,partial,変幻自在,,,,bar,outdoor
+osm-n2043307350,none,,,,,unknown,area
+osm-n2043307353,none,,,,,unknown,area
+osm-n2043324063,none,,,,,unknown,area
+osm-n2043324079,none,,,,,unknown,area
+osm-n2054171176,none,,,,,bar,whole
+osm-n2055586765,romaji,ハニーミツバチ,,Hanīmitsubachi,Hanīmitsubachi,cafe,section
+osm-n2066427239,romaji,さわやか,,Sawayaka,Sawayaka,bar,whole
+osm-n2089584283,none,,,,,unknown,area
+osm-n2094365138,romaji,ポポラマーマ,,Poporamāma,Poporamāma,restaurant,section
+osm-n2119003957,romaji,すずめ,,Suzume,Suzume,restaurant,whole
+osm-n2119005707,partial,寿司処大関,,,,restaurant,whole
+osm-n2120258539,romaji,ちび,,Chibi,Chibi,fast_food,outdoor
+osm-n2125913274,romaji,かおたんラーメン,,Kaotan Ramen,Kaotan Ramen,fast_food,whole
+osm-n2136836234,none,,,,,unknown,area
+osm-n2136836235,none,,,,,unknown,area
+osm-n2139773459,none,,,,,unknown,area
+osm-n2139785134,none,,,,,unknown,area
+osm-n2144858793,partial,小作駅東口公衆喫煙所,,,,station,outdoor
+osm-n2147403177,partial,やきとん佐助,,,,restaurant,section
+osm-n2160246070,partial,曽我たばこ店,,,,tobacco,outdoor
+osm-n2192522431,partial,居酒屋香港亭,,,,bar,whole
+osm-n2209725234,none,,,,,unknown,area
+osm-n2212822408,romaji,ひしゅうや,,Hishuuya,Hishuuya,bar,whole
+osm-n2236529613,partial,韓,,,,restaurant,whole
+osm-n2249753421,none,,,,,unknown,area
+osm-n2270506866,partial,西陣イノクマカフェ,,,,cafe,outdoor
+osm-n2274737393,partial,からふね屋珈琲店 熊野店,,,,cafe,section
+osm-n2293165262,romaji,まりも,,Marimo,Marimo,cafe,whole
+osm-n2293339757,partial,西屋,,,,bar,whole
+osm-n2295370567,partial,隈本文次郎商店 文次郎BURGER,,,,cafe,section
+osm-n2297991712,romaji,ショップ エノモト,,Shop Enomoto,Shop Enomoto,tobacco,outdoor
+osm-n2305051400,none,,,,,unknown,area
+osm-n2308943766,partial,薩摩八郎,,,,bar,whole
+osm-n2308944270,romaji,かどや,,Kadoya,Kadoya,bar,whole
+osm-n2308953304,partial,横綱,,,,restaurant,whole
+osm-n2308960455,romaji,マリンカ,,Marinka,Marinka,cafe,whole
+osm-n2310934324,romaji,ひろや,,Hiroya,Hiroya,restaurant,whole
+osm-n2322739296,partial,味菜里,,,,restaurant,whole
+osm-n2334371662,romaji,いちゃりぽちょーでー,,Icharipochōdē,Icharipochōdē,restaurant,whole
+osm-n2355669377,none,,,,,bar,whole
+osm-n2355811752,partial,満北亭,,,,restaurant,outdoor
+osm-n2366900066,partial,月の宴 人形町駅前店,,,,bar,whole
+osm-n2384032168,partial,水仙,,,,restaurant,whole
+osm-n2384943284,partial,ホープ軒,,,,restaurant,outdoor
+osm-n2386319825,none,,,,,unknown,area
+osm-n2388036999,none,,,,,unknown,area
+osm-n2390513162,partial,饂飩四国,,,,restaurant,whole
+osm-n2402414452,romaji,だんだん,,Dandan,Dandan,bar,whole
+osm-n2412830634,generic,喫煙所,,,,unknown,area
+osm-n2417267267,partial,TOWER’S CAFE,,,,cafe,section
+osm-n2425447200,none,,,,,unknown,area
+osm-n2426863118,generic,喫煙所,,,,unknown,area
+osm-n2442017957,none,,,,,unknown,area
+osm-n2444369329,none,,,,,unknown,area
+osm-n2444369330,none,,,,,unknown,area
+osm-n2448146194,romaji,チャンダニー,,Chandanī,Chandanī,restaurant,whole
+osm-n2451343387,none,,,,,unknown,area
+osm-n2459128726,none,,,,,unknown,area
+osm-n2459175588,romaji,カフェ・アンセーニュ・ダングル,,Kafe Ansēnyu Danguru,Kafe Ansēnyu Danguru,cafe,whole
+osm-n2467557010,none,,,,,unknown,area
+osm-n2479970377,generic,喫煙所,,,,unknown,area
+osm-n2509998819,none,,,,,unknown,area
+osm-n2510114313,partial,ホテル チェックイン 四条烏丸,,,,hotel,section
+osm-n2518203119,partial,長尾茶屋,,,,cafe,whole
+osm-n2523281501,partial,杉の子,,,,bar,whole
+osm-n2584917683,none,,,,,unknown,area
+osm-n2584917684,none,,,,,unknown,area
+osm-n2587611451,none,,,,,unknown,area
+osm-n2587611458,none,,,,,unknown,area
+osm-n2599144035,partial,仲の,,,,bar,whole
+osm-n2603430429,generic,喫煙所,,,,unknown,area
+osm-n2646795673,none,,,,,unknown,area
+osm-n2655804299,partial,根室酒場,,,,bar,whole
+osm-n2659279464,none,,,,,unknown,area
+osm-n2735732522,partial,道楽うどん,,,,fast_food,whole
+osm-n2735788777,partial,博多長浜ラーメン,,,,fast_food,section
+osm-n2741378368,romaji,アート,,Āto,Āto,cafe,whole
+osm-n2741669027,partial,もん吉,,,,restaurant,whole
+osm-n2744079349,partial,紀月,,,,restaurant,whole
+osm-n2802857813,partial,らくだ屋珈琲店,,,,cafe,whole
+osm-n2886832509,partial,かもすや酒店,,,,bar,outdoor
+osm-n2891519501,partial,六家-rikka,,,,restaurant,whole
+osm-n2928687515,none,,,,,restaurant,whole
+osm-n2936335005,partial,中華料理上海園,,,,restaurant,whole
+osm-n2967087933,partial,中華風 海老専家,,,,restaurant,whole
+osm-n2987189176,partial,Kanno~k,,,,cafe,whole
+osm-n2990689433,partial,味隆,,,,bar,whole
+osm-n3064495597,generic,喫煙所,,,,unknown,area
+osm-n3084665491,none,,,,,unknown,area
+osm-n3175869862,partial,喫茶ミキヤ,,,,cafe,whole
+osm-n3182628304,romaji,わん,,Wan,Wan,bar,whole
+osm-n3220100461,partial,炭焼き家 粋,,,,restaurant,whole
+osm-n3235757461,partial,太陽讃歌,,,,bar,section
+osm-n3293687462,none,,,,,unknown,area
+osm-n3343138144,partial,クレオール一歩,,,,restaurant,whole
+osm-n3371408375,partial,宮越屋珈琲,,,,cafe,whole
+osm-n3431316093,partial,寅や,,,,restaurant,section
+osm-n3455390793,partial,土と青,,,,bar,section
+osm-n3458652280,romaji,カフェギャルソン,,Café Gyaruson,Café Gyaruson,cafe,section
+osm-n3469202964,generic,喫煙所,,,,unknown,area
+osm-n3474604215,none,,,,,unknown,area
+osm-n3474662433,none,,,,,unknown,area
+osm-n3502674093,none,,,,,unknown,area
+osm-n3506559978,partial,寿々喜,,,,restaurant,section
+osm-n3557695495,generic,喫煙所,,,,unknown,area
+osm-n3561058434,partial,花きゃべつ,,,,cafe,outdoor
+osm-n3576296693,none,,,,,unknown,outdoor
+osm-n3600238800,romaji,ラ・クローヌ,,Ra Kurōnu,Ra Kurōnu,restaurant,outdoor
+osm-n3608505561,partial,お好み焼き　あつあつ亭,,,,fast_food,section
+osm-n3652475872,partial,河辺駅南口喫煙所,,,,station,outdoor
+osm-n3698217925,romaji,ゼッテリア,,Zetteria,Zetteria,fast_food,section
+osm-n3751941179,none,,,,,unknown,area
+osm-n3751941192,none,,,,,unknown,area
+osm-n3753965121,none,,,,,unknown,area
+osm-n3773449871,partial,肉汁餃子製作所,,,,restaurant,whole
+osm-n3781733995,romaji,ハウスこのゆびとまれ,,House Konoyubitomare,House Konoyubitomare,cafe,outdoor
+osm-n3850713042,none,,,,,unknown,area
+osm-n3864512180,none,,,,,unknown,area
+osm-n3891415932,romaji,フラッシュバック,,Furasshubakku,Furasshubakku,bar,whole
+osm-n3897543221,partial,楽や,,,,bar,whole
+osm-n3917879159,partial,浦添ベース,,,,bar,section
+osm-n3926634234,generic,喫煙所,,,,unknown,area
+osm-n3937133279,generic,喫煙所,,,,unknown,area
+osm-n3955414412,partial,黒猫食堂,,,,cafe,outdoor
+osm-n3991390080,partial,珈琲屋Roy,,,,cafe,whole
+osm-n3991816987,partial,マルキュウ別館,,,,bar,whole
+osm-n3998818107,partial,河辺駅北口喫煙スポット,,,,station,outdoor
+osm-n4057677076,partial,沖縄茶屋,,,,restaurant,whole
+osm-n4070487913,none,,,,,unknown,area
+osm-n4080891392,none,,,,,unknown,area
+osm-n4118147507,none,,,,,unknown,area
+osm-n4158761919,partial,神戸らーめん Big mama,,,,restaurant,whole
+osm-n4207956203,partial,やきとん炭火や,,,,bar,section
+osm-n4212047036,none,,,,,unknown,area
+osm-n4245403365,romaji,いなせや,,Inaseya,Inaseya,bar,section
+osm-n4245405514,partial,ワイン食堂イナセヤキッチン,,,,restaurant,section
+osm-n4344032282,partial,炉ばた屋,,,,restaurant,section
+osm-n4346690056,partial,恵比寿１８番,,,,restaurant,section
+osm-n4346701064,partial,焼肉チャンピオン,,,,restaurant,section
+osm-n4346705309,partial,松下,,,,bar,section
+osm-n4346709069,partial,焼肉チャンピオン PENTHOUSE,,,,restaurant,section
+osm-n4346716495,partial,松虎,,,,bar,section
+osm-n4358428542,none,,,,,bar,whole
+osm-n4359537867,none,,,,,unknown,area
+osm-n4398323869,partial,三線ライブcafe&diningゆにば,,,,restaurant,outdoor
+osm-n4405666027,romaji,おれんち,,Orenchi,Orenchi,bar,section
+osm-n4407487947,partial,ターミナルデッキ奥指定喫煙所,,,,street,area
+osm-n4415942816,none,,,,,unknown,area
+osm-n4417550905,partial,カシミール瑞江,,,,restaurant,section
+osm-n4440606731,none,,,,,unknown,area
+osm-n4444115013,none,,,,,unknown,area
+osm-n4449276450,none,,,,,unknown,area
+osm-n4449438988,none,,,,,unknown,area
+osm-n4450126679,none,,,,,unknown,area
+osm-n4511479648,none,,,,,unknown,area
+osm-n4516485413,generic,喫煙所,,,,unknown,area
+osm-n4536777050,partial,豚星,,,,restaurant,section
+osm-n4547528154,generic,喫煙所,,,,unknown,area
+osm-n4547666640,partial,地鶏料理 炭や,,,,bar,whole
+osm-n4558497142,none,,,,,unknown,area
+osm-n4569908744,none,,,,,unknown,area
+osm-n4577299569,partial,味美,,,,restaurant,whole
+osm-n4582281005,partial,真仲,,,,bar,whole
+osm-n4588417589,none,,,,,unknown,area
+osm-n4599103756,partial,焼肉ぎゅうぎゅう,,,,restaurant,section
+osm-n4603410519,partial,青山壹番館,,,,cafe,whole
+osm-n4674739893,partial,囲炉裏と釜飯 しずる,,,,bar,whole
+osm-n4711139564,romaji,かわかみ,,Kawakami,Kawakami,restaurant,whole
+osm-n4721888665,partial,元祖うな鐡,,,,restaurant,whole
+osm-n4723359798,partial,あの頃Bar 下宿屋,,,,bar,whole
+osm-n4774955087,none,,,,,unknown,area
+osm-n4809230490,none,,,,,unknown,area
+osm-n4836305517,none,,,,,unknown,area
+osm-n4854776950,none,,,,,unknown,area
+osm-n4854776953,none,,,,,unknown,area
+osm-n4860291082,none,,,,,unknown,area
+osm-n4860291107,none,,,,,unknown,area
+osm-n4860291117,none,,,,,unknown,area
+osm-n4861426606,partial,楽や,,,,bar,whole
+osm-n4861426612,romaji,あさひ,,Asahi,Asahi,restaurant,whole
+osm-n4861467120,romaji,だるま,,Daruma,Daruma,restaurant,whole
+osm-n4861513588,romaji,むーたお,,Mūtao,Mūtao,bar,whole
+osm-n4875456297,partial,小錢酒肴 ぼー,,,,bar,whole
+osm-n4883209691,partial,居酒屋じん,,,,bar,whole
+osm-n4887512880,generic,喫煙所,,,,unknown,area
+osm-n4887512894,none,,,,,unknown,area
+osm-n4887623082,partial,五臓六腑 久,,,,bar,whole
+osm-n4887623196,none,,,,,unknown,area
+osm-n4887720196,partial,五臓六腑 久 別館,,,,bar,whole
+osm-n4899295225,none,,,,,unknown,area
+osm-n4899309421,none,,,,,unknown,area
+osm-n4899808942,none,,,,,unknown,area
+osm-n4911913989,partial,ありが十,,,,restaurant,whole
+osm-n4959218102,partial,北京方庄,,,,restaurant,whole
+osm-n4962053556,partial,YAKINIKU HOUSE 伽倻,,,,restaurant,whole
+osm-n4971588381,none,,,,,unknown,area
+osm-n4971644421,none,,,,,unknown,area
+osm-n4971661829,generic,喫煙所,,,,unknown,area
+osm-n4971770743,none,,,,,unknown,area
+osm-n4971770745,none,,,,,unknown,area
+osm-n5029741841,partial,鍛冶屋文蔵,,,,bar,section
+osm-n5040405959,none,,,,,unknown,area
+osm-n5073255670,partial,豪華,,,,restaurant,whole
+osm-n5074691915,none,,,,,unknown,area
+osm-n5074691916,none,,,,,unknown,area
+osm-n5091592410,partial,空,,,,bar,whole
+osm-n5104603735,partial,新橋珈琲店 S.P.I.D Group,,,,cafe,section
+osm-n5112825135,none,,,,,unknown,area
+osm-n5145229150,partial,台湾酒場,,,,restaurant,whole
+osm-n5162999643,partial,酒肆 花はな,,,,bar,whole
+osm-n5174657854,none,,,,,unknown,area
+osm-n5178187486,romaji,ロイヤルエイト,,Roiyarueito,Roiyarueito,cafe,whole
+osm-n5180984000,none,,,,,unknown,area
+osm-n5200000756,romaji,モンシェリー,,Monsherī,Monsherī,cafe,whole
+osm-n5205150578,partial,華閩,,,,restaurant,whole
+osm-n5214277739,partial,紅とん,,,,bar,whole
+osm-n5222553452,partial,日本酒Bar四季,,,,bar,whole
+osm-n5244329418,none,,,,,unknown,area
+osm-n5273140616,none,,,,,unknown,area
+osm-n5273147690,none,,,,,unknown,area
+osm-n5273797446,romaji,ポポロ,,Poporo,Poporo,restaurant,section
+osm-n5274925932,none,,,,,unknown,area
+osm-n5279762887,romaji,にしやま,,Nishiyama,Nishiyama,bar,whole
+osm-n5288992829,partial,月島 在市,,,,restaurant,whole
+osm-n5293768192,romaji,まるとく,,Marutoku,Marutoku,bar,whole
+osm-n5310270451,partial,有卦屋,,,,bar,whole
+osm-n5352760296,none,,,,,unknown,area
+osm-n5398321087,partial,居酒屋 さかもと,,,,bar,outdoor
+osm-n5404545125,partial,酒場しろくま,,,,bar,whole
+osm-n5409726402,partial,洋食&ビール 自由亭,,,,restaurant,whole
+osm-n5432486928,none,,,,,unknown,area
+osm-n5432486934,none,,,,,unknown,area
+osm-n5432486939,none,,,,,unknown,area
+osm-n5436456172,romaji,十三くま (Juso Kuma),,Juso Kuma,Juso Kuma,bar,whole
+osm-n5450157223,none,,,,,unknown,area
+osm-n5450157224,none,,,,,unknown,area
+osm-n5455368499,partial,源,,,,restaurant,whole
+osm-n5468685766,none,,,,,unknown,area
+osm-n5468685767,none,,,,,unknown,area
+osm-n5477275393,romaji,キッチンキムラ,,Kitchen Kimura,Kitchen Kimura,restaurant,whole
+osm-n5541709414,partial,ダンダン酒場,,,,bar,whole
+osm-n5550466620,romaji,ごえん,,Goen,Goen,bar,whole
+osm-n5587022645,none,,,,,unknown,area
+osm-n5587022647,none,,,,,unknown,area
+osm-n5589628063,romaji,べっぴんさん,,Beppinsan,Beppinsan,bar,whole
+osm-n5592425844,none,,,,,unknown,area
+osm-n5592425846,none,,,,,unknown,area
+osm-n5595714104,none,,,,,unknown,area
+osm-n5603040003,romaji,ちゃんこ道場,,Chanko Dojo,Chanko Dojo,restaurant,whole
+osm-n5605920912,partial,無料喫煙所ippuku,,,,unknown,area
+osm-n5617561329,partial,大衆酒場ぎふや,,,,bar,whole
+osm-n5618973819,romaji,トラットリア　ダ　ルイジ,,Trattoria Da Ruiji,Trattoria Da Ruiji,restaurant,section
+osm-n5652730601,none,,,,,unknown,area
+osm-n5652731731,none,,,,,unknown,area
+osm-n5652734430,none,,,,,unknown,area
+osm-n5652734648,none,,,,,unknown,area
+osm-n5670976405,partial,くらげ大陸,,,,bar,whole
+osm-n5681188783,none,,,,,unknown,area
+osm-n5705615856,partial,やきとん元気,,,,restaurant,section
+osm-n5707625071,partial,香港飲茶 点心厨房,,,,restaurant,section
+osm-n5707842736,none,,,,,unknown,area
+osm-n5709278308,partial,大衆酒場 やかん,,,,bar,whole
+osm-n5709278315,partial,鴻元食坊,,,,restaurant,whole
+osm-n5710170477,romaji,シッダールタ,,Shiddāruta,Shiddāruta,restaurant,whole
+osm-n5712862796,none,,,,,unknown,area
+osm-n5712862806,none,,,,,unknown,area
+osm-n5713088664,none,,,,,unknown,area
+osm-n5737998049,partial,直福,,,,bar,whole
+osm-n5741386449,romaji,サシャ,,Sasha,Sasha,restaurant,whole
+osm-n5766182215,partial,再来軒,,,,restaurant,whole
+osm-n5776899258,none,,,,,unknown,area
+osm-n5806113335,partial,居酒屋 きんやま,,,,bar,whole
+osm-n5808540253,none,,,,,unknown,area
+osm-n5809700876,partial,器（utsuwa）designed hostel,,,,hotel,section
+osm-n5822729581,partial,伊良部食堂ちゃんぷる,,,,restaurant,outdoor
+osm-n5824797503,partial,肴屋 あしか,,,,bar,whole
+osm-n5829928010,none,,,,,unknown,area
+osm-n5835767086,partial,くすの木,,,,bar,whole
+osm-n5860962135,partial,立呑み うめや,,,,bar,whole
+osm-n5877082894,partial,焼く鳥 射場本,,,,restaurant,whole
+osm-n5877082901,romaji,タージマハル,,Tājimaharu,Tājimaharu,restaurant,whole
+osm-n5877775490,none,,,,,unknown,area
+osm-n5877794053,none,,,,,unknown,area
+osm-n5877801843,generic,喫煙所,,,,unknown,area
+osm-n5877818483,none,,,,,unknown,area
+osm-n5877829483,none,,,,,unknown,area
+osm-n5915951812,partial,堂山食堂,,,,bar,whole
+osm-n5942818036,partial,豆吉,,,,cafe,whole
+osm-n5965511531,partial,ごはん處,,,,restaurant,whole
+osm-n5972271467,partial,串烤き,,,,restaurant,whole
+osm-n5985318555,partial,創菜酒房おん,,,,bar,whole
+osm-n5989816215,partial,京風 青山,,,,restaurant,whole
+osm-n6017156248,partial,龍門酒家,,,,restaurant,whole
+osm-n6017215792,none,,,,,unknown,area
+osm-n6024232285,partial,大高屋,,,,restaurant,whole
+osm-n6031401278,none,,,,,unknown,area
+osm-n6031702639,romaji,くいしんぼ,,Kuishinbo,Kuishinbo,restaurant,whole
+osm-n6089943989,generic,喫煙所,,,,unknown,area
+osm-n6130552675,partial,新世界串カツ からさき,,,,bar,whole
+osm-n6138103574,partial,やきとん 木々家,,,,restaurant,whole
+osm-n6138115931,romaji,みつぼ,,Mitsubo,Mitsubo,bar,whole
+osm-n6170029269,none,,,,,unknown,area
+osm-n6170148294,none,,,,,unknown,area
+osm-n6170336618,none,,,,,unknown,area
+osm-n6183167935,none,,,,,unknown,area
+osm-n6186074337,none,,,,,unknown,area
+osm-n6187880802,partial,ザ・ゲートホテル東京 by HULIC,,,,hotel,section
+osm-n6204822791,none,,,,,restaurant,whole
+osm-n6220393073,none,,,,,unknown,area
+osm-n6297055487,none,,,,,unknown,area
+osm-n6303416811,none,,,,,unknown,area
+osm-n6303416812,none,,,,,unknown,area
+osm-n6307490715,partial,居酒屋1010,,,,bar,whole
+osm-n6317848877,none,,,,,cafe,whole
+osm-n6350068035,partial,第一旭,,,,restaurant,whole
+osm-n6361772769,partial,にこみ居酒屋はせがわサン,,,,bar,whole
+osm-n6361920291,none,,,,,unknown,area
+osm-n6377272441,partial,来来飯店,,,,restaurant,whole
+osm-n6387134541,none,,,,,unknown,area
+osm-n6388635933,none,,,,,unknown,area
+osm-n6435733541,none,,,,,unknown,area
+osm-n6438702043,none,,,,,unknown,area
+osm-n6440107247,none,,,,,unknown,area
+osm-n6491231193,none,,,,,unknown,area
+osm-n6493642979,none,,,,,unknown,area
+osm-n6501394863,partial,グリル異人館,,,,restaurant,whole
+osm-n6533183429,partial,アジロ印,,,,bar,section
+osm-n6534613034,partial,早苗,,,,cafe,section
+osm-n6567293079,none,,,,,unknown,area
+osm-n6604316201,none,,,,,unknown,area
+osm-n6618440514,none,,,,,unknown,area
+osm-n6618460327,none,,,,,unknown,area
+osm-n6618460328,none,,,,,unknown,area
+osm-n6737667865,romaji,ポム,,Pomu,Pomu,restaurant,whole
+osm-n6862267478,partial,地球屋,,,,bar,whole
+osm-n6933490879,partial,やきとん 居酒屋 のりまる,,,,bar,whole
+osm-n6944224560,none,,,,,unknown,area
+osm-n6954116147,none,,,,,unknown,area
+osm-n6954116148,none,,,,,unknown,area
+osm-n7039037104,partial,日本橋 紅とん,,,,bar,whole
+osm-n7057285997,none,,,,,unknown,area
+osm-n7153734984,none,,,,,unknown,area
+osm-n7212423256,none,,,,,unknown,area
+osm-n7215839965,none,,,,,bar,section
+osm-n7241582845,partial,焼肉ホルモンしんちゃん,,,,restaurant,whole
+osm-n7244186054,partial,Kaeru-ya | 素泊まりの宿かえるやぁ,,,,hotel,outdoor
+osm-n7244193426,partial,Fuuran | 古民家宿ふうらん,,,,hotel,outdoor
+osm-n7318991292,romaji,はっち 神田店,,Hatchi Kanda,Hatchi Kanda,bar,whole
+osm-n7392195804,partial,生パスタ福田,,,,restaurant,outdoor
+osm-n7469304181,partial,焼き鳥 えんのば,,,,bar,whole
+osm-n7502315725,partial,"串カツ　虎""衛門　ドラえもん",,,,bar,whole
+osm-n7510084016,partial,鉄板×日本酒　てっぺん,,,,bar,whole
+osm-n7557012839,none,,,,,unknown,area
+osm-n7573225110,none,,,,,unknown,area
+osm-n7926455970,partial,新宿焼肉 牛たんの檸檬,,,,restaurant,outdoor
+osm-n7973111012,none,,,,,unknown,area
+osm-n8011867077,partial,櫛羅,,,,bar,whole
+osm-n8057536108,generic,喫煙所,,,,unknown,area
+osm-n8440700949,partial,張家,,,,restaurant,section
+osm-n8456166559,none,,,,,unknown,area
+osm-n8552175138,none,,,,,unknown,area
+osm-n8601171016,none,,,,,unknown,area
+osm-n8615085092,partial,炭火焼鳥まかや,,,,bar,section
+osm-n9061437640,none,,,,,unknown,area
+osm-n9090034380,none,,,,,unknown,outdoor
+osm-n9093016391,romaji,やきとん,,Yakiton,Yakiton,restaurant,whole
+osm-n9160429215,none,,,,,unknown,area
+osm-n9189114363,none,,,,,unknown,area
+osm-n9192867848,none,,,,,unknown,area
+osm-n9227125959,none,,,,,unknown,area
+osm-n9369178568,none,,,,,unknown,area
+osm-n9556174928,romaji,けむりちゅーどく,,Kemurichūdoku,Kemurichūdoku,cafe,whole
+osm-n9582287096,partial,夢献,,,,bar,whole
+osm-n9582628489,partial,ラーメン 富士亭,,,,restaurant,outdoor
+osm-n9612254260,none,,,,,unknown,area
+osm-n9713402334,none,,,,,unknown,area
+osm-n9776136944,none,,,,,unknown,area
+osm-n9825743333,romaji,タンパラヤ,,Tanparaya,Tanparaya,bar,whole
+osm-n9909191353,partial,小川珈琲,,,,cafe,whole
+osm-n9921941800,romaji,グランドサロン十三,,Grand Saron Juso,Grand Saron Juso,bar,section
+osm-n9930066893,generic,喫煙所（２階屋外デッキ端）,,,,street,outdoor
+osm-n9930069536,generic,喫煙所（１階屋外）,,,,unknown,outdoor
+osm-n9942127856,none,,,,,unknown,area
+osm-r18984128,none,,,,,unknown,area
+osm-w1089621130,none,,,,,unknown,outdoor
+osm-w1149304512,none,,,,,unknown,room
+osm-w1192339564,partial,小作駅西口外公衆喫煙所,,,,station,area
+osm-w120477640,romaji,きのこの,,Kinokono,Kinokono,bar,section
+osm-w1211925972,none,,,,,unknown,room
+osm-w1213964674,partial,和食しゃぶしゃぶ かごの屋,,,,restaurant,section
+osm-w1262802292,partial,34A Hải Dương Restaurant,,,,restaurant,section
+osm-w1270372193,none,,,,,unknown,room
+osm-w1305208658,none,,,,,unknown,outdoor
+osm-w1326076091,none,,,,,unknown,area
+osm-w1347306075,none,,,,,unknown,area
+osm-w1347576808,none,,,,,unknown,room
+osm-w1358507559,generic,加熱式たばこエリア,,,,tobacco,area
+osm-w1358507560,generic,紙巻たばこエリア,,,,tobacco,area
+osm-w136608990,partial,名曲喫茶ライオン,,,,cafe,whole
+osm-w1367248838,partial,創価大学喫煙所,,,,building,outdoor
+osm-w1368644011,none,,,,,unknown,area
+osm-w1369513918,none,,,,,unknown,area
+osm-w1377408972,none,,,,,unknown,room
+osm-w1391581806,none,,,,,unknown,room
+osm-w1466169130,none,,,,,unknown,area
+osm-w151481856,partial,宮越屋珈琲店,,,,cafe,whole
+osm-w1553719019,none,,,,,unknown,area
+osm-w155807205,none,,,,,unknown,room
+osm-w176156560,partial,でん 中崎店,,,,restaurant,whole
+osm-w180581955,partial,梅田明月館,,,,restaurant,whole
+osm-w204233104,romaji,こよし,,Koyoshi,Koyoshi,bar,whole
+osm-w229034323,partial,BnA_WALL - The BnA ART HOTEL,,,,hotel,section
+osm-w242426590,partial,海鮮茶屋 寿し光,,,,restaurant,whole
+osm-w258099716,romaji,マルミヤ食堂,,Marumiya Dining Hall,Marumiya Dining Hall,restaurant,section
+osm-w288137956,partial,マルシン飯店,,,,restaurant,whole
+osm-w291548907,romaji,ロリアン,,Rorian,Rorian,cafe,section
+osm-w427947779,partial,貝と白ワインのバル　KAKIMARU,,,,restaurant,whole
+osm-w487915129,partial,峰本,,,,restaurant,whole
+osm-w500032304,partial,担々麺胡,,,,restaurant,whole
+osm-w501149967,partial,酒肴菜や　利一,,,,restaurant,whole
+osm-w501158803,partial,花たぬき,,,,restaurant,whole
+osm-w501175901,romaji,いなせや,,Inaseya,Inaseya,restaurant,whole
+osm-w501177204,partial,亀屋マル八,,,,restaurant,whole
+osm-w501246443,partial,炎の池,,,,restaurant,whole
+osm-w501247426,romaji,あずき,,Azuki,Azuki,restaurant,whole
+osm-w512697498,none,,,,,unknown,area
+osm-w513936243,partial,老酒舗,,,,restaurant,whole
+osm-w533606085,none,,,,,unknown,room
+osm-w569026544,romaji,かしを食堂,,Kashio Dining Hall,Kashio Dining Hall,restaurant,whole
+osm-w576322617,none,,,,,unknown,area
+osm-w590695474,romaji,まいど,,Maido,Maido,bar,whole
+osm-w639297658,partial,大高屋,,,,restaurant,whole
+osm-w650354094,romaji,マレンゴ,,Marengo,Marengo,restaurant,whole
+osm-w653173056,partial,翔太朗,,,,bar,whole
+osm-w678971211,none,,,,,unknown,room
+osm-w686515598,none,,,,,unknown,area
+osm-w687886379,romaji,ほかり食堂,,Hokari Dining Hall,Hokari Dining Hall,restaurant,whole
+osm-w720330900,partial,蓮根小樰,,,,bar,whole
+osm-w734879746,generic,喫煙所,,,,unknown,area
+osm-w737887315,none,,,,,unknown,area
+osm-w819523727,generic,喫煙所,,,,unknown,area
+osm-w897533519,none,,,,,unknown,area
+osm-w920225508,none,,,,,unknown,area

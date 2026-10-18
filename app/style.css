@@ -10,9 +10,10 @@
   --c-fill-2: #e8e8e8;
   --c-line: #e2e2e2;
   --c-press: #ebebeb;
-  --c-public: #0b8043;
-  --c-business: #b45f06;
-  --c-heated: #6a3fd1;
+  --c-public: #0a7d3e;
+  --c-business: #1d5fd6;
+  --c-food: #e8590c;
+  --c-heated: #6c3fd6;
   --c-warn-bg: #fff3e0;
   --c-warn-fg: #6b3b00;
   --c-error: #b3261e;
@@ -182,7 +183,7 @@ body[data-sheet="expanded"] .fab-rail { opacity: 0; pointer-events: none; }
 }
 .chip[aria-pressed="true"] { background: var(--c-fg); color: var(--c-bg); }
 .chip-mk { display: inline-flex; }
-.chip-mk svg { width: 18px; height: 18px; }
+.chip-mk img { width: 20px; height: 20px; }
 
 .rules { margin: 0 var(--s-4) var(--s-3); border-radius: var(--r-m); background: var(--c-warn-bg); color: var(--c-warn-fg); font-size: var(--t-s); }
 .rules summary { padding: var(--s-3); font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: var(--s-2); }
@@ -205,12 +206,15 @@ body[data-sheet="expanded"] .fab-rail { opacity: 0; pointer-events: none; }
 .row:active, .row:hover { background: var(--c-fill); }
 .row .mk { grid-row: 1 / span 3; align-self: start; margin-top: 2px; }
 .row-title { font-weight: 600; font-size: var(--t-m); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .mk { width: 30px; height: 30px; }
 .row-title .ja { font-weight: 400; color: var(--c-fg-3); font-size: var(--t-s); margin-left: 6px; }
 .row-meta { font-size: var(--t-s); color: var(--c-fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; grid-column: 2; }
 .row-meta .acc { font-weight: 600; }
 .acc-public { color: var(--c-public); }
 .acc-customers, .acc-business { color: var(--c-business); }
 .acc-heated { color: var(--c-heated); }
+.mk-public { color: var(--c-public); } .mk-food { color: #c2410c; } .mk-shop { color: var(--c-business); }
+.mk-heated { color: var(--c-heated); } .mk-unverified, .mk-gone { color: var(--c-fg-3); }
 .acc-unverified { color: var(--c-fg-3); }
 .row-src { font-size: var(--t-xs); color: var(--c-fg-3); grid-column: 2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-dist { grid-column: 3; grid-row: 1 / span 3; text-align: right; font-variant-numeric: tabular-nums; align-self: start; }
@@ -230,10 +234,11 @@ body[data-sheet="expanded"] .fab-rail { opacity: 0; pointer-events: none; }
 .d-head { display: grid; gap: var(--s-1); padding: var(--s-1) 0 var(--s-3); }
 .d-title { font-size: var(--t-xl); line-height: 1.15; margin: 0; font-weight: 700; letter-spacing: -.015em; overflow-wrap: anywhere; text-wrap: balance; }
 .d-title.long { font-size: 21px; line-height: 1.25; }
+.d-note { font-size: var(--t-xs); color: var(--c-fg-3); margin: 2px 0 0; }
 .d-ja { font-size: var(--t-m); color: var(--c-fg-3); margin: 0; overflow-wrap: anywhere; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--s-2); }
 .tag { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border-radius: var(--r-pill); background: var(--c-fill); font-size: 13px; font-weight: 600; }
-.tag svg { width: 16px; height: 16px; }
+.tag .mk { width: 18px; height: 18px; margin-left: -4px; }
 .tag.public { color: var(--c-public); }
 .tag.customers, .tag.business { color: var(--c-business); }
 .tag.heated { color: var(--c-heated); }
@@ -344,7 +349,8 @@ legend { font-weight: 700; font-size: var(--t-s); padding: 0; margin-bottom: var
 .switch-row input:checked { background: var(--c-fg); }
 .switch-row input:checked::after { transform: translateX(20px); }
 .legend { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
-.legend li { display: grid; grid-template-columns: 32px 1fr; gap: var(--s-3); align-items: center; font-size: var(--t-s); }
+.legend .legend-note { display: block; color: var(--c-fg-3); font-size: var(--t-xs); }
+.legend li { display: grid; grid-template-columns: 34px 1fr; gap: var(--s-3); align-items: center; font-size: var(--t-s); }
 .legend b { display: block; font-size: var(--t-m); }
 .fine { font-size: var(--t-xs); color: var(--c-fg-2); }
 ul.fine { padding-left: 18px; margin: 0; line-height: 1.6; }

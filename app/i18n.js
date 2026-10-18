@@ -10,6 +10,28 @@
   const LANGS = ["en", "de", "ja"];
 
   const en = {
+    "title.near": "{what} near {station}",
+
+    "pk.station": "Station", "pk.airport": "Airport", "pk.mall": "Shopping mall", "pk.park": "Park", "pk.street": "Street or plaza",
+    "pk.cafe": "Café", "pk.restaurant": "Restaurant", "pk.fast_food": "Fast food", "pk.bar": "Bar or izakaya", "pk.karaoke": "Karaoke",
+    "pk.hotel": "Hotel", "pk.konbini": "Konbini", "pk.tobacco": "Tobacco shop", "pk.shop": "Shop", "pk.pachinko": "Pachinko hall",
+    "pk.building": "Building", "pk.leisure": "Leisure park", "pk.unknown": "Place not stated",
+    "ak.room": "Smoking room", "ak.booth": "Smoking booth", "ak.outdoor": "Outdoor smoking area", "ak.area": "Smoking area",
+    "ak.section": "Smoking room inside", "ak.whole": "Smoking allowed inside", "ak.ashtray": "Ashtray outside the store", "ak.unknown": "Smoking area",
+    "akpub.room": "Public smoking room", "akpub.booth": "Public smoking booth", "akpub.outdoor": "Public outdoor smoking area", "akpub.area": "Public smoking area",
+    "acc2.free": "Free", "acc2.public": "Public", "acc2.customers": "Customers only", "acc2.ticket": "Boarding pass needed",
+    "acc2.unknown": "Access unclear", "acc2.unverified": "Unconfirmed",
+    "io.in": "Indoors", "io.out": "Outdoors",
+    "floor.ground": "{fl} (ground floor)", "floor.basement": "{fl} (basement)", "floor.upper": "{fl}",
+    "detail.place": "Place", "detail.area": "Smoking area", "detail.floor": "Floor", "detail.exit": "Exit", "detail.tobacco": "Tobacco",
+    "tob.heated": "Heated tobacco only", "tob.both": "Cigarettes and heated tobacco", "tob.none": "Not stated",
+    "detail.ticketHint": "After the security check. You need a boarding pass.",
+    "detail.nameNote": "Name translated from Japanese. Signs on site use the Japanese name.",
+    "detail.reading": "Reading",
+    "legend.food": "Café, restaurant or bar", "legend.foodSub": "Smoking area in a venue. Access is mostly not stated",
+    "legend.shop": "Shop, konbini or other business", "legend.shopSub": "Customers only, or access unclear",
+    "legend.selected": "Selected spot", "legend.selectedSub": "Black pin",
+    "legend.reliability": "How reliable a spot is shows in the list and the details, not on the map.",
     "app.tagline": "Smoking areas in Japan",
     "beta.badge": "Beta",
 
@@ -271,6 +293,28 @@
   };
 
   const de = {
+    "title.near": "{what} bei {station}",
+
+    "pk.station": "Bahnhof", "pk.airport": "Flughafen", "pk.mall": "Einkaufszentrum", "pk.park": "Park", "pk.street": "Straße oder Platz",
+    "pk.cafe": "Café", "pk.restaurant": "Restaurant", "pk.fast_food": "Imbiss", "pk.bar": "Bar oder Izakaya", "pk.karaoke": "Karaoke",
+    "pk.hotel": "Hotel", "pk.konbini": "Konbini", "pk.tobacco": "Tabakgeschäft", "pk.shop": "Geschäft", "pk.pachinko": "Pachinko-Halle",
+    "pk.building": "Gebäude", "pk.leisure": "Freizeitpark", "pk.unknown": "Ort nicht angegeben",
+    "ak.room": "Raucherraum", "ak.booth": "Raucherkabine", "ak.outdoor": "Raucherplatz im Freien", "ak.area": "Raucherplatz",
+    "ak.section": "Raucherraum im Lokal", "ak.whole": "Rauchen im Lokal erlaubt", "ak.ashtray": "Aschenbecher vor dem Laden", "ak.unknown": "Raucherplatz",
+    "akpub.room": "Öffentlicher Raucherraum", "akpub.booth": "Öffentliche Raucherkabine", "akpub.outdoor": "Öffentlicher Raucherplatz im Freien", "akpub.area": "Öffentlicher Raucherplatz",
+    "acc2.free": "Kostenlos", "acc2.public": "Öffentlich", "acc2.customers": "Nur für Kunden", "acc2.ticket": "Nur mit Bordkarte",
+    "acc2.unknown": "Zugang unklar", "acc2.unverified": "Unbestätigt",
+    "io.in": "Innen", "io.out": "Im Freien",
+    "floor.ground": "{fl} (Erdgeschoss)", "floor.basement": "{fl} (Untergeschoss)", "floor.upper": "{fl}",
+    "detail.place": "Ort", "detail.area": "Rauchbereich", "detail.floor": "Stockwerk", "detail.exit": "Ausgang", "detail.tobacco": "Tabak",
+    "tob.heated": "Nur Tabakerhitzer", "tob.both": "Zigaretten und Tabakerhitzer", "tob.none": "Nicht angegeben",
+    "detail.ticketHint": "Nach der Sicherheitskontrolle. Du brauchst eine Bordkarte.",
+    "detail.nameNote": "Name aus dem Japanischen übertragen. Vor Ort steht der japanische Name.",
+    "detail.reading": "Lesung",
+    "legend.food": "Café, Restaurant oder Bar", "legend.foodSub": "Rauchbereich in einem Lokal. Zugang meist nicht angegeben",
+    "legend.shop": "Geschäft, Konbini oder anderer Betrieb", "legend.shopSub": "Nur für Kunden, oder Zugang unklar",
+    "legend.selected": "Ausgewählter Platz", "legend.selectedSub": "Schwarze Nadel",
+    "legend.reliability": "Wie verlässlich ein Platz ist, steht in der Liste und im Detail, nicht auf der Karte.",
     "app.tagline": "Raucherplätze in Japan",
     "beta.badge": "Beta",
 
@@ -532,6 +576,28 @@
   };
 
   const ja = {
+    "title.near": "{station}付近の{what}",
+
+    "pk.station": "駅", "pk.airport": "空港", "pk.mall": "商業施設", "pk.park": "公園", "pk.street": "路上・広場",
+    "pk.cafe": "カフェ", "pk.restaurant": "レストラン", "pk.fast_food": "ファストフード", "pk.bar": "バー・居酒屋", "pk.karaoke": "カラオケ",
+    "pk.hotel": "ホテル", "pk.konbini": "コンビニ", "pk.tobacco": "たばこ店", "pk.shop": "店舗", "pk.pachinko": "パチンコ店",
+    "pk.building": "ビル", "pk.leisure": "レジャー施設", "pk.unknown": "場所の種類不明",
+    "ak.room": "喫煙室", "ak.booth": "喫煙ブース", "ak.outdoor": "屋外喫煙所", "ak.area": "喫煙所",
+    "ak.section": "店内に喫煙室", "ak.whole": "店内喫煙可", "ak.ashtray": "店頭に灰皿", "ak.unknown": "喫煙所",
+    "akpub.room": "公共の喫煙室", "akpub.booth": "公共の喫煙ブース", "akpub.outdoor": "公共の屋外喫煙所", "akpub.area": "公共の喫煙所",
+    "acc2.free": "無料", "acc2.public": "公共", "acc2.customers": "利用客のみ", "acc2.ticket": "搭乗券が必要",
+    "acc2.unknown": "利用条件不明", "acc2.unverified": "未確認",
+    "io.in": "屋内", "io.out": "屋外",
+    "floor.ground": "{fl}", "floor.basement": "{fl}", "floor.upper": "{fl}",
+    "detail.place": "場所", "detail.area": "喫煙場所", "detail.floor": "階", "detail.exit": "出口", "detail.tobacco": "たばこ",
+    "tob.heated": "加熱式たばこ専用", "tob.both": "紙巻き・加熱式", "tob.none": "記載なし",
+    "detail.ticketHint": "保安検査後のエリアです。搭乗券が必要です。",
+    "detail.nameNote": "日本語名を翻訳したものです。現地の表示は日本語名です。",
+    "detail.reading": "読み",
+    "legend.food": "カフェ・レストラン・バー", "legend.foodSub": "店内の喫煙スペース。利用条件は多くの場合記載なし",
+    "legend.shop": "店舗・コンビニなど", "legend.shopSub": "利用客のみ、または利用条件不明",
+    "legend.selected": "選択中の喫煙所", "legend.selectedSub": "黒いピン",
+    "legend.reliability": "信頼性は地図ではなく、リストと詳細に表示されます。",
     "app.tagline": "日本の喫煙所マップ",
     "beta.badge": "ベータ",
 

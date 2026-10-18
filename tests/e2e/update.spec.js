@@ -72,7 +72,8 @@ test("Update von der Alpha: neuer Service Worker, alte Caches weg, Rückmeldunge
     expect(st.prefs.showBusiness).toBe(true);
     // neue Oberfläche, neues Datenformat
     await expect(page.locator("#sheet")).toBeVisible();
-    expect(await page.evaluate(() => window.SmokrCore.DATA_SCHEMA)).toBe(3);
+    const schema = JSON.parse(fs.readFileSync(path.join(NEW, "data", "tokyo.json"), "utf8")).schema;
+    expect(await page.evaluate(() => window.SmokrCore.DATA_SCHEMA)).toBe(schema);
   } finally {
     await context.close();
     server.close();
