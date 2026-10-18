@@ -4,7 +4,7 @@ Smokr ist eine Web-App, die Raucherplätze für unsere Japanreise zeigt. Sie dec
 
 **Adresse:** https://shortzn.github.io/smokr/
 
-Stand: 18. Oktober 2026
+Stand: 18. Oktober 2026, Redesign auf Branch `redesign/uber-ux`
 
 ## Auf dem iPhone einrichten
 
@@ -35,52 +35,67 @@ So geht Smokr damit um:
 
 ## Was die App kann
 
-### Karte und Liste
+### Bedienung
 
-- Die Karte beschriftet Orte auf Englisch und Japanisch.
-- Unten steht eine Liste der nächsten 30 Plätze, sortiert nach Entfernung. Jeder Eintrag zeigt Entfernung, Gehzeit, einen Richtungspfeil und den nächsten Bahnhof.
-- Ohne Standort sortiert die Liste nach der Kartenmitte.
-- Oben wechselst du zwischen den Orten der Reise, die Karte springt dann dorthin.
-- Das Blatt mit der Liste lässt sich über den Griff oben in drei Größen stellen.
+- **Karte zuerst.** Die Karte füllt den Bildschirm. Oben schweben die Stadt, die Suche und die Filter, rechts der Standort-Knopf.
+- **Das Blatt unten** hat drei Stufen: zu, halb, ganz offen. Du ziehst es mit dem Finger oder tippst auf den Griff. Ganz offen scrollt die Liste. Oben angekommen zieht eine Abwärtsbewegung das Blatt wieder herunter.
+- **Liste:** die nächsten 40 Plätze mit Name, Entfernung, Zugang, Einschränkungen und Herkunft.
+- **Entfernungen sind Luftlinie.** Den echten Fußweg zeigt Apple Karten oder Google Maps. Gehzeiten nennt Smokr bewusst nicht.
+- **Bezugspunkt der Liste:**
+  - **Standort-Knopf:** Die Liste zeigt die Plätze bei dir.
+  - **Karte verschieben oder Stadt wechseln:** Die Liste zeigt die Plätze um die Kartenmitte.
+  - GPS-Updates verschieben die Karte nie. Der Standort-Knopf holt dich jederzeit zurück.
+- **Suche** nach Bahnhof, Name oder Stadt, auch auf Japanisch. Trifft der Suchbegriff genau einen Bahnhof, kommen die Plätze an diesem Bahnhof zuerst.
+- **Detail:** „Route starten“ öffnet den Fußweg in Apple Karten oder Google Maps. Darunter folgen die Wegbeschreibung der Stadt, Öffnungszeiten, Zugang und die Herkunft der Angaben.
+- **Auf dem Mac oder quer gehaltenen iPhone** wird das Blatt zum Seitenpanel. Tastatur: `/` öffnet die Suche, `Esc` geht zurück.
 
-### Farben und Filter
+### Zeichen auf der Karte
 
-| Farbe | Bedeutung |
+Form und Farbe zeigen die Art des Platzes. Man muss also keine Farben unterscheiden können.
+
+| Zeichen | Bedeutung |
 |---|---|
-| Grün | Öffentlicher Raucherplatz, kostenlos |
-| Braun | Lokal, Geschäft oder Konbini mit Raucherbereich. Hier musst du etwas kaufen. |
-| Violett | Nur für Tabakerhitzer wie IQOS, glo oder Ploom |
-| Grau | Von dir als „nicht gefunden“ markiert |
+| Grüner Kreis | Öffentlicher Raucherplatz, ohne Einkauf nutzbar |
+| Braunes Quadrat | Geschäft oder Lokal: nur für Kunden, oder Zugang unklar |
+| Violette Raute | Nur für Tabakerhitzer wie IQOS, glo oder Ploom |
+| Hohles Zeichen | Weniger verlässlich: nur OpenStreetMap ohne Prüfdatum, oder Position nur ungefähr |
+| Schwarzer Kreis mit Zahl | Mehrere Plätze. Antippen vergrößert die Karte. Grau heißt: nur Geschäfte |
+| Schwarze Nadel | Der ausgewählte Platz |
 
-Die Filter oben:
+### Zugang: nur was belegt ist
 
-- **Öffentlich:** ist beim Start an.
-- **Lokale:** ist beim Start aus, damit die Karte übersichtlich bleibt.
-- **Ohne Nur-IQOS:** blendet Plätze aus, an denen Zigaretten verboten sind.
+| Anzeige | Wann |
+|---|---|
+| Öffentlich | Von der Stadt als öffentlicher Platz gelistet, oder in OpenStreetMap als Raucherplatz ohne Einschränkung |
+| Nur für Kunden | Die Stadt (Osaka) oder OpenStreetMap sagt ausdrücklich „nur für Kunden“ |
+| Zugang unklar | Raucherbereich in einem Café, Lokal oder bei einem Konbini, ohne Angabe zum Zugang |
 
-Die App merkt sich deine Filter.
+### Herkunft der Angaben
 
-### Detailansicht eines Platzes
+Die Detailansicht trennt vier Dinge:
 
-- Die Ortsbeschreibung der Stadt, zum Beispiel welcher Ausgang oder welches Stockwerk.
-- **Route in Apple Karten** und **Google Maps**, beide mit Fußweg.
-- Die Öffnungszeiten, wo die Stadt sie angibt.
-- Die Adresse, die Quelle und das Datum der letzten Prüfung.
-- Warnungen, wenn die Position nur ungefähr bekannt ist, wenn der Platz nur für Tabakerhitzer ist oder wenn er nur aus OpenStreetMap stammt und kein Prüfdatum hat.
-- Ein Link zur offiziellen Quelle.
+- **Offizielle Liste:** welcher Bezirk und welcher Stand der Liste. Das ist das Datum der Liste, keine Prüfung vor Ort.
+- **OpenStreetMap:** ob Mitwirkende den Eintrag geprüft haben, und wann.
+- **Position:** genau, aus der Adresse berechnet oder nur ungefähr.
+- **Deine Rückmeldung:** „Gefunden“ oder „Nicht gefunden“, nur auf deinem Gerät.
 
-### Rückmeldungen
+### Filter
 
-Mit **War da** und **Nicht gefunden** gibst du Rückmeldung zu einem Platz. Nicht gefundene Plätze verschwinden aus deiner Liste und werden auf der Karte grau. Mit **Zurücksetzen** machst du das rückgängig.
+- **Ich rauche:**
+  - **Zigaretten:** blendet Plätze nur für Tabakerhitzer aus.
+  - **Tabakerhitzer** oder **Beides:** zeigt alle Plätze.
+- **Anzeigen:** öffentliche Plätze, Geschäfte und Lokale, von dir nicht gefundene Plätze.
+- **Route öffnen mit:** Apple Karten oder Google Maps.
+- **Schnellfilter:** Für „Öffentlich“ und „Geschäfte“ gibt es zusätzlich Schalter direkt über der Liste.
 
-Die Rückmeldungen bleiben nur auf deinem Gerät gespeichert. Die anderen Mitreisenden sehen sie nicht.
+Alte Einstellungen aus der ersten Version werden übernommen.
 
 ### Weitere Funktionen
 
-- **Auf Japanisch fragen:** Der Knopf 喫煙所？ zeigt groß „Wo ist hier ein Raucherplatz?“ auf Japanisch, mit Lautschrift und deutscher Übersetzung. Das kannst du Einheimischen zeigen.
-- **Hinweise je Stadt:** Steht die Karte auf Kamakura, Kyoto, Okinawa oder Osaka, zeigt die Liste oben die wichtigsten Regeln, etwa Rauchverbote und Strafen.
-- **Offline:** Die App und alle Daten werden beim ersten Öffnen gespeichert. Kartenstücke, die du schon angesehen hast, bleiben auch ohne Netz sichtbar, bis zu 4.000 davon.
-- **Updates:** Neue Daten kommen beim nächsten Öffnen mit Internet automatisch an.
+- **Auf Japanisch fragen:** zeigt groß „Wo ist hier ein Raucherplatz?“ auf Japanisch.
+- **Regeln je Stadt:** Rauchverbote und Strafen stehen oben in der Liste.
+- **Offline:** App und Daten werden gespeichert. Bei schlechtem Netz wartet die App höchstens 3,5 Sekunden, dann nimmt sie den gespeicherten Stand.
+- **Fehlende Daten:** Fehlt eine Stadtdatei, sagt die App das und bietet „Erneut laden“ an. Sie zeigt dann keine scheinbar leere Gegend.
 
 ## Was drin ist
 
@@ -155,11 +170,12 @@ Es fehlen Shinagawa und Sumida: Für beide Bezirke wurde keine offizielle Liste 
 
 ## Grenzen
 
-- **Datenstand:** Die Listen der Städte sind auf dem Stand, den sie veröffentlicht haben. Plätze können inzwischen wegen Baustellen geschlossen oder umgezogen sein. Shinjuku hat seine Hauptliste zuletzt 2024 aktualisiert.
-- **OpenStreetMap:** Plätze aus OpenStreetMap haben Freiwillige eingetragen. Sie haben oft kein Prüfdatum und sind daher weniger verlässlich.
-- **Lokale:** Die Angaben zu Lokalen stammen ebenfalls aus OpenStreetMap. Seit dem Gesetz von 2020 haben viele Lokale das Rauchen abgeschafft.
-- **Rückmeldungen:** Sie werden nicht zwischen Geräten geteilt.
-- **Kein Kompass:** Der Richtungspfeil in der Liste zeigt die Himmelsrichtung, nicht die Richtung relativ zu deinem Handy.
+- **Datenstand:** Die Listen der Städte sind auf dem Stand, den sie veröffentlicht haben. Plätze können inzwischen geschlossen oder umgezogen sein. Shinjuku hat seine Hauptliste zuletzt 2024 aktualisiert.
+- **OpenStreetMap:** Plätze von Freiwilligen haben oft kein Prüfdatum. Sie sind hohl gezeichnet.
+- **Lokale:** Ob du dort ohne Einkauf rauchen darfst, ist meist nicht angegeben.
+- **Rückmeldungen** bleiben auf dem Gerät und werden nicht geteilt.
+- **Luftlinie:** Die Entfernung ist Luftlinie. Der Richtungspfeil der ersten Version ist weggefallen.
+- **Offline-Karte:** Die Karte ist offline nur dort sichtbar, wo du schon warst.
 
 ## Mögliche nächste Schritte
 
@@ -173,12 +189,16 @@ Dieser Teil ist für später, falls die Daten aktualisiert werden sollen.
 
 - **Code:** `~/Projects/smokr`, Repository `Shortzn/smokr` auf GitHub.
 - **Veröffentlichung:** GitHub Pages veröffentlicht den Ordner `app/` automatisch bei jedem Push auf `main`.
-- **Aufbau:** Die App ist eine statische Seite mit HTML, CSS und JavaScript. Die Karte läuft mit MapLibre, die Kartenstücke kommen von OpenFreeMap. Der Offline-Betrieb läuft über einen Service Worker in `app/sw.js`.
-- **Daten:** Sie liegen in `app/data/<ort>.json` und werden aus diesen Quellen gebaut:
-  - `data/official/<ort>.json`: offizielle Listen, erzeugt von `scripts/build_<ort>_official.py`
-  - OpenStreetMap-Abfragen über `scripts/fetch_osm.sh` und `scripts/fetch_stations.sh`
-- **Zusammenführung:** `scripts/build_data.py` legt doppelte Einträge zusammen. Ist derselbe Platz in beiden Quellen, hat die offizielle Angabe Vorrang.
+- **Aufbau:** statische Seite ohne Framework.
+  - `app/core.js`: Logik ohne Oberfläche, also Zugang, Herkunft, Filter, Reihenfolge, Suche und Standort-Zustand.
+  - `app/sheet.js`: das ziehbare Blatt.
+  - `app/markers.js`: die Kartenzeichen.
+  - `app/app.js`: die Oberfläche.
+  - Karte: MapLibre mit Kartenteilen von OpenFreeMap.
+  - Offline: Service Worker in `app/sw.js`.
+- **Daten:** `app/data/<ort>.json` im Schema 2, gebaut von `scripts/build_data.py`. Quellen sind die offiziellen Listen in `data/official/` und OpenStreetMap. Ist derselbe Platz in beiden Quellen, nimmt jeder offizielle Platz höchstens den nächstgelegenen OSM-Platz auf.
 - **Rohdaten:** Die gespeicherten Seiten der Städte liegen in `data/raw/`. Dieser Ordner ist nicht im Repository.
+- **Tests:** `npm test`. Das sind Logiktests mit Node, Datentests mit Python und Abläufe mit Playwright in WebKit und Chromium. Plan und Abnahme stehen in `docs/`.
 
 Daten aktualisieren, Beispiel Tokio:
 
