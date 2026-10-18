@@ -1,8 +1,8 @@
 # iPhone-Abnahme und erster Community-Eintrag
 
-Stand 18. Oktober 2026, Version `beta-2`. Abhaken direkt hier oder im Chat melden: Punkt, Ergebnis, bei Fehlern ein Screenshot.
+Stand 18. Oktober 2026 (Nachtauftrag). Abhaken direkt hier oder im Chat melden: Punkt, Ergebnis, bei Fehlern ein Screenshot.
 
-Vor dem Start: Smokr einmal in Safari öffnen und neu laden, damit die neue Version (Service Worker v9) aktiv ist. In der Info muss unter Datenstand das Datum vom 18.10.2026 stehen.
+Vor dem Start: Smokr einmal in Safari öffnen und zweimal neu laden, damit die neue Version aktiv ist. In der Info muss unter Datenstand das Datum vom 18.10.2026 stehen. Neu in Tokio: Plätze in Gotanda, Ōsaki, Ōimachi, Kinshichō, Ryōgoku und Oshiage.
 
 ## A. Safari
 
@@ -32,31 +32,31 @@ Vor dem Start: Smokr einmal in Safari öffnen und neu laden, damit die neue Vers
 - [ ] **B3 Route:** „Route starten“ öffnet Apple Karten. Danach zurück zu Smokr, der Zustand ist noch da.
 - [ ] **B4 Drehen:** Querformat zeigt das Seitenpanel. Zurück ins Hochformat: Das Blatt sitzt richtig.
 
-## C. Erster Community-Eintrag (erst nach Einrichtung und Freigabe)
+## C. Erster echter Raucherplatz (privater Test)
 
-Voraussetzung:
+**Voraussetzung, einmalig (du):**
+1. Bereitstellungs-Token als GitHub-Secret anlegen und den Workflow „Worker“ erst mit `staging`, dann mit `production` laufen lassen. Anleitung: `docs/COMMUNITY.md`, Abschnitt „Neue Worker-Versionen veröffentlichen“.
+2. Moderation öffnen: `https://smokr-api.stefan-boschmeier.workers.dev/admin`, mit dem Passwort aus der Passwörter-App anmelden. Oben steht „Community: privat (nur mit Testercode)“.
+3. Unter „Testzugänge“ einen Namen eintragen (zum Beispiel „Stefan iPhone“) und „Testercode erstellen“. Der Code erscheint **nur einmal**. In die Passwörter-App kopieren. Für jede Person einen eigenen Code.
 
-- `sh worker/tools/setup.sh` ist gelaufen.
-- Ich habe die API in der App eingeschaltet.
-- Das Impressum ist online.
+Wir testen mit einem echten Platz, den ihr gefunden habt. Erfundene Plätze kommen nicht in die Datenbank. Muss doch etwas nur zum Testen hinein, beginnt der Name mit `[TEST]` und wird danach abgelehnt. Das löscht auch das Foto.
 
-Wir testen mit einem echten Platz, den ihr gefunden habt. Erfundene Testdaten kommen nicht in die Datenbank. Muss doch etwas nur zum Testen hinein, beginnt der Name mit `[TEST]`. Es wird danach in der Moderation abgelehnt, das löscht auch das Foto.
-
-- [ ] **C1** Vor Ort „+“ antippen. Unten öffnet sich das Formular, auf der Karte steht eine Nadel.
-- [ ] **C2** „Meinen Standort verwenden“ oder die Karte verschieben, bis die Nadel stimmt.
-- [ ] **C3** Art, Tabak und Zugang wählen. Name und Hinweise eintippen. Die Tastatur verdeckt die Felder nicht.
-- [ ] **C4** „Foto aufnehmen oder auswählen“:
-  - Ein Foto direkt mit der Kamera aufnehmen.
-  - Beim zweiten Versuch eines aus der Mediathek wählen. Das darf auch ein HEIC-Foto sein.
-  - Die Vorschau erscheint.
-- [ ] **C5** Zustimmung anhaken und „Zur Prüfung senden“ tippen. Es erscheint ein Dank. Erscheint ein Turnstile-Kästchen, bitte notieren.
-- [ ] **C6** Moderation unter `<API-Adresse>/admin` öffnen, mit dem Admin-Passwort anmelden:
+- [ ] **C1 Freischalten:** In Safari `https://shortzn.github.io/smokr/#community` öffnen. Ein Fenster „Privater Test“ fragt nach dem Testcode. Den Testercode aus der Moderation einfügen, „Freischalten“. Danach erscheint unten rechts der „+“-Knopf.
+- [ ] **C2 Platz hinzufügen:** Vor Ort „+“ antippen. Unten öffnet sich das Formular, auf der Karte steht eine Nadel.
+- [ ] **C3 Standort per Karte:** „Meinen Standort verwenden“ oder die Karte verschieben, bis die Nadel genau auf dem Platz steht.
+- [ ] **C4 Angaben:** Art, Tabak und Zugang wählen. Name, Stockwerk oder Ausgang und eine kurze Beschreibung eintippen. Die Tastatur verdeckt die Felder nicht.
+- [ ] **C5 Foto:** „Foto aufnehmen oder auswählen“. Ein echtes iPhone-Foto vom Platz oder Schild, ohne erkennbare Personen. HEIC aus der Mediathek geht auch. Die Vorschau erscheint.
+- [ ] **C6 Absenden:** Zustimmung anhaken und „Zur Prüfung senden“. Es erscheint ein Dank. Erscheint ein Turnstile-Kästchen, bitte notieren.
+- [ ] **C7 Admin öffnen:** Moderation neu laden.
   - Ist der Eintrag da, mit Position, Angaben und Foto?
   - Ist das Foto richtig gedreht?
-  - Wird eine Dublette in der Nähe angezeigt?
-- [ ] **C7** Freigeben. Smokr neu laden: Der Platz erscheint auf der Karte, in der Liste („Community“) und in der Suche nach seinem Namen. Das Foto ist sichtbar.
-- [ ] **C8** Beim Platz „Problem melden oder mit Foto bestätigen“ antippen, dann „Raucherplatz ist da“ senden. In der Moderation freigeben. Danach steht beim Platz „1× von Besuchern bestätigt“.
-- [ ] **C9** „Foto melden“ antippen. In der Moderation erscheint es unter „Gemeldete Fotos“. Bitte „Behalten“ wählen.
+  - Unter „Testzugänge“ steht beim Code „genutzt 1×“.
+  - Bei Bedarf über „Korrigieren“ Name, Stockwerk oder Position anpassen.
+- [ ] **C8 Freigeben.**
+- [ ] **C9 Auf der Karte:** Smokr neu laden. Der Platz erscheint auf der Karte, in der Liste („Community“) und in der Suche nach seinem Namen. Das Foto ist sichtbar.
+- [ ] **C10 Sprachen:** Unter Filter die Sprache auf Englisch und auf Deutsch stellen. Beim Platz stimmen Art, Zugang und Herkunft in beiden Sprachen. Dein Name und deine Beschreibung bleiben, wie du sie geschrieben hast.
+- [ ] **C11 Meldung mit Position:** Bei einem anderen Platz „Problem melden oder mit Foto bestätigen“, dann „Falsche Position“. Die Nadel erscheint, Karte auf die richtige Stelle schieben, senden. In der Moderation steht die vorgeschlagene Position mit Abstand.
+- [ ] **C12 Ohne Code:** In einem privaten Safari-Tab Smokr ohne `#community` öffnen. Es gibt keinen „+“-Knopf.
 
 ## Ergebnis
 
@@ -64,4 +64,4 @@ Wir testen mit einem echten Platz, den ihr gefunden habt. Erfundene Testdaten ko
 |---|---|---|
 | A1 bis A11 | | |
 | B1 bis B4 | | |
-| C1 bis C9 | | |
+| C1 bis C12 | | |

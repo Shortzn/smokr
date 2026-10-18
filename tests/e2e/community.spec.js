@@ -68,6 +68,14 @@ test("Ohne Testercode bleibt die Community zu, der Testlink schaltet sie frei", 
   await expect(page.locator("#tester")).toBeHidden();
   await expect(page.locator("#add-btn")).toBeVisible();
   expect(page.url()).not.toContain("#community");
+  // "+" schiebt den Standort-Knopf nicht auf das Blatt
+  if (!(await page.evaluate(() => window.__smokr.sheet.isPanel()))) {
+    const loc = await page.locator("#locate").boundingBox();
+    const add = await page.locator("#add-btn").boundingBox();
+    const sheetY = await page.evaluate(() => window.__smokr.sheet.y);
+    expect(loc.y + loc.height).toBeLessThanOrEqual(sheetY + 1);
+    expect(add.y + add.height).toBeLessThanOrEqual(loc.y + 1);
+  }
   // bleibt nach dem Neuladen frei
   await page.reload();
   await H.ready(page);

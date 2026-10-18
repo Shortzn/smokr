@@ -23,7 +23,7 @@ Nichts wird automatisch gepostet. Du entscheidest, wann und wo.
 | r/iqos | Tabakerhitzer-Nutzer, Filter „Nur IQOS“ | Kleiner, Thema passt genau |
 | Kommentare in bestehenden Threads | Jemand fragt konkret nach Raucherplätzen in Japan | Nur antworten, wenn die Frage wirklich passt, kein Copy-Paste |
 
-## Entwurf (Englisch, Stand Phase 5)
+## Entwurf (Englisch, Stand 18. Oktober 2026)
 
 **Titel:** We kept walking to "smoking areas" in Japan that didn't exist, so I built a free map from official city lists. Beta testers welcome.
 
@@ -32,10 +32,10 @@ Nichts wird automatisch gepostet. Du entscheidest, wann und wo.
 > So I built **Smokr**, a free web app: **https://shortzn.github.io/smokr/**
 >
 > **What it does today:**
-> - **Data:** Most public spots come from the **official ward and city lists** (for example Chiyoda, Minato, Chuo, Taito and the City of Osaka), plus OpenStreetMap.
+> - **Data:** Most public spots come from the **official ward and city lists** (for example Chiyoda, Minato, Chuo, Taito, Shinagawa, Sumida and the City of Osaka), plus OpenStreetMap.
 > - **Map symbols:** Every marker shows **what kind of place** it is: public smoking area, café or restaurant, shop, or heated-tobacco-only (IQOS etc.).
 > - **Details:** The list shows access ("free", "customers only", "boarding pass needed"), floor, and where the data comes from.
-> - **Names:** Japanese names are shown in **English** where they could be translated reliably, for example "Shinjuku Station Public Smoking Area – East Exit". The original Japanese name always stays visible so you can match it with signs.
+> - **Names:** Japanese names are shown in **English** where they could be translated reliably, for example "Oshiage Station Front Smoking Area" near the Skytree. The original Japanese name always stays visible so you can match it with signs.
 > - **Konbini:** Old konbini ashtray entries are hidden by default because many are gone.
 > - **Directions:** One tap opens walking directions in Apple Maps or Google Maps.
 > - **App:** English, German and Japanese. No account, no ads, no tracking. Works offline once loaded, and you can add it to your home screen.
@@ -55,7 +55,7 @@ Nichts wird automatisch gepostet. Du entscheidest, wann und wo.
 >
 > Please follow local rules. Many areas fine you for smoking on the street.
 
-Ist die Community eingeschaltet, kommt dieser Absatz dazu:
+Erst wenn die Community öffentlich ist (Variante B, nach deiner Freigabe), kommt dieser Absatz dazu. Während des privaten Tests bitte nichts über Einsendungen schreiben, sonst fragen Leute nach einem Code:
 
 > **New:** You can add missing smoking areas yourself, confirm existing ones, report wrong ones, and add your own photo of the entrance or sign. It's free and needs no account. Every submission is reviewed before it appears.
 
@@ -75,7 +75,7 @@ Ist die Community eingeschaltet, kommt dieser Absatz dazu:
 
 ## Feedback-Ablauf
 
-1. **Wege:** Rückmeldungen kommen als Reddit-Kommentare, als GitHub Issue oder, wenn eingeschaltet, über „Problem melden“ in der App.
+1. **Wege:** Rückmeldungen kommen als Reddit-Kommentare, als GitHub Issue, per Mail an die Adresse im Impressum oder, sobald die Community öffentlich ist, über „Problem melden“ in der App.
 2. **Sammeln:** Du sammelst sie einmal am Tag, ich sortiere sie nach der Liste unten ein.
 3. **Datenfehler** (Platz fehlt, existiert nicht) gehen in die Moderation oder eine Korrektur der Daten. **Bedienprobleme** werden Issues mit Gerät und Browser.
 4. **Antworten:** Kurz und ehrlich antworten, ob und wann es behoben wird.
