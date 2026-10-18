@@ -152,6 +152,10 @@ test("Öffnungszeiten: nur bekannte Muster übersetzt", () => {
   assert.equal(C.hours("午前7時～午後8時（土曜日・日曜日・祝日・お盆・年末年始を除く）").text,
     "7:00–20:00 (Sa, So, Feiertage, Obon, Jahreswechsel ausgenommen)");
   assert.equal(C.hours("24/7").text, "rund um die Uhr");
+  // Shinagawa: über Mitternacht und Wochenende geschlossen
+  assert.deepEqual(C.hours("午前5時から翌午前1時"), { text: "5:00 bis 1:00", original: null });
+  assert.deepEqual(C.hours("午前7時～午後9時(土日祝休所）"), { text: "7:00–21:00 (Sa, So und Feiertage geschlossen)", original: null });
+  assert.equal(C.hours("午前8時30分～午後7時30分").text, "8:30–19:30");
   assert.equal(C.hours(null), null);
   const odd = C.hours("店舗営業時間に準ずる");
   assert.ok(odd.original, "Unübersetztes Original wird mitgeliefert");

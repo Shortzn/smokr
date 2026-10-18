@@ -1,21 +1,25 @@
 id,quality,name_ja,en,de
 osm-n10067476010,composed,南町田グランベリーパーク駅前指定喫煙所,Minami-machida Grandberry Park Station Front Designated Smoking Area,"Ausgewiesener Raucherplatz Minami-machida Grandberry Park, Bahnhofsvorplatz"
 osm-n11598429567,composed,JR町田駅原町田交番前指定喫煙所,Designated Smoking Area in front of JR Machida Station Haramachida Police Box,"Ausgewiesener Raucherplatz vor Bahnhof JR Machida Haramachida, Polizeiposten"
-osm-n10873319011,composed,品川区指定喫煙所,Shinagawa Designated Smoking Area,Ausgewiesener Raucherplatz Shinagawa
+off-shinagawa-8,composed,西大井駅前,Nishi-Oi Station Front Smoking Area,"Raucherplatz Nishi-Oi, Bahnhofsvorplatz"
+off-shinagawa-3,composed,大井町駅西口ＪＲ踏切横,"Oimachi Station JR Smoking Area, beside the level crossing – West Exit","Raucherplatz Bahnhof Oimachi JR, neben dem Bahnübergang – Westausgang"
 off-meguro-19,composed,自由が丘しらかば通り公衆喫煙所,Jiyugaoka Shirakaba Street Public Smoking Area,Öffentlicher Raucherplatz Jiyugaoka Shirakaba Street
 off-meguro-16,romaji,プレゴ自由が丘店,Purego Jiyugaoka Smoking Area,Raucherplatz Purego Jiyugaoka
 off-meguro-17,romaji,オリエンタルパサージュ,Orientarupasāju,Orientarupasāju
+off-shinagawa-13,composed,品川区立文庫の森公園（コンテナ型喫煙所）,Shinagawa-ku Bunko no Mori Park Smoking Area,"Raucherplatz Shinagawa-ku Bunko no Mori, Park"
 off-meguro-13,composed,クラフトビレッジ西小山,Craft Village Nishi-koyama Smoking Area,Raucherplatz Craft Village Nishi-koyama
-osm-n10897584275,composed,品川区指定喫煙所【紙巻きたばこ専用】,Shinagawa Designated Smoking Area,Ausgewiesener Raucherplatz Shinagawa
-osm-n10896014947,composed,品川区指定喫煙所【加熱式たばこ専用】,Shinagawa Designated Smoking Area,Ausgewiesener Raucherplatz Shinagawa
-osm-n10896014948,composed,品川区指定喫煙所【加熱式たばこ専用】,Shinagawa Designated Smoking Area,Ausgewiesener Raucherplatz Shinagawa
+off-shinagawa-5,composed,大崎駅西口バスロータリー,Osaki Station Bus Rotary Smoking Area – West Exit,"Raucherplatz Bahnhof Osaki, Busvorplatz – Westausgang"
+off-shinagawa-6,composed,大崎駅西口線路脇（加熱式たばこ専用）,"Osaki Station Smoking Area, beside the tracks – West Exit","Raucherplatz Bahnhof Osaki, an den Gleisen – Westausgang"
 off-meguro-14,composed,イオンスタイル碑文谷7階,Aeon Style Himonya Smoking Area,Raucherplatz Aeon Style Himonya
+off-shinagawa-9,composed,五反田JPビルディング 1階,Gotanda JP Building Smoking Area,Raucherplatz Gotanda JP Building
 off-meguro-10,composed,セブン-イレブン目黒鷹番1丁目店,7-Eleven Meguro Takaban 1-chome Smoking Area,Raucherplatz 7-Eleven Meguro Takaban 1-chome
 off-minato-89,romaji,イケダヤ品川ビル１階指定喫煙場所（セブンイレブン港区港南２丁目店内）,Ikedaya Shinagawa Building Designated Smoking Area,Ausgewiesener Raucherplatz Ikedaya Shinagawa Building
 off-minato-91,composed,ＮＢＦ品川タワー２階指定喫煙場所（ファミリーマート品川グランパサージュ店内）,NBF Shinagawa Tower Designated Smoking Area,Ausgewiesener Raucherplatz NBF Shinagawa Tower
 off-minato-83,composed,加藤たばこ店内指定喫煙場所,Kato Designated Smoking Area,Ausgewiesener Raucherplatz Kato
 off-minato-90,composed,ＴＨＥ ＴＯＢＡＣＣＯ ＳＨＩＮＡＧＡＷＡ指定喫煙場所,THE TOBACCO SHINAGAWA Designated Smoking Area,Ausgewiesener Raucherplatz THE TOBACCO SHINAGAWA
 off-minato-33,composed,フジテレビ（敷地内）横指定喫煙場所,"Fuji TV Designated Smoking Area, beside","Ausgewiesener Raucherplatz Fuji TV, daneben"
+off-shinagawa-10,composed,ファミリーマート東五反田桜田通り店 地下1階,FamilyMart Higashi Gotanda Sakurada-dori Smoking Area,Raucherplatz FamilyMart Higashi Gotanda Sakurada-dori
+off-shinagawa-2,composed,五反田駅東口花房山通り,Gotanda Station Hanabusayama Street Smoking Area – East Exit,Raucherplatz Bahnhof Gotanda Hanabusayama Street – Ostausgang
 off-meguro-11,composed,学芸大学駅西口公衆喫煙所,Gakugei-daigaku Station Public Smoking Area – West Exit,Öffentlicher Raucherplatz Bahnhof Gakugei-daigaku – Westausgang
 off-meguro-12,composed,学芸大学駅東口公衆喫煙所,Gakugei-daigaku Station Public Smoking Area – East Exit,Öffentlicher Raucherplatz Bahnhof Gakugei-daigaku – Ostausgang
 off-minato-92,composed,デックス東京ビーチ１階指定喫煙場所（ファミリーマートお台場東京ビーチ店内）,Decks Tokyo Beach Designated Smoking Area,Ausgewiesener Raucherplatz Decks Tokyo Beach
@@ -178,6 +182,8 @@ off-chiyoda-70,composed,Smoking Spot 三恵ビル 2階,Smoking Spot Sankei Build
 off-chiyoda-10,composed,IPPUKU秋葉原店,IPPUKU Akihabara Smoking Area,Raucherplatz IPPUKU Akihabara
 off-chiyoda-33,composed,paspa神保町,paspa Jimbocho Smoking Area,Raucherplatz paspa Jimbocho
 off-shinjuku-3,composed,西武新宿駅前公衆喫煙所,Seibu-Shinjuku Station Front Public Smoking Area,"Öffentlicher Raucherplatz Seibu-Shinjuku, Bahnhofsvorplatz"
+off-sumida-1,composed,錦糸町駅南口喫煙所,Kinshicho Station Smoking Area – South Exit,Raucherplatz Bahnhof Kinshicho – Südausgang
+off-sumida-3,composed,両国駅西口喫煙所,Ryogoku Station Smoking Area – West Exit,Raucherplatz Bahnhof Ryogoku – Westausgang
 off-chiyoda-37,composed,paspa神田神保町一丁目,paspa Kanda-Jimbocho 1-chome Smoking Area,Raucherplatz paspa Kanda-Jimbocho 1-chome
 off-chiyoda-66,composed,小川町SMOKING AREA,Ogawacho SMOKING AREA Smoking Area,Raucherplatz Ogawacho SMOKING AREA
 off-chiyoda-3,romaji,ミマツたばこ,Mimatsu,Mimatsu
@@ -185,6 +191,7 @@ off-chiyoda-36,composed,Smoking Room 九段北店,Smoking Room Kudan-Kita Smokin
 off-chiyoda-5,composed,秋葉原昭和通り口喫煙所（区営）,Akihabara Smoking Area – Showa-dori Exit,Raucherplatz Akihabara – Showa-dori-Ausgang
 off-taito-17,composed,paspa 浅草橋,paspa Asakusabashi Smoking Area,Raucherplatz paspa Asakusabashi
 off-chiyoda-8,composed,paspa秋葉原高架下,"paspa Akihabara Smoking Area, under the tracks","Raucherplatz paspa Akihabara, unter der Bahntrasse"
+off-sumida-2,composed,錦糸公園内喫煙所,Kinshi Park Smoking Area,"Raucherplatz Kinshi, Park"
 off-chiyoda-9,composed,paspa神田佐久間町,paspa Kanda-Sakumachō Smoking Area,Raucherplatz paspa Kanda-Sakumachō
 off-chiyoda-4,composed,オアシス@akiba（区営）,Oasis @ Akiba Smoking Area,Raucherplatz Oasis @ Akiba
 off-chiyoda-41,composed,ピュアウッドガーデン,Pure Wood Garden Smoking Area,Raucherplatz Pure Wood Garden
@@ -203,14 +210,17 @@ off-taito-19,composed,セブン-イレブン　東上野１丁目店,7-Eleven Hi
 off-taito-24,composed,paspa 御徒町,paspa Okachimachi Smoking Area,Raucherplatz paspa Okachimachi
 off-taito-26,composed,アメ横センタービル喫煙所,Ameyoko Center Building Smoking Area,Raucherplatz Ameyoko Center Building
 off-taito-21,composed,セブン-イレブン　田原町駅前店,7-Eleven Tawaramachi Station Front Smoking Area,"Raucherplatz 7-Eleven Tawaramachi, Bahnhofsvorplatz"
+off-sumida-5,composed,押上駅前喫煙所,Oshiage Station Front Smoking Area,"Raucherplatz Oshiage, Bahnhofsvorplatz"
 off-taito-20,composed,セブン-イレブン　台東松が谷１丁目店,7-Eleven Taito Matsugaya 1-chome Smoking Area,Raucherplatz 7-Eleven Taito Matsugaya 1-chome
 off-taito-27,composed,松葉公園内,Matsuba Park Smoking Area,Raucherplatz Matsuba Park
+off-sumida-8,composed,隅田公園内喫煙所,Sumida Park Smoking Area,Raucherplatz Sumida Park
 off-taito-16,composed,隅田公園内,Sumida Park Smoking Area,Raucherplatz Sumida Park
 off-shinjuku-5,composed,高田馬場駅前公衆喫煙所,Takadanobaba Station Front Public Smoking Area,"Öffentlicher Raucherplatz Takadanobaba, Bahnhofsvorplatz"
 off-taito-23,composed,paspa 上野,paspa Ueno Smoking Area,Raucherplatz paspa Ueno
 off-taito-15,composed,金竜公園内,Kinryu Park Smoking Area,Raucherplatz Kinryu Park
 off-bunkyo-5,composed,セブン-イレブン 茗荷谷駅前店,7-Eleven Myogadani Station Front Smoking Area,"Raucherplatz 7-Eleven Myogadani, Bahnhofsvorplatz"
 off-taito-11,composed,台東リバーサイドスポーツセンター体育館前,Smoking Area in front of Taito Riverside Sports Center Gymnasium,"Raucherplatz vor Taito Riverside Sports Center, Sporthalle"
+off-sumida-4,composed,曳舟文化センター前喫煙所（コンテナ型）,Smoking Area in front of Hikifune Cultural Center,"Raucherplatz vor Hikifune, Kulturzentrum"
 off-taito-33,composed,千束公園内,Senzoku Park Smoking Area,"Raucherplatz Senzoku, Park"
 off-taito-34,composed,千束通り商店街公衆喫煙所,Senzoku-dori Shopping Street Public Smoking Area,"Öffentlicher Raucherplatz Senzoku-dori, Einkaufsstraße"
 off-taito-13,composed,鶯谷公園内,Uguisudani Park Smoking Area,Raucherplatz Uguisudani Park

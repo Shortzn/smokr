@@ -431,9 +431,16 @@ off-shibuya-4,partial,（区設置）渋谷駅新南口喫煙所,,,,station,area
 off-shibuya-41,partial,住友不動産新宿南口ビル,,,,building,area
 off-shibuya-42,partial,ヒューリック将棋会館千駄ヶ谷ビル,,,,building,area
 off-shibuya-7,partial,（区設置）原宿竹下口喫煙所,,,,street,area
+off-shinagawa-1,partial,五反田駅西口本村橋（加熱式たばこ専用）,,,,tobacco,area
+off-shinagawa-14,partial,東京都立大井ふ頭中央海浜公園なぎさの森 しおじ磯喫煙所,,,,park,area
+off-shinagawa-15,partial,東京都立みなとが丘ふ頭公園喫煙所,,,,park,area
+off-shinagawa-4,partial,大井町駅東口ペデストリアンデッキ下,,,,station,area
+off-shinagawa-7,partial,大崎駅東口コンテナ型喫煙所,,,,station,booth
 off-shinjuku-4,partial,新宿駅東南口高架下公衆喫煙所,,,,station,area
 off-shinjuku-6,partial,おおくぼそよかぜ橋公衆喫煙所,,,,unknown,area
 off-shinjuku-8,partial,マルタイタバコ店,,,,tobacco,area
+off-sumida-6,partial,東武橋喫煙所,,,,unknown,area
+off-sumida-7,partial,吾妻橋地区喫煙所,,,,unknown,area
 off-taito-1,partial,上野公園前交番裏,,,,park,area
 off-taito-10,partial,本庁舎駐車場出口横,,,,building,area
 off-taito-12,partial,清川清掃車庫内,,,,unknown,area
@@ -589,7 +596,6 @@ osm-n14252047722,none,,,,,unknown,area
 osm-n14276387842,none,,,,,unknown,outdoor
 osm-n14276387843,none,,,,,unknown,outdoor
 osm-n14278393643,partial,激太鳥,,,,bar,whole
-osm-n14288614937,none,,,,,unknown,area
 osm-n1670125233,partial,大鵬,,,,bar,whole
 osm-n1681588707,partial,集,,,,cafe,whole
 osm-n1693090837,partial,多古菊,,,,bar,whole
@@ -865,7 +871,6 @@ osm-n5741386449,romaji,サシャ,,Sasha,Sasha,restaurant,whole
 osm-n5766182215,partial,再来軒,,,,restaurant,whole
 osm-n5776899258,none,,,,,unknown,area
 osm-n5806113335,partial,居酒屋 きんやま,,,,bar,whole
-osm-n5808540253,none,,,,,unknown,area
 osm-n5809700876,partial,器（utsuwa）designed hostel,,,,hotel,section
 osm-n5822729581,partial,伊良部食堂ちゃんぷる,,,,restaurant,outdoor
 osm-n5824797503,partial,肴屋 あしか,,,,bar,whole
@@ -890,7 +895,6 @@ osm-n6017215792,none,,,,,unknown,area
 osm-n6024232285,partial,大高屋,,,,restaurant,whole
 osm-n6031401278,none,,,,,unknown,area
 osm-n6031702639,romaji,くいしんぼ,,Kuishinbo,Kuishinbo,restaurant,whole
-osm-n6089943989,generic,喫煙所,,,,unknown,area
 osm-n6130552675,partial,新世界串カツ からさき,,,,bar,whole
 osm-n6138103574,partial,やきとん 木々家,,,,restaurant,whole
 osm-n6138115931,romaji,みつぼ,,Mitsubo,Mitsubo,bar,whole
@@ -1024,7 +1028,6 @@ osm-w590695474,romaji,まいど,,Maido,Maido,bar,whole
 osm-w639297658,partial,大高屋,,,,restaurant,whole
 osm-w650354094,romaji,マレンゴ,,Marengo,Marengo,restaurant,whole
 osm-w653173056,partial,翔太朗,,,,bar,whole
-osm-w678971211,none,,,,,unknown,room
 osm-w686515598,none,,,,,unknown,area
 osm-w687886379,romaji,ほかり食堂,,Hokari Dining Hall,Hokari Dining Hall,restaurant,whole
 osm-w720330900,partial,蓮根小樰,,,,bar,whole

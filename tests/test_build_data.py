@@ -153,3 +153,32 @@ class BuiltDataTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WardListsTest(unittest.TestCase):
+    """Shinagawa und Sumida: nur belegte Plätze, Testphase und unpräzise Betreiberangaben bleiben draußen."""
+
+    def setUp(self):
+        with open(os.path.join(ROOT, "app", "data", "tokyo.json"), encoding="utf-8") as f:
+            self.spots = {s["id"]: s for s in json.load(f)["spots"]}
+
+    def test_shinagawa_and_sumida_imported(self):
+        shinagawa = [i for i in self.spots if i.startswith("off-shinagawa-")]
+        sumida = [i for i in self.spots if i.startswith("off-sumida-")]
+        self.assertEqual(len(shinagawa), 15)
+        self.assertEqual(len(sumida), 8)
+        for i in shinagawa + sumida:
+            s = self.spots[i]
+            self.assertTrue(s["off"]["url"].startswith("https://www.city."), i)
+            self.assertTrue(s["off"].get("date"), i)
+
+    def test_trial_phase_and_keio_excluded(self):
+        for i in ["off-sumida-9", "off-sumida-10", "off-sumida-11", "off-sumida-12", "off-shinjuku-keio-1"]:
+            self.assertNotIn(i, self.spots)
+        names = " ".join(s.get("nj", "") for s in self.spots.values() if (s.get("off") or {}).get("ward") in ("Sumida", "Shinjuku"))
+        for n in ["東京楽天地", "パルコ", "錦糸町マルイ", "テルミナ", "京王百貨店"]:
+            self.assertNotIn(n, names)
+
+    def test_big_parks_marked_as_approximate(self):
+        self.assertEqual(self.spots["off-shinagawa-14"]["pos"], "area")
+        self.assertEqual(self.spots["off-shinagawa-15"]["pos"], "area")

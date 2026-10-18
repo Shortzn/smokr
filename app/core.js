@@ -29,7 +29,7 @@
   // Bezirksnamen auf Japanisch, für die japanische Oberfläche
   const WARD_JA = {
     Shinjuku: "新宿区", Shibuya: "渋谷区", Chiyoda: "千代田区", Minato: "港区", Chuo: "中央区", Taito: "台東区",
-    Toshima: "豊島区", Bunkyo: "文京区", Meguro: "目黒区", Koto: "江東区", Kamakura: "鎌倉市", Fujisawa: "藤沢市",
+    Toshima: "豊島区", Bunkyo: "文京区", Meguro: "目黒区", Koto: "江東区", Shinagawa: "品川区", Sumida: "墨田区", Kamakura: "鎌倉市", Fujisawa: "藤沢市",
     "Naha Airport": "那覇空港", Motobu: "本部町（海洋博公園）",
   };
 
@@ -348,17 +348,19 @@
   // ---------- Öffnungszeiten ----------
   const JA_WORDS = {
     de: [
+      [/土日祝日?(休所|休み|休業)/g, "Sa, So und Feiertage geschlossen"], [/翌/g, ""],
       [/24時間/g, "rund um die Uhr"], [/平日/g, "Mo–Fr"], [/土曜日?/g, "Sa"], [/日曜日?/g, "So"],
       [/祝日|祝祭日/g, "Feiertage"], [/年末年始/g, "Jahreswechsel"], [/お盆/g, "Obon"],
       [/を除く/g, " ausgenommen"], [/のみ/g, " nur"], [/から/g, " bis "], [/まで/g, ""], [/毎日/g, "täglich"],
     ],
     en: [
+      [/土日祝日?(休所|休み|休業)/g, "closed Sat, Sun and holidays"], [/翌/g, ""],
       [/24時間/g, "24 hours"], [/平日/g, "Mon–Fri"], [/土曜日?/g, "Sat"], [/日曜日?/g, "Sun"],
       [/祝日|祝祭日/g, "public holidays"], [/年末年始/g, "New Year holidays"], [/お盆/g, "Obon"],
       [/を除く/g, " excluded"], [/のみ/g, " only"], [/から/g, " to "], [/まで/g, ""], [/毎日/g, "daily"],
     ],
   };
-  const JA_PUNCT = [[/[～〜~]/g, "–"], [/・/g, ", "], [/（/g, " ("], [/）/g, ")"]];
+  const JA_PUNCT = [[/[～〜~]/g, "–"], [/・/g, ", "], [/（/g, " ("], [/）/g, ")"], [/(\S)\(/g, "$1 ("]];
   const JA_CHAR = /[぀-ヿ一-鿿]/;
   /** Übersetzt nur bekannte Muster. {text, original}: original nur, wenn Reste unübersetzt bleiben.
       Auf Japanisch bleibt der Text der Quelle unverändert. */

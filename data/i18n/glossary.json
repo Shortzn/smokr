@@ -272,6 +272,26 @@
     "構内": [
       "",
       ""
+    ],
+    "バスロータリー": [
+      "Bus Rotary",
+      "Busvorplatz"
+    ],
+    "線路脇": [
+      "beside the tracks",
+      "an den Gleisen"
+    ],
+    "踏切横": [
+      "beside the level crossing",
+      "neben dem Bahnübergang"
+    ],
+    "踏切": [
+      "Level Crossing",
+      "Bahnübergang"
+    ],
+    "文化センター": [
+      "Cultural Center",
+      "Kulturzentrum"
     ]
   },
   "katakana": {

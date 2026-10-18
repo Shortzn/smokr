@@ -1,12 +1,12 @@
 {
-  "ja_only": 1191,
+  "ja_only": 1207,
   "q_brand": 37,
-  "q_composed": 409,
-  "q_generic": 20,
-  "q_latin": 219,
-  "q_none": 281,
+  "q_composed": 419,
+  "q_generic": 19,
+  "q_latin": 221,
+  "q_none": 278,
   "q_osm_en": 949,
-  "q_partial": 607,
+  "q_partial": 614,
   "q_romaji": 126,
-  "total": 2648
+  "total": 2663
 }

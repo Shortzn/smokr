@@ -8,6 +8,7 @@ import collections
 import csv
 import json
 import math
+import glob
 import os
 import sys
 from datetime import date
@@ -220,13 +221,23 @@ def position_quality(s):
     return "exact"
 
 
+def official_files(region):
+    """Hauptdatei der Region plus Ergänzungen wie tokyo_shinagawa.json (einzeln geprüfte Bezirkslisten)."""
+    main = os.path.join(OFFICIAL, f"{region}.json")
+    extra = sorted(glob.glob(os.path.join(OFFICIAL, f"{region}_*.json")))
+    return [p for p in [main] + extra if os.path.exists(p)]
+
+
 def official_spots(region):
-    path = os.path.join(OFFICIAL, f"{region}.json")
-    if not os.path.exists(path):
-        return []
-    data = load_json(path)
+    rows = []
+    for path in official_files(region):
+        rows.extend(load_json(path).get("spots", []))
+    ids = [s["id"] for s in rows]
+    dup = {i for i in ids if ids.count(i) > 1}
+    if dup:
+        raise SystemExit(f"doppelte IDs in den offiziellen Daten: {sorted(dup)}")
     out = []
-    for s in data.get("spots", []):
+    for s in rows:
         if s.get("lat") is None or s.get("lon") is None:
             continue
         if s.get("status") == "closed":
