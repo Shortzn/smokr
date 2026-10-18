@@ -6,3 +6,7 @@ data/raw/
 node_modules/
 test-results/
 playwright-report/
+.dev.vars
+.wrangler/
+worker/.dev.vars
+worker/.wrangler/

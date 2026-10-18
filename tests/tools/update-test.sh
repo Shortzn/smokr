@@ -2,7 +2,7 @@
 # Prüft das Update von einer älteren Version (Standard: main) auf den Arbeitsstand.
 # Die alte Version registriert ihren Service Worker nur unter HTTPS; die Testkopie auch lokal.
 set -e
-REF="${1:-main}"
+REF="${1:-alpha-final}"
 DIR="$(mktemp -d)"
 git worktree add -f "$DIR/src" "$REF" >/dev/null 2>&1
 cp -R "$DIR/src/app" "$DIR/old-app"

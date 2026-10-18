@@ -707,10 +707,10 @@ function openForm(type) {
   renderForm();
   setView("form");
   if (sheet && !sheet.isPanel()) sheet.snap(type === "place" ? "half" : "expanded");
-  mountCaptcha();
 }
 function closeForm() {
   if (state.form && state.form.ts) state.form.ts.remove();
+  if (state.form && state.form.photo) URL.revokeObjectURL(state.form.photo.url);
   const back = state.form && state.form.spotId;
   state.form = null;
   $("add-pin").hidden = true;
@@ -718,12 +718,18 @@ function closeForm() {
   setView("list");
   renderList();
 }
+/** Turnstile genau einmal im aktuellen Formular. Ein neu gezeichnetes Formular bekommt ein neues Feld. */
 async function mountCaptcha() {
   const f = state.form;
   const el = document.getElementById("ts-box");
-  if (!f || !el) return;
+  if (!f || !el || f.tsEl === el) return;
+  if (f.ts) f.ts.remove();
+  f.ts = null;
+  f.tsEl = el;
   try {
-    f.ts = await COM.mountTurnstile(el, t.lang);
+    const ts = await COM.mountTurnstile(el, t.lang);
+    if (state.form === f && f.tsEl === el) f.ts = ts;
+    else ts.remove();
   } catch (e) {
     f.error = t("err.network");
     renderFormError();
@@ -742,12 +748,7 @@ function renderForm() {
   }
   const keep = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
   const vals = { name: keep("f-name"), floor: keep("f-floor"), note: keep("f-note"), comment: keep("f-comment") };
-  const photo = `<fieldset><legend>${esc(t("add.photo"))}</legend>
-      <p class="hint-text">${esc(t("add.photoHint"))}</p>
-      ${f.photo ? `<div class="photo-preview"><img src="${f.photo.url}" alt=""><button type="button" class="text-btn" data-photo-remove>${esc(t("add.photoRemove"))}</button></div>`
-        : `<label class="btn secondary wide file-btn"><input type="file" id="f-photo" accept="image/*" hidden>${esc(t("add.photoPick"))}</label>`}
-      ${f.photo ? `<label class="check-row"><input type="checkbox" id="f-consent" required><span>${esc(t("add.consent"))}</span></label>` : ""}
-    </fieldset>`;
+  const photo = `<fieldset id="photo-box"></fieldset>`;
   let body;
   if (f.type === "place") {
     body = `<h2 class="form-title">${esc(t("add.title"))}</h2>
@@ -776,7 +777,21 @@ function renderForm() {
       <p class="form-error" id="form-error" role="alert"${f.error ? "" : " hidden"}>${esc(f.error)}</p>
       <button class="btn primary wide" id="form-submit"${f.sending ? " disabled" : ""}>${esc(t(f.sending ? "add.sending" : f.type === "place" ? "add.submit" : "report.submit"))}</button>
     </form>`;
-  if (f.ts) { const el = document.getElementById("ts-box"); f.ts.remove(); f.ts = null; if (el) mountCaptcha(); }
+  renderPhotoBox();
+  mountCaptcha();
+}
+/** Nur der Fotobereich wird neu gezeichnet, damit Eingaben und Turnstile erhalten bleiben. */
+function renderPhotoBox() {
+  const f = state.form;
+  const box = document.getElementById("photo-box");
+  if (!f || !box) return;
+  const consent = document.getElementById("f-consent");
+  const agreed = consent ? consent.checked : false;
+  box.innerHTML = `<legend>${esc(t("add.photo"))}</legend>
+      <p class="hint-text">${esc(t("add.photoHint"))}</p>
+      ${f.photo ? `<div class="photo-preview"><img src="${f.photo.url}" alt=""><button type="button" class="text-btn" data-photo-remove>${esc(t("add.photoRemove"))}</button></div>`
+        : `<label class="btn secondary wide file-btn"><input type="file" id="f-photo" accept="image/*" hidden>${esc(t("add.photoPick"))}</label>`}
+      ${f.photo ? `<label class="check-row"><input type="checkbox" id="f-consent"${agreed ? " checked" : ""}><span>${esc(t("add.consent"))}</span></label>` : ""}`;
 }
 function renderFormError() {
   const el = document.getElementById("form-error");
@@ -795,8 +810,8 @@ async function onPhoto(file) {
   } catch (e) {
     f.error = t(COM.errorKey(e));
   }
-  captureChoices();
-  renderForm();
+  renderPhotoBox();
+  renderFormError();
 }
 function captureChoices() {
   const f = state.form;
@@ -952,7 +967,7 @@ function wire() {
     if (e.target.type === "radio") captureChoices();
   });
   $("form-scroll").addEventListener("click", (e) => {
-    if (e.target.closest("[data-photo-remove]") && state.form) { URL.revokeObjectURL(state.form.photo.url); state.form.photo = null; captureChoices(); renderForm(); }
+    if (e.target.closest("[data-photo-remove]") && state.form) { URL.revokeObjectURL(state.form.photo.url); state.form.photo = null; renderPhotoBox(); }
     if (e.target.closest("[data-form-close]")) closeForm();
     if (e.target.closest("[data-form-gps]")) {
       if (state.loc.pos && map) map.easeTo({ center: state.loc.pos, zoom: Math.max(map.getZoom(), 17), padding: mapPadding() });

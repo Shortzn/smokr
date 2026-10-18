@@ -345,6 +345,8 @@ test.describe("Datenfehler und Offline", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test.describe("mit Service Worker", () => {
+  test.use({ serviceWorkers: "allow" });
   test("offline starten und wieder online", async ({ page, context }, info) => {
     test.skip(!info.project.name.includes("chromium"), "Service-Worker-Test mit Chromium");
     const errors = await H.open(page, context);
@@ -365,6 +367,8 @@ test.describe("Datenfehler und Offline", () => {
     await page.evaluate(() => window.dispatchEvent(new Event("online")));
     await expect(page.locator("#banner")).toBeHidden();
     expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   });
 
   test("Manifest und Icons für den Home-Bildschirm", async ({ page, context }) => {

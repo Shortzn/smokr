@@ -1,0 +1,24 @@
+# Smokr Community API. Kostenlos nutzbar: Workers Free, D1 Free.
+# Secrets (nie im Repository): TURNSTILE_SECRET, IP_SALT, SESSION_KEY, ADMIN_PASSWORD_HASH
+name = "smokr-api"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+preview_urls = false
+
+[vars]
+ALLOWED_ORIGINS = "https://shortzn.github.io"
+TURNSTILE_HOSTNAMES = "shortzn.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "smokr-community"
+# Wird beim ersten Einrichten von scripts in worker/tools/setup.sh eingetragen
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[triggers]
+crons = ["17 3 * * *"]
+
+[observability]
+enabled = true

@@ -4,7 +4,7 @@ Smokr ist eine Web-App, die Raucherplätze für unsere Japanreise zeigt. Sie dec
 
 **Adresse:** https://shortzn.github.io/smokr/
 
-Stand: 18. Oktober 2026, Redesign auf Branch `redesign/uber-ux`
+Stand: 18. Oktober 2026. Öffentliche Beta, Sprache Englisch, Deutsch oder Japanisch.
 
 ## Auf dem iPhone einrichten
 
@@ -89,6 +89,38 @@ Die Detailansicht trennt vier Dinge:
 - **Schnellfilter:** Für „Öffentlich“ und „Geschäfte“ gibt es zusätzlich Schalter direkt über der Liste.
 
 Alte Einstellungen aus der ersten Version werden übernommen.
+
+### Sprachen
+
+Die App ist auf Englisch, Deutsch und Japanisch verfügbar.
+
+- **Startsprache:** Englisch ist Standard, Deutsch und Japanisch kommen automatisch, wenn das Gerät so eingestellt ist.
+- **Wechsel:** jederzeit unter Filter, Sprache. Die Wahl bleibt gespeichert.
+- **Japanische Texte:** Japanische Namen und Ortsbeschreibungen der Städte bleiben im Original, sie werden nicht übersetzt.
+
+### Konbinis
+
+Ein Konbini zählt nur dann als Raucherplatz, wenn der OpenStreetMap-Eintrag seit 2024 geprüft wurde.
+
+- **Ungeprüfte Einträge** sind unbestätigt und standardmäßig ausgeblendet. Einblenden lassen sie sich unter Filter, „Unbestätigte Konbini-Aschenbecher“.
+- **Doppelte Einträge:** Liegt ein Raucherplatz direkt daneben, zeigt die App nur diesen.
+- **Zahlen:**
+
+  | Ort | belegt | unbestätigt | doppelt |
+  |---|---:|---:|---:|
+  | Tokio | 2 | 50 | 1 |
+  | Okinawa | 1 | 3 | 0 |
+  | Osaka | 0 | 1 | 0 |
+
+### Community (vorbereitet)
+
+Diese Funktionen sind gebaut, aber noch ausgeschaltet:
+
+- neue Plätze vorschlagen
+- Plätze bestätigen oder Probleme melden, jeweils mit Foto
+- Moderation
+
+Sie gehen erst an, wenn das Backend eingerichtet ist. Bis dahin zeigt die App keine Knöpfe dafür. Details stehen in `docs/COMMUNITY.md`.
 
 ### Weitere Funktionen
 
@@ -198,7 +230,24 @@ Dieser Teil ist für später, falls die Daten aktualisiert werden sollen.
   - Offline: Service Worker in `app/sw.js`.
 - **Daten:** `app/data/<ort>.json` im Schema 2, gebaut von `scripts/build_data.py`. Quellen sind die offiziellen Listen in `data/official/` und OpenStreetMap. Ist derselbe Platz in beiden Quellen, nimmt jeder offizielle Platz höchstens den nächstgelegenen OSM-Platz auf.
 - **Rohdaten:** Die gespeicherten Seiten der Städte liegen in `data/raw/`. Dieser Ordner ist nicht im Repository.
-- **Tests:** `npm test`. Das sind Logiktests mit Node, Datentests mit Python und Abläufe mit Playwright in WebKit und Chromium. Plan und Abnahme stehen in `docs/`.
+- **Tests:** `npm test` führt alle Suiten aus:
+  - Logik (Node) und Daten (Python)
+  - Abläufe mit Playwright in WebKit und Chromium
+  - Update von der Alpha
+  - Community-API und Community-Abläufe gegen einen lokalen Worker
+- **Rollback:** Der letzte Stand vor dem Redesign ist der Tag `alpha-final`. Zurück geht es mit diesen Befehlen, ohne die Historie zu verändern:
+
+  ```sh
+  git checkout alpha-final -- app
+  git commit -m "Rollback auf alpha-final"
+  git push
+  ```
+- **Doku:**
+  - `docs/BETA.md`: Abnahme
+  - `docs/COMMUNITY.md`: Backend
+  - `docs/REDDIT.md`: Beta-Aufruf
+  - `docs/MONETIZATION.md`: Monetarisierung
+  - `docs/legal/`: Vorlagen für Impressum und Datenschutz
 
 Daten aktualisieren, Beispiel Tokio:
 

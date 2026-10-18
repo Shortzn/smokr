@@ -93,6 +93,8 @@
     "warn.posArea": "The position is only approximate. Follow the description.",
     "warn.posAddress": "The position was calculated from the address and may be off by a few dozen meters.",
     "warn.unverified": "Unconfirmed: this konbini is only marked as having an ashtray in OpenStreetMap, without a recent check. Many ashtrays at convenience stores have been removed since 2020.",
+    "warn.communityMissing": "Visitors reported in {date} that this spot no longer exists. The report was reviewed.",
+    "warn.communityClosed": "Visitors reported in {date} that this spot is temporarily closed.",
 
     "src.official": "Official list",
     "src.osm": "OpenStreetMap",
@@ -352,6 +354,8 @@
     "warn.posArea": "Die Position ist nur ungefähr bekannt. Halte dich an die Beschreibung.",
     "warn.posAddress": "Die Position ist aus der Adresse berechnet und kann einige Dutzend Meter danebenliegen.",
     "warn.unverified": "Unbestätigt: Dieser Konbini ist nur in OpenStreetMap mit Aschenbecher eingetragen, ohne aktuelle Prüfung. Viele Aschenbecher vor Konbinis wurden seit 2020 entfernt.",
+    "warn.communityMissing": "Besucher haben im {date} gemeldet, dass es diesen Platz nicht mehr gibt. Die Meldung wurde geprüft.",
+    "warn.communityClosed": "Besucher haben im {date} gemeldet, dass der Platz vorübergehend geschlossen ist.",
 
     "src.official": "Offizielle Liste",
     "src.osm": "OpenStreetMap",
@@ -611,6 +615,8 @@
     "warn.posArea": "位置はおおよそです。説明を参考にしてください。",
     "warn.posAddress": "位置は住所から算出しているため、数十メートルずれることがあります。",
     "warn.unverified": "未確認：このコンビニはOpenStreetMapで灰皿ありとされているだけで、最近の確認がありません。2020年以降、多くのコンビニで灰皿が撤去されています。",
+    "warn.communityMissing": "{date}に、この喫煙所はもうないと利用者から報告がありました（確認済み）。",
+    "warn.communityClosed": "{date}に、この喫煙所は一時閉鎖中と利用者から報告がありました。",
 
     "src.official": "公式リスト",
     "src.osm": "OpenStreetMap",

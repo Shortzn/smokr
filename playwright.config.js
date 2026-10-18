@@ -8,7 +8,9 @@ module.exports = defineConfig({
   fullyParallel: true,
   workers: 4,
   reporter: [["list"]],
-  use: { baseURL: "http://127.0.0.1:4181", trace: "retain-on-failure", locale: "de-AT", timezoneId: "Asia/Tokyo" },
+  // Service Worker sind aus, damit Umleitungen (Kartenteile, Turnstile) in allen Browsern greifen.
+  // Die Offline- und Update-Tests schalten sie gezielt ein.
+  use: { baseURL: "http://127.0.0.1:4181", trace: "retain-on-failure", locale: "de-AT", timezoneId: "Asia/Tokyo", serviceWorkers: "block" },
   webServer: {
     command: "node tests/tools/serve.js 4181",
     url: "http://127.0.0.1:4181/index.html",

@@ -237,3 +237,22 @@ test("Community-Daten: nur gültige Plätze, Bestätigungen hängen sich an", ()
   assert.equal(C.trust(base[0], null).community.confirmed, 3);
   assert.deepEqual(C.mergeCommunity(base, null), base);
 });
+
+test("Community: ausgeblendete Plätze fallen weg, geprüfte Hinweise warnen", () => {
+  C.setLang("en");
+  const base = [spot({ id: "osm-n1" }), spot({ id: "off-b", off: { ward: "Chiyoda" } })];
+  const out = C.mergeCommunity(base, {
+    places: [{ id: 3, lat: 35.68, lon: 139.76, category: "public", tobacco: "all", access: "public", approved_at: "2026-10-18", photos: ["a"] }],
+    confirmations: [
+      { spot_id: "off-b", n: 0, last: null, photos: [], issues: { closed: { n: 1, last: "2026-10-17" } } },
+      { spot_id: "com-3", n: 2, last: "2026-10-18", photos: ["b"] },
+    ],
+    hidden: ["osm-n1"],
+  });
+  assert.deepEqual(out.map((s) => s.id), ["off-b", "com-3"]);
+  assert.equal(C.warnings(out[0]).some((w) => w.id === "comClosed"), true);
+  const com = out[1];
+  assert.equal(com.com.n, 2, "Bestätigungen auch für Community-Plätze");
+  assert.deepEqual(com.com.photos, ["a", "b"]);
+  C.setLang("de");
+});

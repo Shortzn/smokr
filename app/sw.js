@@ -1,5 +1,5 @@
 // Offline-Betrieb: App und Daten vorab, Kartenteile beim Ansehen zwischenspeichern.
-const VERSION = "smokr-v7";
+const VERSION = "smokr-v8";
 const SHELL = [
   "./", "index.html", "style.css", "config.js", "i18n.js", "core.js", "markers.js", "sheet.js", "community.js", "app.js", "manifest.webmanifest",
   "vendor/maplibre-gl.js", "vendor/maplibre-gl.css", "icons/icon-180.png", "icons/icon-192.png",
@@ -22,11 +22,11 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(removeOldCaches().then(() => self.clients.claim()));
 });
 // Eine ältere Version kann kurz nach dem Wechsel noch in ihren Cache schreiben.
-// Darum gelegentlich nachräumen, höchstens einmal pro Minute.
+// Darum gelegentlich nachräumen, höchstens alle 10 Sekunden.
 let lastSweep = 0;
 function sweepLater(e) {
   const now = Date.now();
-  if (now - lastSweep < 60000) return;
+  if (now - lastSweep < 10000) return;
   lastSweep = now;
   e.waitUntil(new Promise((r) => setTimeout(r, 3000)).then(removeOldCaches));
 }

@@ -7,6 +7,7 @@ const path = require("node:path");
 
 const OLD = process.env.OLD_APP;
 const NEW = path.join(__dirname, "..", "..", "app");
+const CURRENT = fs.readFileSync(path.join(NEW, "sw.js"), "utf8").match(/VERSION = "([^"]+)"/)[1];
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png" };
 
 test.skip(!OLD, "OLD_APP nicht gesetzt");
@@ -25,7 +26,7 @@ test("Update von der Alpha: neuer Service Worker, alte Caches weg, Rückmeldunge
   });
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
   const origin = `http://127.0.0.1:${server.address().port}`;
-  const context = await browser.newContext();
+  const context = await browser.newContext({ serviceWorkers: "allow" });
   await context.route("https://tiles.openfreemap.org/**", (r) => r.request().url().includes("/styles/")
     ? r.fulfill({ contentType: "application/json", body: JSON.stringify({ version: 8, sources: {}, layers: [{ id: "bg", type: "background" }] }) })
     : r.fulfill({ status: 200, body: "" }));
@@ -33,7 +34,7 @@ test("Update von der Alpha: neuer Service Worker, alte Caches weg, Rückmeldunge
   try {
     // 1. Alpha laden, wie ein Nutzer sie heute hat
     await page.goto(`${origin}/`);
-    await page.waitForFunction(() => document.querySelectorAll("#list .item").length > 0, null, { timeout: 20000 });
+    await page.waitForFunction(() => document.querySelectorAll("#list .item, #list .row").length > 0, null, { timeout: 20000 });
     await page.waitForFunction(() => navigator.serviceWorker.controller !== null || navigator.serviceWorker.ready.then(() => true), null, { timeout: 15000 });
     await page.reload();
     await page.waitForFunction(() => navigator.serviceWorker.controller !== null, null, { timeout: 15000 });
@@ -43,7 +44,7 @@ test("Update von der Alpha: neuer Service Worker, alte Caches weg, Rückmeldunge
       localStorage.setItem("kitsuen.geo", "false");
     });
     const oldCaches = await page.evaluate(() => caches.keys());
-    expect(oldCaches.some((k) => /^(smokr|kitsuen)-v[1-6]$/.test(k))).toBe(true);
+    expect(oldCaches.some((k) => /^(smokr|kitsuen)-v\d+$/.test(k) && k !== CURRENT)).toBe(true);
 
     // 2. Neue Version am selben Ort ausliefern
     root = NEW;
@@ -52,16 +53,19 @@ test("Update von der Alpha: neuer Service Worker, alte Caches weg, Rückmeldunge
     await page.waitForTimeout(1500);
     await page.reload();
     await page.waitForFunction(() => window.__smokr && window.__smokr.state.spots.length > 1000, null, { timeout: 20000 });
-    await page.waitForFunction(async () => {
+    await page.waitForFunction(async (current) => {
       await fetch("index.html");
       const reg = await navigator.serviceWorker.getRegistration();
       const versions = (await caches.keys()).filter((k) => /-v\d+$/.test(k));
-      return reg && reg.active && versions.length === 1 && versions[0] === "smokr-v7";
-    }, null, { timeout: 30000, polling: 1000 });
-    // Nach weiteren 4 s ist nichts Altes zurückgekommen
+      return reg && reg.active && versions.length === 1 && versions[0] === current;
+    }, CURRENT, { timeout: 30000, polling: 1000 });
+    // Eine ältere Version kann kurz danach noch einmal schreiben; spätestens beim nächsten Aufräumen ist es weg
     await page.waitForTimeout(4000);
-    const keys = await page.evaluate(() => caches.keys());
-    expect(keys.filter((k) => /-v\d+$/.test(k))).toEqual(["smokr-v7"]);
+    await expect.poll(async () => {
+      await page.evaluate(() => fetch("index.html"));
+      const keys = await page.evaluate(() => caches.keys());
+      return keys.filter((k) => /-v\d+$/.test(k));
+    }, { timeout: 30000, intervals: [2000] }).toEqual([CURRENT]);
     const st = await page.evaluate(() => ({ prefs: window.__smokr.state.prefs, reports: window.__smokr.state.reports }));
     expect(st.reports["osm-n1"].s).toBe("gone");
     expect(st.prefs.tobacco).toBe("cig");

@@ -107,6 +107,9 @@
     if (s.unk) out.push({ id: "status", text: t("warn.status") });
     if (s.pos === "area") out.push({ id: "pos", text: t("warn.posArea") });
     if (s.pos === "address") out.push({ id: "pos", text: t("warn.posAddress") });
+    const issues = (s.com && s.com.issues) || {};
+    if (issues.missing) out.push({ id: "comMissing", text: t("warn.communityMissing", { date: fmtMonth(issues.missing.last) }) });
+    if (issues.closed) out.push({ id: "comClosed", text: t("warn.communityClosed", { date: fmtMonth(issues.closed.last) }) });
     return out;
   }
 
@@ -349,21 +352,18 @@
       Bestätigungen hängen sich an vorhandene Plätze, neue Plätze kommen dazu. */
   function mergeCommunity(spots, community) {
     if (!community || !Array.isArray(community.places)) return spots;
-    const byId = new Map(spots.map((s) => [s.id, s]));
-    for (const c of community.confirmations || []) {
-      const s = byId.get(c.spot_id);
-      if (s) s.com = Object.assign({}, s.com, { n: c.n || 0, last: c.last || null, photos: c.photos || [] });
-    }
-    const added = [];
+    const hidden = new Set(Array.isArray(community.hidden) ? community.hidden : []);
+    const out = spots.filter((s) => !hidden.has(s.id));
+    const byId = new Map(out.map((s) => [s.id, s]));
     for (const p of community.places) {
       if (typeof p.lat !== "number" || typeof p.lon !== "number" || !inJapan(p.lat, p.lon)) continue;
       const id = `com-${p.id}`;
-      if (byId.has(id)) continue;
+      if (byId.has(id) || hidden.has(id)) continue;
       const k = p.category === "shop" ? "v" : "p";
       const spot = {
         id, k, acc: p.access === "customers" ? "customers" : k === "v" ? "unknown" : "public",
         lat: p.lat, lon: p.lon, nj: "", ne: String(p.name || ""), pos: "exact",
-        com: { added: p.approved_at || null, n: p.confirmations || 0, last: p.last_confirmed || null, photos: p.photos || [] },
+        com: { added: p.approved_at || null, n: 0, last: null, photos: Array.isArray(p.photos) ? p.photos.slice() : [] },
         region: (regionFor([p.lon, p.lat]) || {}).id || null,
       };
       if (p.note) spot.hint = String(p.note);
@@ -371,9 +371,21 @@
       if (p.tobacco === "heated") spot.heated = true;
       if (k === "v") spot.vt = "shop";
       if (p.category === "room") { spot.ind = true; spot.sd = "room"; }
-      added.push(spot);
+      out.push(spot);
+      byId.set(id, spot);
     }
-    return spots.concat(added);
+    // Bestätigungen und geprüfte Hinweise hängen sich an Basis- und Community-Plätze
+    for (const c of community.confirmations || []) {
+      const s = byId.get(c.spot_id);
+      if (!s) continue;
+      const prev = s.com || { photos: [] };
+      s.com = Object.assign({}, prev, {
+        n: c.n || 0, last: c.last || null,
+        photos: (prev.photos || []).concat(Array.isArray(c.photos) ? c.photos : []),
+        issues: c.issues || {},
+      });
+    }
+    return out;
   }
 
   return {

@@ -6,11 +6,18 @@
     "serve": "python3 -m http.server 4180 --directory app",
     "test:unit": "node --test tests/unit/*.test.js",
     "test:data": "python3 -I -m unittest discover -s tests -p 'test_*.py'",
-    "test:e2e": "playwright test",
-    "test": "npm run test:unit && npm run test:data && npm run test:e2e",
-    "test:update": "sh tests/tools/update-test.sh main"
+    "test:e2e": "playwright test tests/e2e/smokr.spec.js",
+    "test": "npm run test:unit && npm run test:data && npm run test:e2e && npm run test:update && npm run test:worker && npm run test:community",
+    "test:update": "sh tests/tools/update-test.sh alpha-final",
+    "test:worker": "sh tests/tools/worker-test.sh",
+    "test:community": "sh tests/tools/community-e2e.sh"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0"
+    "@playwright/test": "1.63.0",
+    "wrangler": "4.147.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "workerd@1.20261001.1": true
   }
 }
