@@ -4,7 +4,7 @@ const path = require("node:path");
 const H = require("./helpers");
 
 const API = process.env.SMOKR_API;
-const PASSWORD = "test-admin-password-123";
+const PASSWORD = process.env.SMOKR_ADMIN_PASSWORD || "test-admin-password-123";
 test.skip(!API, "SMOKR_API nicht gesetzt");
 
 const TURNSTILE_STUB = `window.turnstile = {

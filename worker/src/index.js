@@ -525,6 +525,8 @@ async function exportAll(env) {
     testers: await all("SELECT id, created_at, label, revoked_at, last_used_at, uses FROM testers"),
     photos: await all("SELECT id, created_at, status, owner_type, owner_id, size, width, height, sha256, flags, reviewed_at FROM photos"),
     hidden: await all("SELECT * FROM hidden_spots"),
+    // Moderationsprotokoll: wer hat wann was entschieden (nur Admin-Aktionen, keine IPs)
+    audit: await all("SELECT id, at, action, target, note FROM audit ORDER BY id"),
   };
 }
 

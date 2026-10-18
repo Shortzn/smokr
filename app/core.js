@@ -421,6 +421,10 @@
 
   /** Freigegebene Community-Daten mit den Basisdaten zusammenführen.
       Bestätigungen hängen sich an vorhandene Plätze, neue Plätze kommen dazu. */
+  // Foto-IDs vergibt der Server (32 Hex-Zeichen); alles andere wird ignoriert
+  function photoIds(list) {
+    return Array.isArray(list) ? list.filter((x) => typeof x === "string" && /^[0-9a-f]{32}$/.test(x)) : [];
+  }
   function mergeCommunity(spots, community) {
     if (!community || !Array.isArray(community.places)) return spots;
     const hidden = new Set(Array.isArray(community.hidden) ? community.hidden : []);
@@ -432,9 +436,10 @@
       if (byId.has(id) || hidden.has(id)) continue;
       const k = p.category === "shop" ? "v" : "p";
       const spot = {
-        id, k, acc: p.access === "customers" ? "customers" : k === "v" ? "unknown" : "public",
+        // Zugang nur so, wie er gemeldet und geprüft wurde; "unklar" bleibt unklar
+        id, k, acc: p.access === "customers" ? "customers" : p.access === "public" ? "public" : "unknown",
         lat: p.lat, lon: p.lon, nj: "", ne: String(p.name || ""), pos: "exact",
-        com: { added: p.approved_at || null, n: 0, last: null, photos: Array.isArray(p.photos) ? p.photos.slice() : [] },
+        com: { added: p.approved_at || null, n: 0, last: null, photos: photoIds(p.photos) },
         region: (regionFor([p.lon, p.lat]) || {}).id || null,
       };
       if (p.note) spot.hint = String(p.note);
@@ -452,7 +457,7 @@
       const prev = s.com || { photos: [] };
       s.com = Object.assign({}, prev, {
         n: c.n || 0, last: c.last || null,
-        photos: (prev.photos || []).concat(Array.isArray(c.photos) ? c.photos : []),
+        photos: (prev.photos || []).concat(photoIds(c.photos)),
         issues: c.issues || {},
       });
     }

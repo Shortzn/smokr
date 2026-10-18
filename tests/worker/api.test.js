@@ -210,6 +210,44 @@ test("Foto melden und zurückziehen", async () => {
   assert.deepEqual(c.places[0].photos, []);
 });
 
+test("Manipulierte Fotos und zu große Anfragen werden abgewiesen", async () => {
+  ip = "203.0.113.40";
+  const plain = fixture("plain.jpg");
+  const cases = [
+    [Buffer.concat([Buffer.from([0xff, 0xd8, 0xff]), Buffer.alloc(500, 0x41)]), "JPEG-Kopf mit Müll"],
+    [plain.subarray(0, Math.floor(plain.length / 2)), "abgeschnittenes JPEG"],
+    [Buffer.concat([Buffer.from("<?php echo 1; ?>"), plain]), "Skript vor dem Bild"],
+  ];
+  for (const [buf, why] of cases) {
+    const r = await post("/v1/submissions", form(place({ lat: "35.75", lon: "139.75", consent: "1" }), buf));
+    assert.equal(r.status, 400, why);
+    assert.equal((await r.json()).error, "photo", why);
+  }
+  // Anfrage über 2 MB: abgewiesen, bevor etwas gespeichert wird
+  const big = await post("/v1/submissions", form(place({ lat: "35.76", lon: "139.75", consent: "1" }), Buffer.alloc(2.5 * 1024 * 1024, 0xff)));
+  assert.equal(big.status, 400);
+  // Kein Foto aus diesen Versuchen gespeichert
+  const q = await (await admin("/admin/api/queue")).json();
+  assert.ok(!q.submissions.some((x) => Math.abs(x.lat - 35.75) < 0.001 || Math.abs(x.lat - 35.76) < 0.001));
+});
+
+test("Abgelehnt heißt gelöscht: Foto ist danach auch für den Admin weg", async () => {
+  ip = "203.0.113.41";
+  const r = await post("/v1/submissions", form(place({ lat: "35.77", lon: "139.75", name: "[TEST] reject me", consent: "1" }), variant(fixture("plain.jpg"), 30)));
+  assert.equal(r.status, 201);
+  const id = (await r.json()).id;
+  const sub = (await (await admin("/admin/api/queue")).json()).submissions.find((x) => x.id === id);
+  assert.match(sub.photo_id, /^[0-9a-f]{32}$/);
+  assert.equal((await admin(`/admin/api/photos/${sub.photo_id}`)).status, 200);
+  assert.equal((await admin(`/admin/api/submissions/${id}`, { action: "reject", note: "test" })).status, 200);
+  assert.equal((await admin(`/admin/api/photos/${sub.photo_id}`)).status, 404, "Bilddaten gelöscht");
+  assert.equal((await fetch(`${API}/v1/photos/${sub.photo_id}`)).status, 404);
+  const c = await (await fetch(API + "/v1/community")).json();
+  assert.ok(!c.places.some((p) => p.name === "[TEST] reject me"));
+  const exp = await (await admin("/admin/api/export")).json();
+  assert.ok(exp.audit.some((a) => a.target === String(id) && /reject/.test(a.action)), "Entscheidung protokolliert");
+});
+
 test("Doppelte Einsendungen werden abgewiesen", async () => {
   ip = "203.0.113.30";
   let r = await post("/v1/submissions", form(place({ lat: "35.6900", lon: "139.7000", name: "Dup A" })));

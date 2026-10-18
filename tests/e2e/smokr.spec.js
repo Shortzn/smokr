@@ -501,6 +501,37 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test("Community-Texte vom Server werden nie als HTML ausgeführt", async ({ page, context }) => {
+    const evil = `<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>"'&`;
+    const community = {
+      places: [{ id: "1\"><img src=x onerror=window.__xss=3>", lat: 35.6812, lon: 139.7671, category: "room", tobacco: "all", access: "unknown",
+        name: evil, floor: evil, note: evil, approved_at: evil, photos: ["../../evil\" onerror=\"window.__xss=4", "a".repeat(32)] }],
+      confirmations: [{ spot_id: "x", n: 1 }], hidden: [],
+    };
+    const api = (req) => {
+      const u = req.url();
+      if (u.endsWith("/v1/status")) return { json: { mode: "private" } };
+      if (u.endsWith("/v1/community")) return { json: community };
+      return { status: 404, json: { error: "not_found" } };
+    };
+    const errors = await H.open(page, context, { api, storage: { "kitsuen.tester": "TEST-CODE-0000-0000" } });
+    const id = await page.waitForFunction(() => [...window.__smokr.state.byId.keys()].find((k) => k.startsWith("com-"))).then((h) => h.jsonValue());
+    await page.evaluate((x) => { const s = window.__smokr.state.byId.get(x); window.__smokr.map.jumpTo({ center: [s.lon, s.lat], zoom: 19 }); }, id);
+    await H.waitIdle(page);
+    await page.locator("#list .row").filter({ hasText: "<img" }).first().click();
+    await expect(page.locator("#detail")).toContainText("<img src=x");
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => window.__xss)).toBeUndefined();
+    expect(await page.locator('img[src="x"], #detail script').count()).toBe(0);
+    // Nur die gültige Foto-ID wird geladen
+    const srcs = await page.locator("#detail .photos img").evaluateAll((els) => els.map((e) => e.getAttribute("src")));
+    expect(srcs.length).toBe(1);
+    expect(srcs[0]).toMatch(/\/v1\/photos\/a{32}$/);
+    // Unklarer Zugang wird nicht als kostenlos angezeigt
+    await expect(page.locator("#detail")).not.toContainText(/Kostenlos|Free of charge/);
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   test("Normale Besucher fragen die Community-API gar nicht an", async ({ page, context }) => {
     const calls = [];
     const errors = await H.open(page, context, { api: (req) => { calls.push(req.url()); return { json: { mode: "public" } }; } });

@@ -242,14 +242,24 @@ test("Community-Daten: nur gültige Plätze, Bestätigungen hängen sich an", ()
   assert.deepEqual(C.mergeCommunity(base, null), base);
 });
 
+test("Community: unklarer Zugang bleibt unklar, wird nicht zu kostenlos", () => {
+  C.setLang("de");
+  const out = C.mergeCommunity([], { places: [
+    { id: 1, lat: 35.68, lon: 139.76, category: "public", tobacco: "all", access: "unknown" },
+    { id: 2, lat: 35.69, lon: 139.76, category: "public", tobacco: "all", access: "public" },
+  ] });
+  assert.equal(out[0].acc, "unknown");
+  assert.equal(out[1].acc, "public");
+});
+
 test("Community: ausgeblendete Plätze fallen weg, geprüfte Hinweise warnen", () => {
   C.setLang("en");
   const base = [spot({ id: "osm-n1" }), spot({ id: "off-b", off: { ward: "Chiyoda" } })];
   const out = C.mergeCommunity(base, {
-    places: [{ id: 3, lat: 35.68, lon: 139.76, category: "public", tobacco: "all", access: "public", approved_at: "2026-10-18", photos: ["a"] }],
+    places: [{ id: 3, lat: 35.68, lon: 139.76, category: "public", tobacco: "all", access: "public", approved_at: "2026-10-18", photos: ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "../x\" onerror=1"] }],
     confirmations: [
       { spot_id: "off-b", n: 0, last: null, photos: [], issues: { closed: { n: 1, last: "2026-10-17" } } },
-      { spot_id: "com-3", n: 2, last: "2026-10-18", photos: ["b"] },
+      { spot_id: "com-3", n: 2, last: "2026-10-18", photos: ["bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"] },
     ],
     hidden: ["osm-n1"],
   });
@@ -257,7 +267,7 @@ test("Community: ausgeblendete Plätze fallen weg, geprüfte Hinweise warnen", (
   assert.equal(C.warnings(out[0]).some((w) => w.id === "comClosed"), true);
   const com = out[1];
   assert.equal(com.com.n, 2, "Bestätigungen auch für Community-Plätze");
-  assert.deepEqual(com.com.photos, ["a", "b"]);
+  assert.deepEqual(com.com.photos, ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"], "nur gültige Foto-IDs");
   C.setLang("de");
 });
 

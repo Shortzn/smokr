@@ -19,6 +19,8 @@ async function stubTiles(context, api) {
   // Die echte Community-API wird in Tests nie angefragt. Standard: Community aus (wie ohne Server).
   // opts.api ersetzt die Antworten, z. B. für den privaten Testmodus.
   await context.route("https://*.workers.dev/**", (route) => {
+    // Community-Test gegen den Staging-Worker: dessen Anfragen echt durchlassen
+    if (!api && process.env.SMOKR_API && route.request().url().startsWith(process.env.SMOKR_API)) return route.fallback();
     const r = api && api(route.request());
     const body = r ? r : { status: 503, json: { error: "disabled" } };
     return route.fulfill({ status: body.status || 200, contentType: "application/json", body: JSON.stringify(body.json), headers: { "access-control-allow-origin": "*" } });
