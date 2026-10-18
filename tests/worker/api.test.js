@@ -36,7 +36,9 @@ const place = (over) => Object.assign({ tester: TESTER, turnstile: TOKEN, lat: "
 // Lokal reicht wrangler den Header durch; in Produktion setzt ihn Cloudflare selbst
 let ip = "203.0.113.1";
 function post(p, body, headers) {
-  return fetch(API + p, { method: "POST", body, headers: Object.assign({ origin: ORIGIN, "cf-connecting-ip": ip }, headers) });
+  // Cloudflare weist Anfragen ab, die diesen Header selbst setzen (403); bei Cloudflare setzt er ihn selbst
+  const fake = REMOTE ? {} : { "cf-connecting-ip": ip };
+  return fetch(API + p, { method: "POST", body, headers: Object.assign({ origin: ORIGIN }, fake, headers) });
 }
 let adminCookie = null;
 async function admin(p, body, extra) {
