@@ -137,7 +137,9 @@ test("Platz hinzufügen mit Foto, erst nach Freigabe sichtbar", async ({ page, c
   await expect(page.locator("#detail")).toContainText("Nur Tabakerhitzer");
   const img = page.locator("#detail .photos img").first();
   await expect(img).toBeVisible();
-  await expect.poll(() => img.evaluate((el) => el.naturalWidth)).toBeGreaterThan(0);
+  // Fotos laden "lazy": auf kleinen Bildschirmen erst, wenn sie ins Bild kommen
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(() => img.evaluate((el) => el.naturalWidth), { timeout: 15000 }).toBeGreaterThan(0);
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
