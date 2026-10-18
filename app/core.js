@@ -395,9 +395,13 @@
     if (isNaN(d)) return String(iso);
     return d.toLocaleDateString(t.locale, { month: "short", year: "numeric" });
   }
+  // Ein Formatierer pro Sprache statt bei jedem Aufruf ein neuer (toLocaleDateString ist teuer)
+  const dayFmt = new Map();
   function fmtDay(iso) {
     const d = new Date(iso);
-    return isNaN(d) ? String(iso) : d.toLocaleDateString(t.locale);
+    if (isNaN(d)) return String(iso);
+    if (!dayFmt.has(t.locale)) dayFmt.set(t.locale, new Intl.DateTimeFormat(t.locale));
+    return dayFmt.get(t.locale).format(d);
   }
 
   // ---------- Route ----------

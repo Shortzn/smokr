@@ -10,6 +10,7 @@ import json
 import math
 import glob
 import os
+import re
 import sys
 from datetime import date
 
@@ -154,6 +155,10 @@ def osm_spots(region):
                 spot["cov"] = True
             if t.get("indoor") == "yes" or t.get("building"):
                 spot["ind"] = True
+            # Ein eigener Raucherplatz-Punkt, der nach einem Konbini benannt ist ("ファミリーマート喫煙所"),
+            # ist derselbe schwache Beleg wie ein Aschenbecher vor dem Konbini: gleiche Regel
+            if KONBINI_NAMES.search(t.get("name") or "") or KONBINI_NAMES.search(t.get("name:en") or ""):
+                spot["_konbini"] = True
             spots.append(spot)
             continue
 
@@ -191,7 +196,7 @@ def konbini_rule(spots):
     - Seit 2024 geprüft: bleibt als belegter Eintrag.
     - Sonst: bleibt in den Daten, aber als "unv" (unbestätigt), standardmäßig ausgeblendet.
     """
-    areas = [s for s in spots if s["k"] == "p" and "osm" in s and "off" not in s]
+    areas = [s for s in spots if s["k"] == "p" and "osm" in s and "off" not in s and not s.get("_konbini")]
     out = []
     for s in spots:
         if not s.pop("_konbini", False):
@@ -210,6 +215,9 @@ def konbini_rule(spots):
 
 
 KONBINI_STATS = {"confirmed": 0, "unverified": 0, "duplicate": 0}
+KONBINI_NAMES = re.compile("|".join(
+    [re.escape(n) for n in dict(classify.NAME_RULES)["konbini"]] + [r"\bLawson\b", r"\bFamily ?Mart\b", r"\b7-?Eleven\b", r"\bMinistop\b"]
+), re.IGNORECASE)
 
 
 def position_quality(s):

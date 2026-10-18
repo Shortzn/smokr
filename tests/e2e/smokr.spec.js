@@ -534,6 +534,31 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test("Community-Formular: Netzabbruch und fehlendes Turnstile werden verständlich gemeldet", async ({ page, context }, info) => {
+    test.skip(!["iphone-15-webkit", "desktop-chromium"].includes(info.project.name), "zwei Profile reichen");
+    const api = (req) => req.url().endsWith("/v1/status") ? { json: { mode: "private" } }
+      : req.url().endsWith("/v1/community") ? { json: { places: [], confirmations: [], hidden: [] } } : { status: 404, json: {} };
+    // Turnstile-Skript nicht erreichbar
+    await context.route("https://challenges.cloudflare.com/**", (r) => r.abort());
+    const errors = await H.open(page, context, { api, storage: { "kitsuen.tester": "TEST-CODE-0000-0000" } });
+    await page.click("#add-btn");
+    await expect(page.locator("#form-error")).toContainText(/Verbindung|connection/);
+    // Turnstile wieder da, aber die Einsendung bricht im Netz ab
+    await context.unroute("https://challenges.cloudflare.com/**");
+    await context.route("https://challenges.cloudflare.com/**", (r) => r.fulfill({ contentType: "text/javascript",
+      body: 'window.turnstile={render(el,o){setTimeout(()=>o.callback("XXXX.DUMMY.TOKEN.XXXX"),20);return "w"},reset(){},remove(){}};' }));
+    await context.route("https://*.workers.dev/v1/submissions", (r) => r.abort("internetdisconnected"));
+    await page.click("#form-back");
+    await page.click("#add-btn");
+    await page.fill("#f-name", "Mein Platz");
+    await page.waitForTimeout(300);
+    await page.click("#form-submit");
+    await expect(page.locator("#form-error")).toContainText(/Verbindung|connection/);
+    await expect(page.locator("#form-submit")).toBeEnabled();
+    await expect(page.locator("#f-name")).toHaveValue("Mein Platz");
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   test("Normale Besucher fragen die Community-API gar nicht an", async ({ page, context }) => {
     const calls = [];
     const errors = await H.open(page, context, { api: (req) => { calls.push(req.url()); return { json: { mode: "public" } }; } });

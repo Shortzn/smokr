@@ -182,3 +182,18 @@ class WardListsTest(unittest.TestCase):
     def test_big_parks_marked_as_approximate(self):
         self.assertEqual(self.spots["off-shinagawa-14"]["pos"], "area")
         self.assertEqual(self.spots["off-shinagawa-15"]["pos"], "area")
+
+
+class KonbiniBuiltTest(unittest.TestCase):
+    """Kein Konbini aus OSM gilt ohne Prüfdatum ab 2024 als verlässlich, auch nicht als eigener Raucherplatz-Punkt."""
+
+    def test_no_unchecked_konbini_shown_as_reliable(self):
+        for region in ["tokyo", "kamakura", "kyoto", "okinawa", "osaka"]:
+            with open(os.path.join(ROOT, "app", "data", f"{region}.json"), encoding="utf-8") as f:
+                spots = json.load(f)["spots"]
+            for s in spots:
+                if not s["id"].startswith("osm-") or s.get("unv"):
+                    continue
+                konbini = s.get("pk") == "konbini" or s.get("vt") == "konbini"
+                if konbini:
+                    self.assertGreaterEqual(s["osm"].get("chk") or "", "2024", f"{region} {s['id']} {s.get('nj')}")

@@ -693,7 +693,11 @@ async function loadData() {
   loadCommunity();
 }
 async function loadCommunity() {
-  if (!COM.enabled()) { state.community = null; rebuildSpots(); return; }
+  if (!COM.enabled()) {
+    // Nur neu aufbauen, wenn vorher Community-Daten da waren (Testmodus beendet); sonst doppelte Arbeit beim Start
+    if (state.community) { state.community = null; rebuildSpots(); }
+    return;
+  }
   try {
     state.community = await COM.fetchCommunity();
     saveStore("kitsuen.community", state.community);
