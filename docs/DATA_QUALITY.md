@@ -1,12 +1,12 @@
 # Datenqualität
 
-Stand: 18. Oktober 2026, nach dem Nachtauftrag (N5).
+Stand: 18. Oktober 2026, abends (zweiter Durchgang).
 
 ## Bestand
 
 | Stadt | Orte | öffentlich | offiziell gelistet | Position nach Adresse | Position nur Gegend | Konbini unbestätigt |
 |---|---|---|---|---|---|---|
-| Tokio | 1.751 | 641 | 413 | 150 | 7 | 50 |
+| Tokio | 1.751 | 639 | 413 | 150 | 7 | 51 |
 | Kamakura | 12 | 5 | 5 | 1 | 3 | 0 |
 | Kyoto | 132 | 53 | 19 | 0 | 0 | 0 |
 | Okinawa | 80 | 50 | 32 | 0 | 19 | 3 |
@@ -39,12 +39,37 @@ Ich bin kein Anwalt. Das ist meine Einschätzung als Grundlage für deine Entsch
 - **Quellenangabe:** Bei jedem Platz steht der Bezirk mit Link und Datum. Das ist fair gegenüber der Quelle und hilft Nutzern beim Nachprüfen.
 - **Ergebnis:** geringes Risiko. Sollte ein Bezirk widersprechen, lassen sich die Einträge mit einer Datei entfernen.
 
+## Namen
+
+| Art | Anzahl | Bedeutung |
+|---|---|---|
+| Offizieller englischer Name (OSM `name:en`) | 949 | übernommen |
+| Aus geprüften Begriffen zusammengesetzt | 448 | zum Beispiel „Shinjuku Station Public Smoking Area, under the tracks, Southeast Exit“ |
+| Schon lateinisch | 221 | unverändert |
+| Marke | 37 | zum Beispiel „Doutor Coffee Shop“ |
+| Nur romanisiert | 128 | Eigenname in Umschrift, japanisches Original daneben |
+| Teilweise | 583 | Eigennamen wie Bar- oder Lokalnamen; die App zeigt „Raucherplatz bei <Bahnhof>“ und das Original |
+| Generisch | 19 | nur „喫煙所“ o. ä.; Anzeige nach Ort |
+| Ohne Namen | 278 | Anzeige nach Ort |
+| **Gesamt** | **2.663** | Überschneidungen: keine, jede Zeile zählt einmal |
+
+Zweiter Durchgang am 18.10.: 29 Namen mehr zusammengesetzt (neue Ausgänge, Seiten, innen und außen, Gelände, Strandpark, Großmarkt, unter den Gleisen). Nummern wie ② stehen jetzt am Ende, Bindestriche bleiben. „Kreuzung“ (交差点) bewusst nicht aufgenommen, weil es bei Shibuya einen falschen Titel ergab. Die Lage im Gebäude aus „（南西）“ steht jetzt bei 68 Orten in Liste und Detail.
+
+Die übrigen Lücken sind fast nur Eigennamen. Die werden nicht übersetzt.
+
 ## Konbini-Regel nachgeprüft
 
 - **Regel:** Ein Konbini aus OpenStreetMap mit Raucherhinweis gilt nur als belegt, wenn ein OSM-Prüfdatum ab 2024 vorliegt. Sonst ist er „unbestätigt“, standardmäßig ausgeblendet und im Detail deutlich gewarnt. Liegt ein Raucherplatz höchstens 25 m entfernt, fällt der Konbini weg.
-- **Ergebnis Tokio:** 2 belegt, 50 unbestätigt, 1 als Dublette entfernt.
+- **Ergebnis Tokio:** 2 belegt, 51 unbestätigt, 1 als Dublette entfernt.
+- **Lücke geschlossen (18.10. abends):** Ein eigener OSM-Raucherplatz-Punkt „ファミリーマート喫煙所“ ohne Prüfdatum galt als verlässlich, weil er nicht als Konbini, sondern als Raucherplatz eingetragen ist. Solche Punkte fallen jetzt unter dieselbe Regel. Ein Datentest prüft, dass kein Konbini aus OSM ohne Prüfdatum ab 2024 als verlässlich erscheint.
+- **Offizielle Konbini-Plätze** (47 in Tokio, 21 in Osaka) sind von Bezirk oder Stadt als Raucherplatz ausgewiesen und bleiben sichtbar, mit Quelle und Datum.
 - **Bewertung:** Die Regel bleibt richtig. Seit dem Tokioter Nichtraucherschutz (2020) haben viele Konbinis ihre Aschenbecher entfernt. Ein OSM-Prüfdatum ist keine Kontrolle vor Ort. Die App nennt es deshalb auch nicht so.
 - **Später:** Bestätigungen aus der Community können einzelne Konbinis wieder sichtbar machen.
+
+## Recherche ohne Ergebnis
+
+- **Sumida, 4 Kaufhäuser aus der Testphase:** Keine Quelle nach November 2025 gefunden, die den Weiterbetrieb belegt (Suche am 18.10.2026). Bleiben ausgeschlossen.
+- **Kyoto:** Keine aktuelle offizielle Liste der Raucherplätze im Netz, nur Ratsunterlagen von 2007 bis 2012. Ein Reiseportal nennt für 2026 ein Rauch- und Fotoverbot in Gassen von Gion, das ist nicht amtlich bestätigt. Keine Änderung.
 
 ## MottoSuitai
 

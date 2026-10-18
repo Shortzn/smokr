@@ -1,60 +1,83 @@
 # Nachtauftrag: Fortschritt
 
-Stand: 18. Oktober 2026, abends. Nachtrag 17:20: Worker bereitgestellt.
+Stand: 18. Oktober 2026, abends. Zwei Durchgänge: Nachmittag (privater Testmodus, Shinagawa und Sumida) und Abend (Sicherheit, Sicherung, Staging-Tests, Datenschutz, Namen).
 
-## Wichtige Rahmenbedingung
+## Cloudflare-Status
 
-Der Cloudflare-Token wurde nach der Einrichtung widerrufen. Laut Entscheidung A wird er nicht weiterverwendet, und die Infrastruktur wird nicht neu eingerichtet. Ich habe deshalb keinen Zugang, um den laufenden Worker zu aktualisieren.
+| Ressource | Name | Zustand |
+|---|---|---|
+| Worker | `smokr-api` | live, Modus `private`, HTTPS unter `https://smokr-api.stefan-boschmeier.workers.dev` |
+| D1 | `smokr-community` | Migrationen 0001 und 0002, 1 Testercode („Stefan iPhone“), keine Einsendungen |
+| Turnstile | Widget „Smokr“ | unverändert, für `shortzn.github.io` |
+| Staging | `smokr-api-staging`, `smokr-community-staging(-restore)` | nur während Testläufen, danach gelöscht |
+| Kosten | | 0 €, Workers Free und D1 Free, nichts Kostenpflichtiges aktiv |
 
-Alle Änderungen am Worker sind lokal gebaut und getestet. Ausgerollt werden sie über den neuen GitHub-Workflow „Worker“, sobald du einen eng begrenzten Token als Repository-Secret `CLOUDFLARE_API_TOKEN` hinterlegst. Dieser Token läuft nie durch den Chat oder über diesen Mac. Anleitung: `docs/COMMUNITY.md`, Abschnitt „Neue Worker-Versionen veröffentlichen“.
-
-**Nachtrag:** Du hast einen neuen Token bereitgestellt. Er liegt jetzt nur als GitHub-Secret vor (über eine Pipe gesetzt, nie angezeigt). Staging lief auf echtem Cloudflare grün (13 Tests, 2 nur lokal) und wurde wieder gelöscht. Danach Produktion: Migration 0002 eingespielt, neuer Worker live im Modus `private`. Eine Einsendung ohne Code bekommt 403.
+Bereitstellung nur über GitHub Actions „Worker“ (staging, dann production von `main`). Token als Repository-Secret.
 
 ## Aufgaben
 
 | # | Aufgabe | Stand |
 |---|---|---|
-| N1 | Bestandsaufnahme, Secrets in der Git-Historie | erledigt: keine Secrets gefunden |
-| N1 | D1-Grenzen geprüft | erledigt: 500 MB pro Datenbank (Free), Doku korrigiert |
-| N2 | Suche nach neuen Gegenden (lateinisch, mit Makron, Japanisch) | erledigt |
-| N2 | Öffnungszeiten: 翌 und 土日祝休所 übersetzt | erledigt |
-| N2 | Knopf „+“ schob den Standort-Knopf auf die Liste | behoben, mit Test |
-| N3 | Privater Testmodus serverseitig (Testercodes) | live |
-| N3 | Fotobudget 300 MB, Foto max. 1 MB, engere Tageslimits | live |
-| N3 | Dubletten-Schutz für Plätze, Meldungen, Fotos | live |
-| N3 | Admin: Speicheranzeige, Testercodes, Korrigieren, Positionsvorschlag | live |
-| N3 | Admin-Login warf 500 im neuen Code | behoben, durch Test gefunden |
-| N3 | Login-Kasten blieb nach Anmeldung sichtbar | behoben |
-| N3 | Normale Besucher kontaktieren die API nicht | erledigt, live geprüft |
-| N3 | Impressum und Datenschutz um Testphase ergänzt | erledigt, live |
-| N3 | R2-Umzug für Fotos | beschrieben in `docs/COMMUNITY.md`, nicht aktiviert |
-| N3 | Bereitstellung per GitHub Actions, Staging für Live-Tests | erledigt und benutzt |
-| N4 | Live-End-to-End-Test in isolierter Staging-Umgebung | grün auf echtem Cloudflare, danach gelöscht |
-| N4 | Staging-Tests scheiterten zuerst: Cloudflare blockt selbst gesetztes `cf-connecting-ip` | Tests angepasst |
-| N5 | Shinagawa (15) und Sumida (8) übernommen, Rechtsbewertung | erledigt, `docs/DATA_QUALITY.md` |
-| N5 | Sumida-Testphase und Keiō ausgeschlossen | erledigt, mit Test |
-| N5 | Konbini-Regel nachgeprüft | erledigt, bleibt |
-| N6 | Volle Regression | grün (siehe unten) |
-| N7 | Admin am iPhone (emuliert) | geprüft, Screenshot `docs/screenshots/admin-iphone15-emuliert.png` |
-| N7 | Reddit-Text aktualisiert | erledigt, nichts gepostet |
-| N7 | iPhone-Anleitung für den ersten echten Platz | `docs/IPHONE_TEST.md`, Abschnitt C |
-| N9 | Monetarisierung | unverändert nur dokumentiert (`docs/MONETIZATION.md`) |
+| N1 | Bestandsaufnahme, Secrets in allen 28 Commits | keine Secrets |
+| N1 | Sicherheitsprüfung mit Belegen | `docs/SECURITY_REVIEW.md` |
+| N2 | Namen: 29 mehr zusammengesetzt, Nummern, Bindestriche, Lage im Gebäude (68 Orte) | live |
+| N2 | Suche EN/DE/JA, Rōmaji, Makron, Marken | geprüft, unabhängig von der App-Sprache |
+| N2 | Community-Plätze mit unklarem Zugang wurden als öffentlich gezeigt | behoben |
+| N2 | Marker: Trefferfläche 44 px, Symbol zusätzlich zur Farbe, reduzierte Bewegung | geprüft, keine Änderung nötig |
+| N3 | Privater Testmodus serverseitig, Testercodes | live |
+| N3 | D1-Grenzen nach aktueller Doku | 500 MB pro Datenbank, 100 KB pro Anweisung, Time Travel 7 Tage |
+| N3 | Sicherung: Export mit Fotos ließ sich nicht wiederherstellen (SQLITE_TOOBIG) | behoben mit `worker/tools/d1-restore-prepare.mjs`, auf Cloudflare getestet |
+| N3 | Erste echte Sicherung der Produktion | im iCloud-Ordner Smokr/Sicherungen |
+| N3 | Export enthält jetzt das Moderationsprotokoll | live |
+| N3 | Texte abgelehnter Beiträge wurden nie gelöscht (Datenschutz sagte anderes) | behoben, Löschung nach 30 Tagen, getestet |
+| N3 | Datenschutz: Fristen, Sicherungen, keine Cookies, Rauchen ab 20 | live |
+| N3 | Formular: Hinweis auf Prüfung und CC BY auch ohne Foto | live |
+| N3 | Offene Rechtsfragen | `docs/legal/OPEN_POINTS.md` |
+| N3 | setup.sh gegen versehentlichen zweiten Lauf gesperrt | erledigt |
+| N4 | Browser-Abläufe gegen echten Staging-Worker (Chromium, WebKit) | 8 von 8 |
+| N4 | API-Tests gegen echten Staging-Worker | bestanden (2 nur lokal, brauchen mehrere IPs) |
+| N4 | Sicherung, Wiederherstellung, Time Travel auf Staging | bestanden, alles byte-identisch |
+| N4 | Erster echter Platz vorbereitet | Testcode liegt in `smokr-testcode.txt` im iCloud-Ordner, live geprüft |
+| N5 | Shinagawa 15, Sumida 8 | live (Nachmittag) |
+| N5 | Sumida-Kaufhäuser, Kyoto | recherchiert, kein aktueller Beleg, keine Änderung |
+| N5 | Konbini: ein OSM-Punkt umging die Regel | behoben, Datentest |
+| N6 | Volle Regression | grün |
+| N6 | Leistung gemessen (4× gedrosselte CPU) | Liste 0,8 s, alle Städte 2,5 s, 1,2 MB; doppelter Neuaufbau beim Start entfernt |
+| N6 | Netzabbruch, Turnstile fehlt | Test: verständliche Meldung, Eingaben bleiben |
+| N7 | Rückmeldung ohne Community: „Problem per E-Mail melden“ | live |
+| N7 | Reddit-Text und Modmail | `docs/REDDIT.md`, nichts gepostet; Regeln nicht automatisch lesbar |
+| N7 | Admin am iPhone | emuliert geprüft (Nachmittag), echter Test offen (C13) |
+| N9 | Monetarisierung | Dokument passt zur Entscheidung, nichts umgesetzt |
 
-## Tests (letzter Lauf)
+## Commits (Abend)
+
+- `61f7624` Sicherheit und Sicherung: XSS-Test, Upload-Missbrauch, getestete Wiederherstellung
+- `c929961` Community-Test: Foto vor der Prüfung ins Bild scrollen
+- `06b714a` Namen und Lage im Gebäude
+- `708a098` Datenschutz wie im Code, Rückmeldung per E-Mail, Aufräumen geprüft
+- `62e94ab` Konbini-Regel lückenlos, Start ohne doppelte Arbeit, Robustheitstests
+- `eb5a585` Sicherheitsprüfung, Sicherungsablauf, Reddit-Text, iPhone-Anleitung
+
+Wiederherstellungspunkte: Tags `alpha-final`, `beta-1`, `beta-2`, `beta-3`, neu `beta-4`.
+
+## Tests (letzter voller Lauf)
 
 | Bereich | Ergebnis |
 |---|---|
-| Unit (Node) | 20 bestanden |
-| Daten (Python) | 30 bestanden |
-| Browser, 7 Geräteprofile | 128 bestanden |
+| Unit (Node) | 22 bestanden |
+| Daten (Python) | 36 bestanden |
+| Browser, 7 Geräteprofile | 137 bestanden |
 | Marker-Darstellung | 20 bestanden |
 | Update von alpha-final | bestanden |
-| Worker-API gegen lokalen Worker | 15 bestanden |
-| Community-Abläufe im Browser gegen lokalen Worker | 8 bestanden |
+| Worker-API lokal | 18 bestanden |
+| Community-Abläufe lokal | 8 bestanden |
+| Staging auf Cloudflare | Browser 8, API, Sicherung: bestanden |
 
-Alle Gerätetests laufen in emulierten Profilen (WebKit und Chromium). Ein echtes iPhone wurde nicht getestet.
+Alle Gerätetests laufen in emulierten Profilen. Ein echtes iPhone wurde nicht getestet.
 
-## Veröffentlicht
+## Offene Nutzerhandlungen
 
-- `main` und GitHub Pages: Frontend mit privatem Testmodus (inaktiv bis zur Bereitstellung), neue Daten für Shinagawa und Sumida, Layout-Korrektur.
-- Worker `smokr-api`: neue Version im Modus `private`, Migration 0002 eingespielt.
+1. Token-Datei und `smokr-testcode.txt` im iCloud-Ordner nach Übernahme löschen.
+2. iPhone-Test `docs/IPHONE_TEST.md` (A, B, C), erster echter Platz.
+3. Subreddit-Regeln lesen, Reddit-Beitrag selbst posten.
+4. Öffentliche Freigabe (Variante B) entscheiden.
