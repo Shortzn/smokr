@@ -392,7 +392,7 @@ test("Genauigkeit, Herkunft und Adresse der Position werden gespeichert und gepr
 test("Karten-Link als Referenz: bereinigt gespeichert, nur für die Moderation", async () => {
   ip = "203.0.113.62";
   const real = "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56?entry=s&sa=X&ved=2ahUKEwikkoHl08SXAxX5luEIHT1FOHoQ4kB6BAgaEAA&hl=de";
-  let r = await post("/v1/submissions", form(place({ lat: "35.6611", lon: "139.7009", name: "[TEST] Referenz", pos_source: "search", pos_quality: "building", ref_url: real })));
+  let r = await post("/v1/submissions", form(place({ lat: "35.6650", lon: "139.7150", name: "[TEST] Referenz", pos_source: "search", pos_quality: "building", ref_url: real })));
   assert.equal(r.status, 201);
   const id = (await r.json()).id;
   for (const bad of ["https://evil.example/maps", "http://maps.google.com/?q=1,2", "javascript:alert(1)", "https://maps.google.com/" + "a".repeat(600)]) {
