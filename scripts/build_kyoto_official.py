@@ -14,8 +14,8 @@ Run: python3 -I scripts/build_kyoto_official.py
 """
 import datetime, html, json, re, sys, unicodedata
 
-RAW = '/Users/habo/Projects/kitsuen/data/raw/official/kyoto'
-OUT = '/Users/habo/Projects/kitsuen/data/official/kyoto.json'
+RAW = '/Users/habo/Projects/smokr/data/raw/official/kyoto'
+OUT = '/Users/habo/Projects/smokr/data/official/kyoto.json'
 URL = 'https://www.city.kyoto.lg.jp/bunshi/page/0000027498.html'
 MAPURL = 'https://map.city.kyoto.lg.jp/?lat={lat}&lng={lon}&id={id}&zoom=17'
 

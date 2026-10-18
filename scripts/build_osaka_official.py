@@ -17,8 +17,8 @@ Run: python3 -I scripts/build_osaka_official.py
 """
 import datetime, html, json, re, sys
 
-RAW = '/Users/habo/Projects/kitsuen/data/raw/official/osaka'
-OUT = '/Users/habo/Projects/kitsuen/data/official/osaka.json'
+RAW = '/Users/habo/Projects/smokr/data/raw/official/osaka'
+OUT = '/Users/habo/Projects/smokr/data/official/osaka.json'
 URL = 'https://www.city.osaka.lg.jp/kankyo/page/0000607135.html'
 
 WARDS = {'北区': 'Kita', '都島区': 'Miyakojima', '福島区': 'Fukushima', '此花区': 'Konohana',

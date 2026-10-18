@@ -25,8 +25,8 @@ Run: python3 -I scripts/build_okinawa_official.py
 """
 import datetime, hashlib, json, math, re, sys
 
-RAW = '/Users/habo/Projects/kitsuen/data/raw/official/okinawa'
-OUT = '/Users/habo/Projects/kitsuen/data/official/okinawa.json'
+RAW = '/Users/habo/Projects/smokr/data/raw/official/okinawa'
+OUT = '/Users/habo/Projects/smokr/data/official/okinawa.json'
 
 spots = []
 

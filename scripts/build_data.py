@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Baut die App-Daten pro Region aus OpenStreetMap und den offiziellen Listen.
 
-Aufruf: python3 -I scripts/build_data.py   (aus ~/Projects/kitsuen)
+Aufruf: python3 -I scripts/build_data.py   (aus ~/Projects/smokr)
 Ergebnis: app/data/<region>.json
 """
 import json

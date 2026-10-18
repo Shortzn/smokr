@@ -1,11 +1,11 @@
 // Offline-Betrieb: App und Daten vorab, Kartenteile beim Ansehen zwischenspeichern.
-const VERSION = "kitsuen-v3";
+const VERSION = "smokr-v4";
 const SHELL = [
   "./", "index.html", "style.css", "app.js", "manifest.webmanifest",
   "vendor/maplibre-gl.js", "vendor/maplibre-gl.css", "icons/icon-180.png", "icons/icon-192.png",
   "data/tokyo.json", "data/kamakura.json", "data/kyoto.json", "data/okinawa.json", "data/osaka.json",
 ];
-const TILE_CACHE = "kitsuen-tiles";
+const TILE_CACHE = "smokr-tiles";
 const TILE_LIMIT = 4000;
 
 self.addEventListener("install", (e) => {

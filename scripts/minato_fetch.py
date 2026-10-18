@@ -2,8 +2,8 @@
 """Fetch Minato facility pages (shisetsu/sonota/kitsuen/*.html) and extract
 name, address, hours text, and Google Maps q=lat,lon. Output JSON lines."""
 import re, json, time, urllib.request, html, sys, os
-RAW = '/Users/habo/Projects/kitsuen/data/raw/official'
-UA = {'User-Agent': 'Mozilla/5.0 (Macintosh) kitsuen-research'}
+RAW = '/Users/habo/Projects/smokr/data/raw/official'
+UA = {'User-Agent': 'Mozilla/5.0 (Macintosh) smokr-research'}
 def get(url, path):
     if not os.path.exists(path):
         req = urllib.request.Request(url, headers=UA)

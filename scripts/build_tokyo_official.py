@@ -7,11 +7,11 @@ addresses are geocoded with the GSI address API (geo = "address").
 Run: python3 -I scripts/build_tokyo_official.py
 """
 import csv, html, io, json, re, sys, unicodedata, datetime, difflib
-sys.path.insert(0, '/Users/habo/Projects/kitsuen/scripts')
+sys.path.insert(0, '/Users/habo/Projects/smokr/scripts')
 from gsi_geocode import geocode
 
-RAW = '/Users/habo/Projects/kitsuen/data/raw/official'
-OUT = '/Users/habo/Projects/kitsuen/data/official/tokyo.json'
+RAW = '/Users/habo/Projects/smokr/data/raw/official'
+OUT = '/Users/habo/Projects/smokr/data/official/tokyo.json'
 
 spots, unparsed = [], []
 

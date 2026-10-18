@@ -2,7 +2,7 @@
 """GSI address geocoder with on-disk cache (<=1 req/s).
 geocode(addr) -> (lat, lon, matched_title) or None."""
 import json, os, time, urllib.parse, urllib.request
-CACHE = '/Users/habo/Projects/kitsuen/data/raw/official/gsi_cache.json'
+CACHE = '/Users/habo/Projects/smokr/data/raw/official/gsi_cache.json'
 _cache = json.load(open(CACHE)) if os.path.exists(CACHE) else {}
 _last = [0.0]
 def geocode(addr):

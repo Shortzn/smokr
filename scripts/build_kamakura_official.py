@@ -14,11 +14,11 @@ the saved files. Coordinates:
 Run: python3 -I scripts/build_kamakura_official.py
 """
 import datetime, json, re, sys
-sys.path.insert(0, '/Users/habo/Projects/kitsuen/scripts')
+sys.path.insert(0, '/Users/habo/Projects/smokr/scripts')
 from gsi_geocode import geocode
 
-RAW = '/Users/habo/Projects/kitsuen/data/raw/official'
-OUT = '/Users/habo/Projects/kitsuen/data/official/kamakura.json'
+RAW = '/Users/habo/Projects/smokr/data/raw/official'
+OUT = '/Users/habo/Projects/smokr/data/official/kamakura.json'
 
 KAMA_URL = 'https://www.city.kamakura.kanagawa.jp/kan-hozen/smoking_area.html'
 KAMA_DATE = '2026-10-05'  # 更新日 on the page
