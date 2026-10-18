@@ -1,0 +1,26 @@
+{
+ "generated": "2026-10-18",
+ "area": "Shinjuku (private operators)",
+ "spots": [
+  {
+   "id": "cand-shinjuku-keio-1",
+   "name_ja": "京王百貨店 新宿店 喫煙所",
+   "ward": "Shinjuku",
+   "lat": 35.68858,
+   "lon": 139.699432,
+   "geo": "address",
+   "geo_precision": "block",
+   "geo_match": "東京都新宿区西新宿一丁目１番",
+   "address_ja": "東京都新宿区西新宿1-1-4",
+   "hint_ja": "8階レストラン側",
+   "hours": null,
+   "heated_only": false,
+   "status": "open",
+   "source_url": "https://www.keionet.com/info/shinjuku/service/",
+   "source_date": "2026-10-18",
+   "access": "customers",
+   "license": "Privater Betreiber. Erfasst wird nur die Tatsache, dass es einen Raucherraum gibt, mit Link. Kein Text, keine Fotos.",
+   "note": "Raucherraum im Kaufhaus, nur zu Oeffnungszeiten. Die Quelle nennt nur 喫煙所, name_ja ist aus Geschaeftsname und 喫煙所 zusammengesetzt. Adresse von https://www.keionet.com/info/shinjuku/access/, Etage von der Service-Seite und Etagenplan 8階. Seite ohne Datum, source_date = Abrufdatum. Geocode faellt auf denselben Punkt wie shinjuku-2 (gleicher Block), Position vor Uebernahme von Hand setzen."
+  }
+ ]
+}

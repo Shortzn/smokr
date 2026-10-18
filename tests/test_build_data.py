@@ -52,6 +52,11 @@ class MergeTest(unittest.TestCase):
         bd.merge([a], [osm(1, 35.0002, 139.0)])
         self.assertEqual(a["lat"], 35.0)
 
+    def test_second_osm_point_right_next_to_official_is_a_duplicate(self):
+        a = off("a", 35.0, 139.0)
+        out = bd.merge([a], [osm(1, 35.00003, 139.0), osm(2, 35.0001, 139.0), osm(3, 35.0003, 139.0)])  # 3 m, 11 m, 33 m
+        self.assertEqual([s["id"] for s in out], ["off-a", "osm-3"])
+
     def test_venues_never_merge(self):
         out = bd.merge([off("a", 35.0, 139.0)], [osm(1, 35.0, 139.0, k="v", acc="unknown")])
         self.assertEqual(len(out), 2)

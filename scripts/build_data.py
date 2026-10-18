@@ -298,7 +298,19 @@ def merge(official, osm):
         for key in ("cov", "ind"):
             if key in o and key not in m:
                 m[key] = o[key]
+    # Ein zweiter OSM-Raucherplatz in höchstens 15 m Abstand ist praktisch immer ein doppelter
+    # OSM-Eintrag desselben Platzes (zwei getrennte Raucherplätze liegen nie so dicht beieinander).
+    for oi, o in enumerate(osm):
+        if oi in used_osm or o["k"] != "p":
+            continue
+        if any(m["k"] == "p" and dist_m(o["lat"], o["lon"], m["lat"], m["lon"]) <= DUPLICATE_RADIUS_M for m in official):
+            used_osm.add(oi)
+            DUP_STATS["osm_duplicate"] += 1
     return list(official) + [o for i, o in enumerate(osm) if i not in used_osm]
+
+
+DUPLICATE_RADIUS_M = 15
+DUP_STATS = collections.Counter()
 
 
 NAME_STATS = collections.Counter()
@@ -367,6 +379,7 @@ def write_report():
                 if s.get("lq") in ("composed", "romaji", "brand"):
                     w.writerow([s["id"], s["lq"], s.get("nj", ""), s.get("le", ""), s.get("ld", "")])
     print("Namen:", dict(NAME_STATS))
+    print("Doppelte OSM-Punkte neben offiziellen Plätzen entfernt:", DUP_STATS["osm_duplicate"])
 
 
 if __name__ == "__main__":

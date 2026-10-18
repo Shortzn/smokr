@@ -529,7 +529,6 @@ osm-n12531762604,none,,,,,unknown,area
 osm-n12557874672,romaji,じゅんじゅん,,Junjun,Junjun,restaurant,whole
 osm-n12564112928,none,,,,,unknown,area
 osm-n12564154548,none,,,,,unknown,area
-osm-n12573446552,generic,紙巻たばこエリア,,,,tobacco,area
 osm-n1257415751,partial,珈琲艇 CABIN,,,,cafe,whole
 osm-n12600682016,partial,厨 Shuhari,,,,bar,whole
 osm-n12619525309,romaji,まぐろセンター,,Maguro Center,Maguro Center,bar,whole
@@ -787,7 +786,6 @@ osm-n4887623082,partial,五臓六腑 久,,,,bar,whole
 osm-n4887623196,none,,,,,unknown,area
 osm-n4887720196,partial,五臓六腑 久 別館,,,,bar,whole
 osm-n4899295225,none,,,,,unknown,area
-osm-n4899309421,none,,,,,unknown,area
 osm-n4899808942,none,,,,,unknown,area
 osm-n4911913989,partial,ありが十,,,,restaurant,whole
 osm-n4959218102,partial,北京方庄,,,,restaurant,whole
@@ -807,7 +805,6 @@ osm-n5104603735,partial,新橋珈琲店 S.P.I.D Group,,,,cafe,section
 osm-n5112825135,none,,,,,unknown,area
 osm-n5145229150,partial,台湾酒場,,,,restaurant,whole
 osm-n5162999643,partial,酒肆 花はな,,,,bar,whole
-osm-n5174657854,none,,,,,unknown,area
 osm-n5178187486,romaji,ロイヤルエイト,,Roiyarueito,Roiyarueito,cafe,whole
 osm-n5180984000,none,,,,,unknown,area
 osm-n5200000756,romaji,モンシェリー,,Monsherī,Monsherī,cafe,whole
@@ -815,7 +812,6 @@ osm-n5205150578,partial,華閩,,,,restaurant,whole
 osm-n5214277739,partial,紅とん,,,,bar,whole
 osm-n5222553452,partial,日本酒Bar四季,,,,bar,whole
 osm-n5244329418,none,,,,,unknown,area
-osm-n5273140616,none,,,,,unknown,area
 osm-n5273147690,none,,,,,unknown,area
 osm-n5273797446,romaji,ポポロ,,Poporo,Poporo,restaurant,section
 osm-n5274925932,none,,,,,unknown,area
@@ -918,7 +914,6 @@ osm-n6377272441,partial,来来飯店,,,,restaurant,whole
 osm-n6387134541,none,,,,,unknown,area
 osm-n6388635933,none,,,,,unknown,area
 osm-n6435733541,none,,,,,unknown,area
-osm-n6438702043,none,,,,,unknown,area
 osm-n6440107247,none,,,,,unknown,area
 osm-n6491231193,none,,,,,unknown,area
 osm-n6493642979,none,,,,,unknown,area
@@ -993,8 +988,6 @@ osm-w1305208658,none,,,,,unknown,outdoor
 osm-w1326076091,none,,,,,unknown,area
 osm-w1347306075,none,,,,,unknown,area
 osm-w1347576808,none,,,,,unknown,room
-osm-w1358507559,generic,加熱式たばこエリア,,,,tobacco,area
-osm-w1358507560,generic,紙巻たばこエリア,,,,tobacco,area
 osm-w136608990,partial,名曲喫茶ライオン,,,,cafe,whole
 osm-w1367248838,partial,創価大学喫煙所,,,,building,outdoor
 osm-w1368644011,none,,,,,unknown,area
