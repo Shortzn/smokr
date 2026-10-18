@@ -75,7 +75,7 @@ test("Namen: Nominatim nur für Japan, mit Sprache, ohne Autocomplete, gespeiche
   const url = new URL(f.calls[0].url);
   assert.equal(url.hostname, "nominatim.openstreetmap.org");
   assert.equal(url.searchParams.get("countrycodes"), "jp");
-  assert.equal(url.searchParams.get("accept-language"), "de");
+  assert.equal(url.searchParams.get("accept-language"), "de,en", "ohne deutschen Namen lieber Englisch");
   assert.ok(url.searchParams.get("viewbox"));
   await L.searchPlaces("Ichiran Shibuya", { lang: "de", near: [139.7, 35.66] }, f);
   assert.equal(f.calls.filter((c) => /nominatim/.test(c.url)).length, 1, "gleiche Suche nicht noch einmal anfragen");

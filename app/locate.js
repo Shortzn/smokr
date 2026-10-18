@@ -209,7 +209,7 @@
     const o = opts || {};
     const q = String(query || "").trim().slice(0, 120);
     if (q.length < 2) return [];
-    const p = new URLSearchParams({ q, format: "jsonv2", countrycodes: "jp", limit: "6", addressdetails: "1", "accept-language": o.lang || "en" });
+    const p = new URLSearchParams({ q, format: "jsonv2", countrycodes: "jp", limit: "6", addressdetails: "1", "accept-language": acceptLang(o.lang) });
     if (o.near) {
       // Nähe bevorzugen, ohne andere Orte auszuschließen
       const [lon, lat] = o.near, d = 0.25;
@@ -226,6 +226,11 @@
     cache.set(url, res);
     res.catch(() => cache.delete(url));
     return res;
+  }
+  // Ohne deutschen Namen lieber den englischen als den japanischen zeigen; auf Japanisch das Original
+  function acceptLang(lang) {
+    if (lang === "ja") return "ja";
+    return lang && lang !== "en" ? `${lang},en` : "en";
   }
   const AREA_TYPES = /^(city|town|village|suburb|quarter|neighbourhood|county|state|region|postcode|road|municipality|city_district|district|hamlet|island)$/;
   function placeOf(x) {

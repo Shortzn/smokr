@@ -49,6 +49,15 @@ Bereitstellung nur über GitHub Actions „Worker“ (staging, dann production v
 | N7 | Admin am iPhone | emuliert geprüft (Nachmittag), echter Test offen (C13) |
 | N9 | Monetarisierung | Dokument passt zur Entscheidung, nichts umgesetzt |
 
+## Nachtrag 19.10.: Ort finden beim Hinzufügen
+
+Anlass: Beim ersten echten Test ließ sich ein besuchter Platz nicht eintragen, weil nur GPS und Karte gingen.
+
+- Suche nach Namen (Nominatim), japanischen Adressen bis zur Hausnummer (Geolonia), Google-Maps-Links samt Kurzlinks (eigener Worker), Koordinaten.
+- Genauigkeit der Nadel wird erfragt und gespeichert (Migration 0003, live).
+- Live geprüft mit echten Diensten und dem echten Testcode (nur gesucht, nichts eingereicht).
+- Commits `e2c366d` und folgende; Worker in Produktion, Sicherung vorher im iCloud-Ordner.
+
 ## Commits (Abend)
 
 - `61f7624` Sicherheit und Sicherung: XSS-Test, Upload-Missbrauch, getestete Wiederherstellung
