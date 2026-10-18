@@ -501,6 +501,15 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test("Normale Besucher fragen die Community-API gar nicht an", async ({ page, context }) => {
+    const calls = [];
+    const errors = await H.open(page, context, { api: (req) => { calls.push(req.url()); return { json: { mode: "public" } }; } });
+    await page.waitForTimeout(500);
+    expect(calls).toEqual([]);
+    await expect(page.locator("#add-btn")).toBeHidden();
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   test("Ohne Backend gibt es keine Community-Knöpfe", async ({ page, context }) => {
     const errors = await H.open(page, context);
     await expect(page.locator("#add-btn")).toBeHidden();

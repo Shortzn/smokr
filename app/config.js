@@ -6,4 +6,7 @@ window.SMOKR_CONFIG = {
   turnstileSiteKey: "0x4AAAAAAFaO1xQghmWa_hn9",
   contactUrl: "https://github.com/Shortzn/smokr/issues",
   legalUrl: "legal.html",
+  // false = privater Test: nur Geräte mit Testercode oder dem Link #community fragen den Server.
+  // Erst bei der öffentlichen Freigabe (Variante B) auf true setzen.
+  communityPublic: false,
 };

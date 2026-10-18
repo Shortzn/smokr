@@ -885,7 +885,11 @@ async function submitForm() {
 /* Der Server sagt, was gilt (GET /v1/status). Der Link #community öffnet nur die Code-Eingabe;
    die eigentliche Sperre ist der Testercode, den der Server bei jeder Einsendung prüft. */
 async function initCommunity() {
-  await COM.fetchStatus();
+  // Solange die Community nicht öffentlich ist, fragen nur Geräte mit Testercode oder Testlink beim Server nach.
+  // Alle anderen Besucher nehmen keinen Kontakt zu Cloudflare auf.
+  const cfg = window.SMOKR_CONFIG || {};
+  const ask = cfg.communityPublic || COM.runtime.tester || /community/.test(location.hash);
+  if (ask) await COM.fetchStatus();
   refreshCommunityUI();
   communityLink();
   if (COM.enabled()) loadCommunity();
