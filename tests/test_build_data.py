@@ -66,6 +66,34 @@ class ClassificationTest(unittest.TestCase):
         self.assertEqual(bd.position_quality({"geo": "source", "note": "Map link has no feature id; ..."}), "area")
 
 
+class KonbiniTest(unittest.TestCase):
+    def konbini(self, i, lat, chk=None):
+        s = osm(i, lat, 139.0, k="v", acc="unknown", vt="konbini", sd="ashtray_front")
+        s["_konbini"] = True
+        if chk:
+            s["osm"]["chk"] = chk
+        return s
+
+    def test_unchecked_konbini_is_unverified(self):
+        out = bd.konbini_rule([self.konbini(1, 35.0)])
+        self.assertTrue(out[0]["unv"])
+
+    def test_recently_checked_konbini_stays_confirmed(self):
+        out = bd.konbini_rule([self.konbini(1, 35.0, "2024-05-01")])
+        self.assertNotIn("unv", out[0])
+        out = bd.konbini_rule([self.konbini(2, 35.0, "2019-05-01")])
+        self.assertTrue(out[0]["unv"], "alte Prüfung reicht nicht")
+
+    def test_konbini_next_to_smoking_area_is_dropped(self):
+        area = osm(9, 35.0001, 139.0)
+        out = bd.konbini_rule([area, self.konbini(1, 35.0)])
+        self.assertEqual([s["id"] for s in out], ["osm-9"])
+
+    def test_non_konbini_venues_untouched(self):
+        cafe = osm(3, 35.0, 139.0, k="v", acc="unknown", vt="cafe", sd="room")
+        self.assertEqual(bd.konbini_rule([cafe]), [cafe])
+
+
 class BuiltDataTest(unittest.TestCase):
     """Prüft die ausgelieferten Dateien, nicht nur den Code."""
 
@@ -91,6 +119,10 @@ class BuiltDataTest(unittest.TestCase):
                         self.assertNotEqual(s["acc"], "unknown", s["id"])
                     if "off" not in s and s["k"] == "v":
                         self.assertNotEqual(s["acc"], "public", s["id"])
+                    if s["k"] == "v":
+                        self.assertRegex(s.get("vt", ""), r"^[a-z_]+$", "Codes statt Text")
+                    if s.get("vt") == "konbini" and not (s.get("osm", {}).get("chk", "") >= bd.KONBINI_CHECKED_SINCE):
+                        self.assertTrue(s.get("unv"), f"ungeprüfter Konbini nicht markiert: {s['id']}")
 
     def test_spots_lie_in_their_region(self):
         # Okinawa umfasst die ganze Präfektur bis Ishigaki und Yonaguni

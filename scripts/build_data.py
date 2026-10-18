@@ -18,26 +18,32 @@ OUT = os.path.join(ROOT, "app", "data")
 # Reihenfolge = Reiseroute
 REGIONS = ["tokyo", "kamakura", "kyoto", "okinawa", "osaka"]
 
+# Codes statt Text: die App übersetzt sie (Englisch, Deutsch, Japanisch)
 VENUE_TYPES = {
-    "cafe": "Café",
-    "restaurant": "Restaurant",
-    "fast_food": "Imbiss",
-    "pub": "Kneipe",
-    "bar": "Bar",
-    "convenience": "Konbini",
-    "biergarten": "Biergarten",
-    "nightclub": "Club",
-    "karaoke_box": "Karaoke",
-    "hotel": "Hotel",
+    "cafe": "cafe",
+    "restaurant": "restaurant",
+    "fast_food": "fast_food",
+    "pub": "pub",
+    "bar": "bar",
+    "convenience": "konbini",
+    "biergarten": "beer_garden",
+    "nightclub": "club",
+    "karaoke_box": "karaoke",
+    "hotel": "hotel",
 }
 
 SMOKING_DETAIL = {
-    "separated": "Raucherraum",
-    "isolated": "Raucherraum",
-    "dedicated": "Raucherlokal",
-    "yes": "Rauchen erlaubt",
-    "outside": "Rauchen draußen",
+    "separated": "room",
+    "isolated": "room",
+    "dedicated": "smoking_venue",
+    "yes": "allowed",
+    "outside": "outside",
 }
+
+# Ein Konbini gilt nur als belegt, wenn der Eintrag seit diesem Datum geprüft wurde.
+# Viele Aschenbecher vor Konbinis wurden seit dem Rauchgesetz von 2020 entfernt.
+KONBINI_CHECKED_SINCE = "2024-01-01"
+KONBINI_NEAR_AREA_M = 25
 
 MERGE_RADIUS_M = 35
 
@@ -99,13 +105,13 @@ def heated_from_text(*texts):
     return "加熱式" in blob and "専用" in blob
 
 
-# Schema 2: Herkunft, Datum, Positionsgenauigkeit und Zugang sind getrennte Felder.
+# Schema 3 (wie 2, aber vt/sd als Codes und "unv" für unbestätigte Konbinis): Herkunft, Datum, Positionsgenauigkeit und Zugang sind getrennte Felder.
 #   k     "p" = eigener Raucherplatz, "v" = Raucherbereich eines Geschäfts oder Lokals
 #   acc   "public" | "customers" | "unknown"   (nur was die Quelle belegt)
 #   pos   "exact" | "address" | "area"         (wie genau die Koordinate ist)
 #   off   {"ward", "url", "date"}              offizielle Liste und deren Stand
 #   osm   {"url", "chk"}                       OSM-Eintrag und dessen check_date
-SCHEMA = 2
+SCHEMA = 3
 
 
 def osm_spots(region):
@@ -150,14 +156,51 @@ def osm_spots(region):
         if not label:
             # Bänke, Parkplätze usw. mit smoking=yes: Rauchen dort erlaubt, kein Geschäft
             if vtype in ("bench", "parking", "waste_basket", "shelter"):
-                spots.append(dict(base, k="p", acc="public", sd="Rauchen erlaubt"))
+                spots.append(dict(base, k="p", acc="public", sd="allowed"))
             continue
         detail = SMOKING_DETAIL[smoking]
         if vtype == "convenience" and smoking == "outside":
-            detail = "Aschenbecher vor dem Laden"
+            detail = "ashtray_front"
         # Ob man etwas kaufen muss, sagt OSM nicht. Nur access=customers belegt es.
-        spots.append(dict(base, k="v", acc="customers" if access == "customers" else "unknown", vt=label, sd=detail))
-    return spots
+        spot = dict(base, k="v", acc="customers" if access == "customers" else "unknown", vt=label, sd=detail)
+        if vtype == "convenience":
+            spot["_konbini"] = True
+        spots.append(spot)
+    return konbini_rule(spots)
+
+
+def konbini_checked(spot):
+    chk = spot["osm"].get("chk") or ""
+    return chk >= KONBINI_CHECKED_SINCE
+
+
+def konbini_rule(spots):
+    """Konbini-Einträge: belegt, unbestätigt oder doppelt.
+
+    - Liegt ein OSM-Raucherplatz höchstens 25 m entfernt, zeigt die App den Raucherplatz
+      und lässt den Konbini weg (doppelt).
+    - Seit 2024 geprüft: bleibt als belegter Eintrag.
+    - Sonst: bleibt in den Daten, aber als "unv" (unbestätigt), standardmäßig ausgeblendet.
+    """
+    areas = [s for s in spots if s["k"] == "p" and "osm" in s and "off" not in s]
+    out = []
+    for s in spots:
+        if not s.pop("_konbini", False):
+            out.append(s)
+            continue
+        if any(dist_m(s["lat"], s["lon"], a["lat"], a["lon"]) <= KONBINI_NEAR_AREA_M for a in areas):
+            KONBINI_STATS["duplicate"] += 1
+            continue
+        if konbini_checked(s):
+            KONBINI_STATS["confirmed"] += 1
+        else:
+            s["unv"] = True
+            KONBINI_STATS["unverified"] += 1
+        out.append(s)
+    return out
+
+
+KONBINI_STATS = {"confirmed": 0, "unverified": 0, "duplicate": 0}
 
 
 def position_quality(s):
@@ -206,7 +249,7 @@ def official_spots(region):
             spot["unk"] = True
         if s.get("access") == "customers":
             # Von der Stadt als "nur für Kunden" gelistet: Kaufpflicht belegt
-            spot.update(k="v", acc="customers", vt="Geschäft", sd="Raucherraum")
+            spot.update(k="v", acc="customers", vt="shop", sd="room")
         out.append(spot)
     return out
 
@@ -251,6 +294,8 @@ def merge(official, osm):
 
 
 def build(region):
+    for key in KONBINI_STATS:
+        KONBINI_STATS[key] = 0
     stations = load_stations(region)
     spots = merge(official_spots(region), osm_spots(region))
     for s in spots:
@@ -258,13 +303,13 @@ def build(region):
         if st:
             s["st"] = st
     spots.sort(key=lambda s: (s["k"], s["lat"], s["id"]))
-    payload = {"schema": SCHEMA, "region": region, "built": date.today().isoformat(), "spots": spots}
+    payload = {"schema": SCHEMA, "region": region, "built": date.today().isoformat(), "konbini": dict(KONBINI_STATS), "spots": spots}
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, f"{region}.json"), "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
     pub = sum(1 for s in spots if s["acc"] == "public")
     off = sum(1 for s in spots if "off" in s)
-    print(f"{region}: {len(spots)} Orte ({pub} öffentlich, {off} offiziell gelistet, {len(spots) - pub} mit Kundenpflicht oder unklarem Zugang)")
+    print(f"{region}: {len(spots)} Orte ({pub} öffentlich, {off} offiziell gelistet, {len(spots) - pub} mit Kundenpflicht oder unklarem Zugang); Konbini {KONBINI_STATS}")
 
 
 if __name__ == "__main__":
