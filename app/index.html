@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kitsuen</title>
+<meta name="description" content="Raucherplätze in Tokio, Kamakura, Kyoto, Okinawa und Osaka">
+<meta name="theme-color" content="#f6f4ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kitsuen">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="map" aria-label="Karte"></div>
+
+<header class="top">
+  <nav class="regions" id="regions" aria-label="Orte der Reise"></nav>
+  <div class="filters" role="group" aria-label="Filter">
+    <button class="chip on" id="f-public" aria-pressed="true"><span class="dot dot-p"></span>Öffentlich</button>
+    <button class="chip" id="f-venue" aria-pressed="false"><span class="dot dot-v"></span>Lokale</button>
+    <button class="chip" id="f-heated" aria-pressed="false" title="Plätze nur für Tabakerhitzer ausblenden">Ohne Nur-IQOS</button>
+  </div>
+</header>
+
+<button class="locate" id="locate" aria-label="Meinen Standort zeigen">
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2v3m0 14v3M2 12h3m14 0h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/></svg>
+</button>
+
+<section class="sheet" id="sheet" aria-live="polite">
+  <button class="handle" id="handle" aria-label="Liste vergrößern oder verkleinern"><span></span></button>
+
+  <div class="view" id="list-view">
+    <div class="sheet-head">
+      <h1 id="list-title">In deiner Nähe</h1>
+      <p class="sub" id="list-sub">Standort wird gesucht …</p>
+    </div>
+    <ol class="list" id="list"></ol>
+  </div>
+
+  <div class="view" id="detail-view" hidden>
+    <div class="detail-top">
+      <button class="back" id="back" aria-label="Zurück zur Liste">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Liste
+      </button>
+    </div>
+    <div id="detail"></div>
+  </div>
+</section>
+
+<dialog class="ask" id="ask">
+  <p class="ask-ja" lang="ja">喫煙所はどこですか？</p>
+  <p class="ask-romaji">Kitsuenjo wa doko desu ka?</p>
+  <p class="ask-de">Wo ist hier ein Raucherplatz?</p>
+  <p class="ask-ja small" lang="ja">タバコを吸える場所はありますか？</p>
+  <p class="ask-de">Gibt es hier einen Ort zum Rauchen?</p>
+  <form method="dialog"><button class="btn">Schließen</button></form>
+</dialog>
+
+<dialog class="ask" id="info">
+  <h2>Über Kitsuen</h2>
+  <p>Öffentliche Raucherplätze sind <b>grün</b> und kostenlos. <b>Braun</b> sind Lokale mit Raucherbereich, dort musst du etwas kaufen. <b>Violett</b> heißt: nur Tabakerhitzer wie IQOS oder Ploom.</p>
+  <p>Wenn du vor Ort bist, tippe auf „War da“ oder „Nicht gefunden“. Nicht gefundene Plätze blendet die App bei dir aus.</p>
+  <p class="fine">Daten: Bezirke und Städte, wo angegeben, sonst © OpenStreetMap-Mitwirkende (ODbL). Karte: OpenFreeMap, OpenMapTiles. Stand der Daten: <span id="built"></span>.</p>
+  <form method="dialog"><button class="btn">Schließen</button></form>
+</dialog>
+
+<script src="vendor/maplibre-gl.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

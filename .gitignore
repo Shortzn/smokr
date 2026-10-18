@@ -1,0 +1,5 @@
+.DS_Store
+.claude/
+data/raw/official/gsi_cache.json
+__pycache__/
+data/raw/
