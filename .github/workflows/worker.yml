@@ -161,12 +161,17 @@ jobs:
         run: npx wrangler deploy
       - name: Prüfen
         run: |
-          sleep 5
           URL=https://smokr-api.stefan-boschmeier.workers.dev
           curl -sf "$URL/health"
           echo
-          curl -sf "$URL/v1/status" -H "origin: https://shortzn.github.io"
-          echo
+          # Die neue Version braucht einige Sekunden, bis sie überall antwortet
+          for i in $(seq 1 30); do
+            ST=$(curl -sf "$URL/v1/status" -H "origin: https://shortzn.github.io" || true)
+            [ -n "$ST" ] && break
+            sleep 2
+          done
+          echo "Status: $ST"
+          [ -n "$ST" ] || { echo "::error::/v1/status antwortet nicht"; exit 1; }
           # Ohne Testercode muss eine Einsendung abgewiesen werden
           CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/v1/submissions" -H "origin: https://shortzn.github.io" -F lat=35.68 -F lon=139.76 -F category=public -F tobacco=all -F access=public)
           echo "Einsendung ohne Code: $CODE"
