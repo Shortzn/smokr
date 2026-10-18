@@ -45,7 +45,14 @@ json() { node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const 
 echo "== Smokr Community: Einrichtung =="
 
 # ---------- 1. Zugang ----------
+# Token-Datei: cloudflare-token.txt oder eine andere .txt im Übergabeordner (Kurzbefehle nennen sie oft "Text.txt")
 TOKEN_FILE="$HANDOFF/cloudflare-token.txt"
+if [ ! -f "$TOKEN_FILE" ] && [ -d "$HANDOFF" ]; then
+  for f in "$HANDOFF"/*.txt; do
+    case "$(basename "$f")" in LIESMICH.txt|smokr-admin-passwort.txt) continue ;; esac
+    [ -f "$f" ] && TOKEN_FILE="$f" && break
+  done
+fi
 if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] && [ -f "$TOKEN_FILE" ]; then
   CLOUDFLARE_API_TOKEN=$(tr -d ' \r\n\t' < "$TOKEN_FILE")
   echo "Token aus dem iCloud-Übergabeordner gelesen."
