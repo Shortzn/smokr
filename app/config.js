@@ -4,5 +4,5 @@ window.SMOKR_CONFIG = {
   api: "",
   turnstileSiteKey: "",
   contactUrl: "https://github.com/Shortzn/smokr/issues",
-  legalUrl: "",
+  legalUrl: "legal.html",
 };

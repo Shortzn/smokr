@@ -16,6 +16,11 @@ cleanup() { stty echo 2>/dev/null || true; rm -rf "$TMP"; }
 trap cleanup EXIT INT TERM
 API=https://api.cloudflare.com/client/v4
 
+# Übergabe-Ordner im iCloud Drive: Token als Datei hinein, Admin-Passwort kommt als Datei heraus.
+HANDOFF="${SMOKR_HANDOFF:-$HOME/Library/Mobile Documents/com~apple~CloudDocs/Smokr}"
+INTERACTIVE=0
+[ -t 0 ] && INTERACTIVE=1
+
 ask_secret() {
   # $1 = Frage; Antwort steht danach in $REPLY_SECRET
   printf "%s" "$1" >&2
@@ -40,7 +45,13 @@ json() { node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const 
 echo "== Smokr Community: Einrichtung =="
 
 # ---------- 1. Zugang ----------
+TOKEN_FILE="$HANDOFF/cloudflare-token.txt"
+if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] && [ -f "$TOKEN_FILE" ]; then
+  CLOUDFLARE_API_TOKEN=$(tr -d ' \r\n\t' < "$TOKEN_FILE")
+  echo "Token aus dem iCloud-Übergabeordner gelesen."
+fi
 if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+  [ "$INTERACTIVE" = 1 ] || { echo "Kein Token: $TOKEN_FILE fehlt."; exit 1; }
   ask_secret "Cloudflare-API-Token (wird nicht angezeigt): "
   CLOUDFLARE_API_TOKEN="$REPLY_SECRET"
 fi
@@ -61,8 +72,11 @@ export CLOUDFLARE_ACCOUNT_ID
 cf GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" > "$TMP/sub.json"
 SUB=$(json 'j.result && j.result.subdomain' < "$TMP/sub.json" || true)
 if [ -z "$SUB" ]; then
-  printf "Noch keine workers.dev-Adresse. Wunschname (Kleinbuchstaben, z. B. smokr-stefan): "
-  read -r SUB
+  if [ -n "${SMOKR_SUBDOMAIN:-}" ]; then SUB="$SMOKR_SUBDOMAIN"
+  elif [ "$INTERACTIVE" = 1 ]; then
+    printf "Noch keine workers.dev-Adresse. Wunschname (Kleinbuchstaben, z. B. smokr-stefan): "
+    read -r SUB
+  else echo "Keine workers.dev-Adresse und kein SMOKR_SUBDOMAIN gesetzt."; exit 1; fi
   cf PUT "/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" "{\"subdomain\":\"$SUB\"}" > "$TMP/subput.json"
   json 'j.success ? 1 : null' < "$TMP/subput.json" >/dev/null || { echo "Adresse nicht verfügbar:"; cat "$TMP/subput.json"; exit 1; }
 fi
@@ -94,14 +108,21 @@ json 'j.success ? 1 : null' < "$TMP/widget.json" >/dev/null || { echo "Turnstile
 SITEKEY=$(json 'j.result.sitekey' < "$TMP/widget.json")
 
 # ---------- 5. Admin-Passwort ----------
-while :; do
-  ask_secret "Admin-Passwort für die Moderation (mindestens 16 Zeichen): "
-  P1="$REPLY_SECRET"
-  ask_secret "Noch einmal: "
-  if [ "$P1" != "$REPLY_SECRET" ]; then echo "Stimmt nicht überein."; continue; fi
-  if [ "${#P1}" -lt 16 ]; then echo "Zu kurz."; continue; fi
-  break
-done
+if [ "$INTERACTIVE" = 1 ]; then
+  while :; do
+    ask_secret "Admin-Passwort für die Moderation (mindestens 16 Zeichen): "
+    P1="$REPLY_SECRET"
+    ask_secret "Noch einmal: "
+    if [ "$P1" != "$REPLY_SECRET" ]; then echo "Stimmt nicht überein."; continue; fi
+    if [ "${#P1}" -lt 16 ]; then echo "Zu kurz."; continue; fi
+    break
+  done
+else
+  # Ohne Terminal: starkes Zufallspasswort, nur als Datei im privaten iCloud-Übergabeordner
+  P1=$(node -e "const c=require('crypto');const a='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';let s='';for(const b of c.randomBytes(24))s+=a[b%a.length];process.stdout.write(s.match(/.{1,4}/g).join('-'))")
+  printf 'Smokr Admin-Passwort (Moderation unter %s/admin):\n%s\n\nBitte in die Passwörter-App übernehmen und diese Datei danach löschen.\n' "$WORKER_URL" "$P1" > "$HANDOFF/smokr-admin-passwort.txt"
+  echo "Admin-Passwort erzeugt und im iCloud-Übergabeordner abgelegt."
+fi
 HASH=$(printf '%s' "$P1" | node tools/hash-password.mjs --stdin)
 P1=""; REPLY_SECRET=""
 
@@ -123,6 +144,8 @@ rm -f "$TMP/widget.json"
 echo "Veröffentliche den Worker ..."
 npx wrangler deploy --secrets-file "$TMP/secrets.json"
 rm -f "$TMP/secrets.json"
+# Das Token wird nach der Einrichtung nicht mehr gebraucht
+[ -f "$TOKEN_FILE" ] && rm -f "$TOKEN_FILE" && echo "Token-Datei aus dem iCloud-Übergabeordner gelöscht."
 
 # ---------- 7. Prüfen und öffentliche Werte notieren ----------
 sleep 3
