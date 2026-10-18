@@ -137,6 +137,11 @@ test("Suche: Bahnhof und Umlaute", () => {
   assert.deepEqual(C.search([a, b], "大船", TOKYO_STATION, prefs, {}).map((x) => x.s.id), ["b"]);
   assert.deepEqual(C.search([a, b], "", TOKYO_STATION, prefs, {}), []);
   assert.deepEqual(C.searchRegions("kyo").map((r) => r.id), ["tokyo", "kyoto"]);
+  // Bahnhof genau getroffen schlägt Bezirkstreffer, auch wenn der näher an der Kartenmitte liegt
+  const ward = spot({ id: "ward", lat: 35.6815, lon: 139.7672, off: { ward: "Shinjuku" }, st: { en: "Yotsuya", ja: "四ツ谷", m: 100 } });
+  const far = spot({ id: "station-far", lat: 35.69, lon: 139.70, st: { en: "Shinjuku", ja: "新宿", m: 300 } });
+  const near = spot({ id: "station-near", lat: 35.691, lon: 139.701, st: { en: "Shinjuku", ja: "新宿", m: 50 } });
+  assert.deepEqual(C.search([ward, far, near], "Shinjuku", TOKYO_STATION, prefs, {}).map((x) => x.s.id), ["station-near", "station-far", "ward"]);
 });
 
 test("Öffnungszeiten: nur bekannte Muster übersetzt", () => {

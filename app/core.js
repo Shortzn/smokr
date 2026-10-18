@@ -187,15 +187,28 @@
     }
     return s._q;
   }
+  /* Reihenfolge der Suche, offen und einfach:
+     1. Bahnhof heißt genau so: sortiert nach Nähe zu diesem Bahnhof
+     2. Bahnhof beginnt so, oder der Name enthält den Suchbegriff: nach Luftlinie
+     3. Treffer nur in Bezirk, Beschreibung oder Adresse: nach Luftlinie */
+  function searchScore(s, q) {
+    const st = s.st ? [norm(s.st.en), norm(s.st.ja)] : [];
+    if (st.includes(q)) return 0;
+    if (st.some((x) => x && x.startsWith(q))) return 1;
+    if (norm(s.ne).includes(q) || norm(s.nj).includes(q)) return 1;
+    return 2;
+  }
   function search(spots, query, anchor, prefs, reports, limit) {
     const q = norm(query);
     if (!q) return [];
     const hits = [];
     for (const s of spots) {
       if (!visible(s, prefs, reports)) continue;
-      if (searchText(s).includes(q)) hits.push({ d: distM(anchor, [s.lon, s.lat]), s });
+      if (!searchText(s).includes(q)) continue;
+      const score = searchScore(s, q);
+      hits.push({ d: distM(anchor, [s.lon, s.lat]), s, score, key: score === 0 ? s.st.m : distM(anchor, [s.lon, s.lat]) });
     }
-    hits.sort((a, b) => a.d - b.d);
+    hits.sort((a, b) => a.score - b.score || a.key - b.key);
     return hits.slice(0, limit || 40);
   }
   function searchRegions(query) {

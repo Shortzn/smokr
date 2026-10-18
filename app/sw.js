@@ -1,7 +1,7 @@
 // Offline-Betrieb: App und Daten vorab, Kartenteile beim Ansehen zwischenspeichern.
-const VERSION = "smokr-v5";
+const VERSION = "smokr-v6";
 const SHELL = [
-  "./", "index.html", "style.css", "core.js", "app.js", "manifest.webmanifest",
+  "./", "index.html", "style.css", "core.js", "markers.js", "sheet.js", "app.js", "manifest.webmanifest",
   "vendor/maplibre-gl.js", "vendor/maplibre-gl.css", "icons/icon-180.png", "icons/icon-192.png",
   "data/tokyo.json", "data/kamakura.json", "data/kyoto.json", "data/okinawa.json", "data/osaka.json",
 ];
