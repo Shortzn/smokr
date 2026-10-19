@@ -7,10 +7,11 @@
     "test:unit": "node --test tests/unit/*.test.js",
     "test:data": "python3 -I -m unittest discover -s tests -p 'test_*.py'",
     "test:e2e": "playwright test tests/e2e/smokr.spec.js",
-    "test": "npm run test:unit && npm run test:data && npm run test:e2e && npm run test:update && npm run test:worker && npm run test:community",
+    "test": "npm run test:unit && npm run test:data && npm run test:e2e && npm run test:update && npm run test:selfupdate && npm run test:worker && npm run test:community",
     "test:update": "sh tests/tools/update-test.sh alpha-final",
     "test:worker": "sh tests/tools/worker-test.sh",
-    "test:community": "sh tests/tools/community-e2e.sh"
+    "test:community": "sh tests/tools/community-e2e.sh",
+    "test:selfupdate": "playwright test tests/e2e/selfupdate.spec.js --project=desktop-chromium --project=desktop-webkit"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

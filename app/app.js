@@ -4,6 +4,8 @@ const C = window.SmokrCore;
 const M = window.SmokrMarkers;
 const COM = window.SmokrCommunity;
 const CFG = window.SMOKR_CONFIG || {};
+// Muss zu <meta name="smokr-version"> in index.html und VERSION in sw.js passen (die Diagnose prüft das)
+const APP_VERSION = 21;
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const LIST_LIMIT = 40;
 const PANEL_QUERY = "(min-width: 900px), (orientation: landscape) and (max-height: 520px) and (min-width: 560px)";
@@ -726,6 +728,19 @@ async function retryRegion(id) {
   rebuildSpots();
   toast(t(state.regions[id].status === "ok" ? "toast.dataLoaded" : "toast.dataFailed"));
 }
+async function appVersionInfo() {
+  const page = Number(document.querySelector('meta[name="smokr-version"]')?.content) || null;
+  let sw = null, caches_ = [];
+  try { caches_ = (await caches.keys()).filter((k) => /^smokr-v\d+$/.test(k)); } catch (e) { /* kein Cache-Zugriff */ }
+  try { sw = navigator.serviceWorker && navigator.serviceWorker.controller ? "aktiv" : "keiner"; } catch (e) { sw = "?"; }
+  const standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  return { app: APP_VERSION, page, caches: caches_, sw, standalone, mixed: page !== APP_VERSION };
+}
+async function renderVersion() {
+  const v = await appVersionInfo();
+  const el = document.getElementById("app-version");
+  if (el) el.textContent = `${t("info.version")} ${v.app}${v.mixed ? ` (${t("info.versionMixed")})` : ""}`;
+}
 function renderInfo() {
   $("data-status").innerHTML = C.REGIONS.map((r) => {
     const st = state.regions[r.id] || {};
@@ -744,6 +759,7 @@ function openForm(type) {
   if (sheet && !sheet.isPanel()) sheet.snap(type === "place" ? "half" : "expanded");
 }
 function closeForm() {
+  if (state.reloadPending) { location.reload(); return; }
   if (state.form && state.form.ts) state.form.ts.remove();
   if (state.form && state.form.photo) URL.revokeObjectURL(state.form.photo.url);
   const back = state.form && state.form.spotId;
@@ -832,6 +848,22 @@ function renderPhotoBox() {
 /* Die Nadel bleibt immer in der Kartenmitte. Suche und GPS bewegen nur die Karte; danach kann man
    die Nadel durch Verschieben der Karte genau setzen. Wie genau sie sitzt, sagt die Person selbst. */
 const LOC = window.SmokrLocate;
+function diagOn() { return !!CFG.diagnostics && COM.runtime.mode === "private"; }
+async function copyDiagnosis() {
+  const L = state.form && locOf(state.form);
+  if (!L) return;
+  L.diagText = await diagnosisText();
+  renderLocBox();
+  try {
+    await navigator.clipboard.writeText(L.diagText);
+    toast(t("diag.copied"));
+  } catch (e) {
+    // Ohne Zwischenablage: Text markieren, damit man ihn selbst kopieren kann
+    const pre = document.getElementById("loc-diag");
+    if (pre) { const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+    toast(t("diag.select"));
+  }
+}
 function locOf(f) {
   if (!f.loc) f.loc = { mode: "search", source: "map", quality: "exact", label: "", address: "", query: "", results: null, attr: "", busy: false, error: "", note: "" };
   return f.loc;
@@ -864,6 +896,8 @@ function renderLocBox() {
   if (L.error) body += `<p class="form-error loc-error" role="alert">${esc(L.error)}</p>`;
   if (L.mode !== "search" && L.ref) body += `<p class="fine loc-ref">${esc(t("loc.refKept"))} <button type="button" class="text-btn" data-loc-ref-remove>${esc(t("loc.refRemove"))}</button></p>`;
   if (L.attr) body += `<p class="fine loc-attr">${esc(t(L.attr))}</p>`;
+  // Vorübergehend im privaten Test: nachvollziehen, woran eine Übernahme scheitert
+  if (diagOn()) body += `<div class="diag-box"><button type="button" class="text-btn" data-loc-diag>${esc(t("diag.copy"))}</button>${L.diagText ? `<pre class="diag" id="loc-diag">${esc(L.diagText)}</pre>` : ""}</div>`;
   const label = L.label || t("loc.mapLabel");
   const card = `<div class="loc-card" aria-live="polite">
       <p class="loc-chosen"><strong>${esc(t("loc.chosen"))}:</strong> <span id="loc-label">${esc(label)}</span></p>
@@ -921,34 +955,64 @@ function applyPlace(p) {
   const sc = document.getElementById("form-scroll");
   if (sc) sc.scrollTop = 0;
 }
+/** Kurzbeschreibung eines Link-Ergebnisses für die Diagnose (ohne persönliche Daten). */
+function linkKind(link) {
+  if (!link) return "kein Link (Text)";
+  if (link.short) return `Kurzlink ${new URL(link.short).hostname}`;
+  if (link.lat != null) return link.precise ? "Position im Link (Ortsmarke)" : "nur Kartenausschnitt (@)";
+  if (link.error === "nocoords") return link.idOnly && !link.name && !link.address ? "nur interne Kennung" : `Name/Adresse im Link${link.idOnly ? " plus Kennung" : ""}`;
+  if (link.error === "outside") return "Position außerhalb Japans";
+  return "kein Kartenlink erkannt";
+}
 async function runLocSearch() {
   const f = state.form;
   if (!f) return;
   const L = locOf(f);
   const q = (document.getElementById("loc-q")?.value || "").trim();
   L.query = q; L.error = ""; L.results = null; L.attr = ""; L.idOnly = false; L.fromLink = false;
-  if (q.length < 2) { L.error = t("loc.tooShort"); renderLocBox(); return; }
+  // Diagnose: was eingegeben wurde (Form, nicht Inhalt), welche Schritte liefen, was herauskam
+  const urlInText = (q.match(/https?:\/\/[^\s<>"]+/i) || [])[0] || "";
+  const trace = L.trace = [`Eingabe: ${q.length} Zeichen, Link ${urlInText ? (q.indexOf(urlInText) > 0 ? "mit Text davor" : "allein") : "keiner"}`];
+  if (q.length < 2) { L.error = t("loc.tooShort"); trace.push(`Ergebnis: Fehler "${L.error}"`); renderLocBox(); return; }
   document.getElementById("loc-q")?.blur();
   L.busy = true;
   renderLocBox();
   const near = map ? [map.getCenter().lng, map.getCenter().lat] : null;
   try {
     let link = LOC.parseLink(q);
+    const shareName = link && link.textName ? link.textName : "";
+    trace.push(`1 Erkannt: ${linkKind(link)}${shareName ? `, Text davor: "${shareName}"` : ""}`);
+    if (urlInText) trace.push(`  Link (bereinigt): ${LOC.referenceUrl(urlInText) || "(keine Kartenadresse)"}`);
     // Ein eingefügter Karten-Link bleibt als Hinweis für die Moderation dabei (ohne Klickverfolgung)
-    if (link && !link.error) L.ref = LOC.referenceUrl(q) || L.ref;
-    if (link && link.error === "nocoords") L.ref = LOC.referenceUrl(q) || L.ref;
+    if (link && (!link.error || link.error === "nocoords")) L.ref = LOC.referenceUrl(urlInText || q) || L.ref;
     if (link && link.short) {
-      const r = await COM.resolveLink(link.short);
+      let r;
+      try {
+        r = await COM.resolveLink(link.short);
+      } catch (e) {
+        trace.push(`2 Weiterleitung: Fehler ${e && e.code ? e.code : e && e.message}${e && e.detail ? ` (${e.detail})` : ""}`);
+        throw e;
+      }
+      const target = r && r.url ? LOC.referenceUrl(r.url) || r.url.slice(0, 120) : "";
       link = LOC.parseLink(r && r.url);
+      trace.push(`2 Weiterleitung aufgelöst: ${target ? new URL(target).hostname : "kein Ziel"}, ${linkKind(link)}`);
+      if (target) trace.push(`  Ziel (bereinigt): ${target}`);
       if (!link || link.short) link = { error: "link" };
     }
+    // Ortsname aus dem geteilten Text, wenn der Link selbst keinen Ort liefert
+    if (link && link.error === "nocoords" && !link.name && !link.address && shareName) {
+      link.name = shareName;
+      trace.push(`  Name aus dem Text davor verwendet: "${shareName}"`);
+    }
     if (link && link.lat != null) {
+      trace.push(`3 Position aus dem Link: ${link.lat}, ${link.lon}${link.name ? `, Name "${link.name}"` : ""}`);
       applyPlace({ lat: link.lat, lon: link.lon, level: link.precise ? "building" : "district", source: "link",
         label: link.name || `${link.lat.toFixed(5)}, ${link.lon.toFixed(5)}`, name: link.name, note: link.precise ? "" : t("loc.linkView") });
     } else if (link && link.error === "nocoords" && !link.name && !link.address) {
       // Nur eine interne Google- oder Apple-Kennung: Ort nicht bestimmbar. Nichts vortäuschen, zur Suche führen.
       L.idOnly = true;
       L.query = "";
+      trace.push("3 Keine Position bestimmbar, Hinweis gezeigt");
     } else if (link && link.error && link.error !== "nocoords") {
       L.error = t(link.error === "outside" ? "loc.outside" : "loc.badLink");
     } else {
@@ -958,6 +1022,7 @@ async function runLocSearch() {
       let done = false;
       if (LOC.looksLikeAddress(text)) {
         const a = await LOC.geocodeAddress(text, fetch, near);
+        trace.push(`3 Adresssuche: ${a ? `gefunden (${a.level}) ${a.label}` : "nicht gefunden"}`);
         if (a) {
           L.attr = "loc.attrAddr";
           applyPlace({ lat: a.lat, lon: a.lon, level: a.level, source: "address", label: a.label, address: a.label, note: t(`loc.lvl.${a.level}`) });
@@ -967,6 +1032,7 @@ async function runLocSearch() {
       if (!done) {
         if (COM.runtime.geocode === false) throw new Error("geocode off");
         const list = await LOC.searchPlaces(text, { lang: t.lang, near }, fetch);
+        trace.push(`3 Namenssuche "${text.slice(0, 60)}": ${list.length} Treffer`);
         if (!list.length) { L.error = t("loc.noResults"); if (fromLink) L.query = text; }
         else {
           L.results = list.map((r) => ({ ...r, sub: r.area }));
@@ -976,11 +1042,29 @@ async function runLocSearch() {
     }
   } catch (e) {
     L.error = e && e.code === "link" ? t("loc.badLink") : e && e.code === "rate_limited" ? t("err.rate_limited") : t("loc.failed");
+    trace.push(`Ausnahme: ${e && e.code ? `Code ${e.code}` : ""} ${e && e.message ? e.message.slice(0, 120) : ""}`.trim());
   } finally {
     L.busy = false;
+    trace.push(L.error ? `Ergebnis: Fehler "${L.error}"` : L.idOnly ? "Ergebnis: Hinweis \"keine Position\"" : L.results ? `Ergebnis: ${L.results.length} Treffer zur Auswahl` : `Ergebnis: Position "${L.label}"`);
     renderLocBox();
     if (L.idOnly) document.getElementById("loc-q")?.focus();
   }
+}
+/** Diagnose als Text: Version, Umgebung, letzte Suche. Keine Testercodes, Cookies oder Tokens. */
+async function diagnosisText() {
+  const v = await appVersionInfo();
+  const ua = navigator.userAgent;
+  const ios = (ua.match(/OS (\d+)_(\d+)/) || []).slice(1).join(".");
+  const L = state.form && state.form.loc;
+  return [
+    "Smokr-Diagnose",
+    `Zeit: ${new Date().toISOString()}`,
+    `Version: App ${v.app}, Seite ${v.page}, Service Worker ${v.sw}, Speicher ${v.caches.join(" ") || "keiner"}${v.mixed ? " (GEMISCHT)" : ""}`,
+    `Umgebung: ${v.standalone ? "Home-Bildschirm-App" : "Browser"}, ${ios ? `iOS ${ios}` : /Android/.test(ua) ? "Android" : "anderes System"}, ${/CriOS/.test(ua) ? "Chrome" : /FxiOS/.test(ua) ? "Firefox" : /Safari/.test(ua) ? "Safari" : "anderer Browser"}, Sprache ${t.lang}`,
+    `Community: Modus ${COM.runtime.mode || "unbekannt"}, Testcode ${COM.runtime.tester ? "vorhanden" : "keiner"}, Ortssuche ${COM.runtime.geocode === false ? "aus" : "an"}`,
+    `Online: ${navigator.onLine ? "ja" : "nein"}`,
+    ...(L && L.trace ? L.trace : ["(noch keine Suche)"]),
+  ].join("\n");
 }
 function pickLocResult(i) {
   const L = state.form && state.form.loc;
@@ -1175,6 +1259,7 @@ function renderLegend() {
 // ---------- Verdrahtung ----------
 function openDialog(id) {
   const d = $(id);
+  if (id === "info") renderVersion();
   if (!d.open) d.showModal();
 }
 function wire() {
@@ -1266,6 +1351,7 @@ function wire() {
     const mode = e.target.closest("[data-loc-mode]");
     if (mode) setLocMode(mode.dataset.locMode);
     if (e.target.closest("[data-loc-search]")) runLocSearch();
+    if (e.target.closest("[data-loc-diag]")) copyDiagnosis();
     if (e.target.closest("[data-loc-ref-remove]") && state.form) { locOf(state.form).ref = ""; renderLocBox(); }
     const pick = e.target.closest("[data-loc-pick]");
     if (pick) pickLocResult(+pick.dataset.locPick);
@@ -1350,7 +1436,22 @@ loadData();
 if (loadStore("kitsuen.geo", false)) dispatchLoc({ type: "locate" });
 
 if ("serviceWorker" in navigator && window.isSecureContext) {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
+  navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((reg) => {
+    // Beim Zurückkehren in die App nach einer neuen Version fragen, höchstens einmal pro Minute
+    let lastCheck = Date.now();
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible" || Date.now() - lastCheck < 60000) return;
+      lastCheck = Date.now();
+      reg.update().catch(() => {});
+    });
+  }).catch(() => {});
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    const v = e.data && e.data.type === "smokr-version" && e.data.version;
+    if (!v || v === `smokr-v${APP_VERSION}`) return;
+    // Neue Version übernommen: neu laden, außer jemand füllt gerade ein Formular aus
+    if (state.view === "form" && state.form && !state.form.done) { state.reloadPending = true; toast(t("update.ready")); }
+    else location.reload();
+  });
 }
 
 // Für automatische Tests (nur lesend gedacht)

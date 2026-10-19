@@ -714,6 +714,40 @@ test.describe("Sprachen und Konbinis", () => {
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
+  test("Geteilter Text aus Google Maps auf iOS (Name, Zeilenumbruch, Kurzlink) und Diagnose", async ({ page, context }, info) => {
+    test.skip(!["iphone-15-webkit", "desktop-chromium"].includes(info.project.name), "zwei Profile reichen");
+    const api = (req) => req.url().endsWith("/v1/status") ? { json: { mode: "private", geocode: true } }
+      : req.url().endsWith("/v1/community") ? { json: { places: [], confirmations: [], hidden: [] } } : { status: 404, json: {} };
+    await context.route("https://challenges.cloudflare.com/**", (r) => r.fulfill({ contentType: "text/javascript",
+      body: 'window.turnstile={render(el,o){setTimeout(()=>o.callback("XXXX.DUMMY.TOKEN.XXXX"),20);return "w"},reset(){},remove(){}};' }));
+    const errors = await H.open(page, context, { api, storage: { "kitsuen.tester": "SECRET-CODE-1234-5678" } });
+    const resolved = [];
+    await context.route("https://*.workers.dev/v1/resolve-link", (r) => {
+      resolved.push(JSON.parse(r.request().postData()).url);
+      r.fulfill({ contentType: "application/json", headers: { "access-control-allow-origin": "*" },
+        body: JSON.stringify({ ok: true, url: "https://www.google.com/maps/place/A%CC%8ATER+Tokyo/@35.6874623,139.84663,17z/data=!3m1!4b1!8m2!3d35.6874623!4d139.84663?entry=tts&g_ep=abc" }) });
+    });
+    await page.click("#add-btn");
+    // Einfügen wie aus der iOS-Zwischenablage; das Feld entfernt den Zeilenumbruch selbst
+    await page.evaluate(() => { const el = document.getElementById("loc-q"); el.value = "ÅTER Tokyo\nhttps://maps.app.goo.gl/akkoLdQVouxV8ve17?g_st=ic"; el.dispatchEvent(new Event("input", { bubbles: true })); });
+    await page.click("[data-loc-search]");
+    await expect(page.locator("#loc-label")).toHaveText("ÅTER Tokyo");
+    expect(resolved).toEqual(["https://maps.app.goo.gl/akkoLdQVouxV8ve17?g_st=ic"]);
+    await expect.poll(() => page.evaluate(() => { const c = window.__smokr.map.getCenter(); return [+c.lng.toFixed(3), +c.lat.toFixed(3)]; })).toEqual([139.847, 35.687]);
+    // Diagnose: Schritte sichtbar, keine Geheimnisse
+    await page.click("[data-loc-diag]");
+    const diag = await page.locator("#loc-diag").textContent();
+    expect(diag).toMatch(/Version: App 21, Seite 21/);
+    expect(diag).toContain("Link mit Text davor");
+    expect(diag).toContain("1 Erkannt: Kurzlink maps.app.goo.gl");
+    expect(diag).toContain("2 Weiterleitung aufgelöst: www.google.com, Position im Link (Ortsmarke)");
+    expect(diag).toContain('Ergebnis: Position "ÅTER Tokyo"');
+    expect(diag).toContain("Testcode vorhanden");
+    expect(diag).not.toContain("SECRET-CODE");
+    expect(diag).not.toContain("g_ep=");
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+
   test("Normale Besucher fragen die Community-API gar nicht an", async ({ page, context }) => {
     const calls = [];
     const errors = await H.open(page, context, { api: (req) => { calls.push(req.url()); return { json: { mode: "public" } }; } });

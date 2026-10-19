@@ -115,3 +115,23 @@ test("Referenz-Link für die Moderation: ohne Klickverfolgung, nur Karten-Adress
   assert.equal(L.referenceUrl("http://maps.google.com/?q=1,2"), "", "nur https");
   assert.equal(L.referenceUrl("javascript:alert(1)"), "");
 });
+
+test("Geteilter Text von iOS: Link wird herausgelöst, Text davor gemerkt (reproduziert am 19.10.)", () => {
+  const S = "https://maps.app.goo.gl/akkoLdQVouxV8ve17";
+  // Das Suchfeld entfernt den Zeilenumbruch: Name und Link kleben zusammen
+  assert.deepEqual(L.parseLink("ÅTER Tokyo" + S), { short: S, textName: "ÅTER Tokyo" });
+  assert.deepEqual(L.parseLink("ÅTER Tokyo " + S + "?g_st=ic"), { short: S + "?g_st=ic", textName: "ÅTER Tokyo" });
+  assert.deepEqual(L.parseLink(S + "?g_st=com.google.maps.preview.copy"), { short: S + "?g_st=com.google.maps.preview.copy" });
+  const idOnly = L.parseLink("Ichiran https://maps.google.com/maps/place//data=!4m2!3m1!1s0x60188c1d74acd117:0x392ee31a88ad9c56?entry=s");
+  assert.equal(idOnly.idOnly, true);
+  assert.equal(idOnly.textName, "Ichiran");
+});
+
+test("Versionsnummer gleich in Seite, App und Service Worker", () => {
+  const fs = require("node:fs"), path = require("node:path");
+  const read = (f) => fs.readFileSync(path.join(__dirname, "..", "..", "app", f), "utf8");
+  const page = +read("index.html").match(/name="smokr-version" content="(\d+)"/)[1];
+  const app = +read("app.js").match(/const APP_VERSION = (\d+);/)[1];
+  const sw = +read("sw.js").match(/const VERSION = "smokr-v(\d+)";/)[1];
+  assert.deepEqual([page, app], [sw, sw]);
+});

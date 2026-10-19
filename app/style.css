@@ -317,6 +317,8 @@ body[data-view="form"] .fab-rail { opacity: 0; pointer-events: none; }
 .loc-info p { margin: 0; }
 .loc-info a { color: var(--c-focus); font-weight: 600; overflow-wrap: anywhere; }
 .loc-ref { margin: 0; }
+.diag-box { display: grid; gap: 6px; justify-items: start; }
+.diag { margin: 0; width: 100%; max-height: 260px; overflow: auto; padding: var(--s-2); border-radius: var(--r-s); background: var(--c-fill); font-size: 11px; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
 .photo-preview { display: grid; gap: var(--s-2); justify-items: start; }
 .photo-preview img { max-width: 100%; max-height: 220px; border-radius: var(--r-m); object-fit: cover; }
 .ts-box { min-height: 0; }

@@ -11,4 +11,6 @@ window.SMOKR_CONFIG = {
   // false = privater Test: nur Geräte mit Testercode oder dem Link #community fragen den Server.
   // Erst bei der öffentlichen Freigabe (Variante B) auf true setzen.
   communityPublic: false,
+  // Vorübergehend: "Diagnose kopieren" im Formular, nur im privaten Test. Vor der öffentlichen Freigabe entfernen.
+  diagnostics: true,
 };

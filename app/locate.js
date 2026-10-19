@@ -36,8 +36,18 @@
       {error: "link"|"outside"}                      unbrauchbar
       null                                           gar kein Link */
   function parseLink(text) {
-    const s = String(text || "").trim();
-    if (!s) return null;
+    const raw = String(text || "").trim();
+    if (!raw) return null;
+    // iOS kopiert beim Teilen oft "Ortsname" + Zeilenumbruch + Link. Das Suchfeld entfernt den Zeilenumbruch,
+    // dann steht "ÅTER Tokyohttps://maps.app.goo.gl/…" im Feld. Den Link herauslösen, den Text davor merken.
+    const embedded = raw.match(/https?:\/\/[^\s<>"]+/i);
+    const s = embedded ? embedded[0] : raw;
+    const textName = embedded && embedded.index > 0 ? raw.slice(0, embedded.index).trim().slice(0, 120) : "";
+    const res = parseUrl(s);
+    if (res && textName) res.textName = textName;
+    return res;
+  }
+  function parseUrl(s) {
     // Reine Koordinaten, auch aus der Zwischenablage von Google Maps ("35.6812, 139.7671")
     const plain = s.match(/^(-?\d{1,2}\.\d{3,})\s*[, ]\s*(-?\d{2,3}\.\d{3,})$/);
     if (plain) return point(+plain[1], +plain[2], "", true);

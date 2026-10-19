@@ -1,5 +1,5 @@
 // Offline-Betrieb: App und Daten vorab, Kartenteile beim Ansehen zwischenspeichern.
-const VERSION = "smokr-v20";
+const VERSION = "smokr-v21";
 const SHELL = [
   "./", "index.html", "style.css", "config.js", "legal.html", "i18n.js", "core.js", "markers.js", "sheet.js", "community.js", "locate.js", "app.js", "manifest.webmanifest",
   "vendor/maplibre-gl.js", "vendor/maplibre-gl.css", "icons/icon-180.png", "icons/icon-192.png",
@@ -11,7 +11,9 @@ const TILE_LIMIT = 4000;
 const NETWORK_TIMEOUT_MS = 3500;
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // cache: "reload": nie aus dem HTTP-Cache des Browsers übernehmen. GitHub Pages erlaubt 10 Minuten
+  // Zwischenspeicherung; sonst könnte eine neue Version alte Dateien in ihren Speicher legen.
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 function removeOldCaches() {
   return caches.keys().then((keys) => Promise.all(
@@ -19,7 +21,10 @@ function removeOldCaches() {
   ));
 }
 self.addEventListener("activate", (e) => {
-  e.waitUntil(removeOldCaches().then(() => self.clients.claim()));
+  // Offene Fenster erfahren, dass eine neue Version übernommen hat (iOS-Home-Bildschirm lädt sonst nicht neu)
+  e.waitUntil(removeOldCaches().then(() => self.clients.claim())
+    .then(() => self.clients.matchAll({ type: "window" }))
+    .then((list) => list.forEach((c) => c.postMessage({ type: "smokr-version", version: VERSION }))));
 });
 // Eine ältere Version kann kurz nach dem Wechsel noch in ihren Cache schreiben.
 // Darum gelegentlich nachräumen, höchstens alle 10 Sekunden.
@@ -44,7 +49,8 @@ function scheduleTrim() {
 
 async function networkFirst(request) {
   const cache = await caches.open(VERSION);
-  const network = fetch(request).then((res) => {
+  // "no-cache": beim Server nachfragen (304, wenn unverändert), statt bis zu 10 Minuten alte Dateien zu nehmen
+  const network = fetch(request, { cache: "no-cache" }).then((res) => {
     if (res.ok) cache.put(request, res.clone());
     return res;
   });
